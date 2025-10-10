@@ -1,0 +1,44 @@
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Vite build output
+dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env files
+.env*
+
+# IDEs
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Bun
+bun.lockb
+
+# Misc
+coverage/
+*.log
+
+# Mac system files
+.AppleDouble
+.LSOverride
+
+# Windows system files
+ehthumbs.db
+Desktop.ini
+
+# VS Code settings
+.history/
