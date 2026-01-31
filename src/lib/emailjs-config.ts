@@ -4,7 +4,7 @@ export const validateEmailJSConfig = () => {
   const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
   const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
-  const missingVars = [];
+  const missingVars: string[] = [];
   
   if (!serviceId || serviceId === 'your_service_id') {
     missingVars.push('VITE_EMAILJS_SERVICE_ID');
