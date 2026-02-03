@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
 	darkMode: ["class"],
@@ -84,10 +85,9 @@ export default {
 				'gradient-surface': 'var(--gradient-surface)'
 			},
 			boxShadow: {
-				'glow': 'var(--shadow-glow)',
-				'accent': 'var(--shadow-accent)',
-				'soft': 'var(--shadow-soft)',
-				'card': 'var(--shadow-card)'
+				'glow': '0 0 15px rgba(221, 212, 134, 0.35), 0 0 30px rgba(221, 212, 134, 0.15)',
+				'soft': '0 2px 15px rgba(0, 0, 0, 0.05)',
+				'card': '0 4px 20px rgba(0, 0, 0, 0.1)'
 			},
 			fontFamily: {
 				sans: 'var(--font-sans)',
@@ -97,36 +97,6 @@ export default {
 				'smooth': 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
 				'bounce': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
 				'elastic': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-			},
-			keyframes: {
-				'float-slow': {
-					'0%, 100%': { transform: 'translateY(0) scale(1)' },
-					'50%': { transform: 'translateY(-20px) scale(1.05)' }
-				},
-				'float-reverse': {
-					'0%, 100%': { transform: 'translateY(0) scale(1)' },
-					'50%': { transform: 'translateY(20px) scale(0.95)' }
-				},
-				'morph': {
-					'0%': { borderRadius: '60% 40% 30% 70%/60% 30% 70% 40%' },
-					'50%': { borderRadius: '30% 60% 70% 40%/50% 60% 30% 60%' },
-					'100%': { borderRadius: '60% 40% 30% 70%/60% 30% 70% 40%' }
-				},
-				'breathe': {
-					'0%, 100%': { opacity: '0.4' },
-					'50%': { opacity: '0.1' }
-				},
-				'fade-up': {
-					'0%': { opacity: '0', transform: 'translateY(20px)' },
-					'100%': { opacity: '1', transform: 'translateY(0)' }
-				}
-			},
-			animation: {
-				'float-slow': 'float-slow 8s ease-in-out infinite',
-				'float-reverse': 'float-reverse 8s ease-in-out infinite',
-				'morph': 'morph 15s linear infinite',
-				'breathe': 'breathe 10s ease-in-out infinite',
-				'fade-up': 'fade-up 0.5s ease-out forwards'
 			},
 			spacing: {
 				'18': '4.5rem',
@@ -141,15 +111,6 @@ export default {
 				'float-reverse': {
 					'0%, 100%': { transform: 'translateY(0) scale(1)' },
 					'50%': { transform: 'translateY(20px) scale(0.95)' }
-				},
-				'morph': {
-					'0%': { borderRadius: '60% 40% 30% 70%/60% 30% 70% 40%' },
-					'50%': { borderRadius: '30% 60% 70% 40%/50% 60% 30% 60%' },
-					'100%': { borderRadius: '60% 40% 30% 70%/60% 30% 70% 40%' }
-				},
-				'breathe': {
-					'0%, 100%': { opacity: '0.4' },
-					'50%': { opacity: '0.1' }
 				},
 				'accordion-down': {
 					from: {
@@ -269,11 +230,9 @@ export default {
 				'rotate-slow': 'rotate-slow 20s linear infinite',
 				'wiggle': 'wiggle 1s ease-in-out infinite',
 				'float-slow': 'float-slow 8s ease-in-out infinite',
-				'float-reverse': 'float-reverse 8s ease-in-out infinite',
-				'morph': 'morph 15s linear infinite',
-				'breathe': 'breathe 10s ease-in-out infinite'
+				'float-reverse': 'float-reverse 8s ease-in-out infinite'
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [tailwindcssAnimate],
 } satisfies Config;

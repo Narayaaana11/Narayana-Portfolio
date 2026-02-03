@@ -124,8 +124,6 @@ export function Contact() {
         templateParams,
       );
 
-      console.log("Email sent successfully:", result);
-
       // Reset form and show success message
       setFormData({ name: "", email: "", subject: "", message: "" });
 
@@ -134,8 +132,6 @@ export function Contact() {
         description: "Thank you for reaching out. I'll get back to you soon.",
       });
     } catch (error) {
-      console.error("Error sending email:", error);
-
       toast({
         title: "Error Sending Message",
         description:

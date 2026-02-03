@@ -190,9 +190,6 @@ export function About() {
                 >
                   Problem Solving
                 </Badge>
-                {/* <Badge variant="secondary" className="px-3 py-1 text-xs sm:text-sm hover:bg-primary/20 transition-colors duration-300">
-                  System Design
-                </Badge> */}
                 <Badge
                   variant="secondary"
                   className="px-3 py-1 text-xs sm:text-sm hover:bg-primary/20 transition-colors duration-300"
@@ -223,9 +220,6 @@ export function About() {
                 >
                   User Experience
                 </Badge>
-                {/* <Badge variant="secondary" className="px-3 py-1 text-xs sm:text-sm hover:bg-primary/20 transition-colors duration-300">
-                  Performance
-                </Badge> */}
               </div>
             </div>
 

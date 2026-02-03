@@ -18,7 +18,7 @@ import heroImage from "@/assets/hero-image.jpg";
 import profileImage from "@/assets/profile-image.jpg";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useMemo } from "react";
 
 // Tech Stack Icons - Using CDN links for official icons
 const techIcons = {
@@ -41,7 +41,7 @@ const techIcons = {
   vite: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vitejs/vitejs-original.svg",
 };
 
-export function Hero() {
+export const Hero = React.memo(function Hero() {
   // Ref and state for responsive tech icon circle
   const profileRef = useRef<HTMLDivElement>(null);
   const [circle, setCircle] = useState({
@@ -74,10 +74,10 @@ export function Hero() {
       const rect = container.getBoundingClientRect();
       if (rect.width === 0 || rect.height === 0) return;
       // Smaller icons, perfectly centered on the circle
-      let iconSize = Math.max(20, Math.min(rect.width, rect.height) * 0.11); // 11% of container
-      let imgSize = iconSize * 0.7;
-      let radius = rect.width / 2 - iconSize / 2 - 6; // 6px gap
-      let center = rect.width / 2;
+      const iconSize = Math.max(20, Math.min(rect.width, rect.height) * 0.11); // 11% of container
+      const imgSize = iconSize * 0.7;
+      const radius = rect.width / 2 - iconSize / 2 - 6; // 6px gap
+      const center = rect.width / 2;
       setCircle({ center, radius, iconSize, imgSize });
     }
 
@@ -96,9 +96,8 @@ export function Hero() {
   const handleDownloadResume = () => {
     // Download the resume PDF from the public folder
     const link = document.createElement("a");
-    link.href = "/Thota Veera Venkata Naga Satyanarayana Instep Internship.pdf";
-    link.download =
-      "Thota Veera Venkata Naga Satyanarayana Instep Internship.pdf";
+    link.href = encodeURI("/Thota Veera Venkata Naga Satyanarayana.pdf");
+    link.download = "Thota Veera Venkata Naga Satyanarayana.pdf";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -138,18 +137,17 @@ export function Hero() {
         <div className="absolute inset-0 bg-grid-pattern opacity-[0.02] dark:opacity-[0.03]" />
       </div>
 
-      {/* Enhanced Floating Elements */}
+      {/* Optimized Floating Elements - Reduced Animation Complexity */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.5, delay: 0.2 }}
         className="absolute top-16 left-8 w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-r from-primary/20 to-primary-glow/20 blur-sm"
-        style={{ filter: "blur(8px)" }}
+        style={{ filter: "blur(8px)", willChange: "transform, opacity" }}
       >
         <motion.div
           animate={{
             y: [0, 15, 0],
-            rotate: [0, 5, 0],
           }}
           transition={{
             duration: 6,
@@ -157,6 +155,7 @@ export function Hero() {
             repeatType: "reverse",
           }}
           className="w-full h-full"
+          style={{ willChange: "transform" }}
         />
       </motion.div>
 
@@ -165,12 +164,11 @@ export function Hero() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.5, delay: 0.4 }}
         className="absolute bottom-24 right-12 w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-r from-accent-blue/15 to-accent-purple/15 blur-sm"
-        style={{ filter: "blur(10px)" }}
+        style={{ filter: "blur(10px)", willChange: "transform, opacity" }}
       >
         <motion.div
           animate={{
             y: [0, -20, 0],
-            rotate: [0, -8, 0],
           }}
           transition={{
             duration: 8,
@@ -178,6 +176,7 @@ export function Hero() {
             repeatType: "reverse",
           }}
           className="w-full h-full"
+          style={{ willChange: "transform" }}
         />
       </motion.div>
 
@@ -186,13 +185,12 @@ export function Hero() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.5, delay: 0.6 }}
         className="absolute top-1/3 right-6 w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-accent-orange/20 to-primary-glow/20 blur-sm"
-        style={{ filter: "blur(6px)" }}
+        style={{ filter: "blur(6px)", willChange: "transform, opacity" }}
       >
         <motion.div
           animate={{
             y: [0, 12, 0],
             x: [0, 8, 0],
-            rotate: [0, 10, 0],
           }}
           transition={{
             duration: 7,
@@ -200,6 +198,7 @@ export function Hero() {
             repeatType: "reverse",
           }}
           className="w-full h-full"
+          style={{ willChange: "transform" }}
         />
       </motion.div>
 
@@ -208,13 +207,12 @@ export function Hero() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.5, delay: 0.8 }}
         className="absolute bottom-1/3 left-16 w-8 h-8 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-accent-purple/15 to-accent-blue/15 blur-sm"
-        style={{ filter: "blur(4px)" }}
+        style={{ filter: "blur(4px)", willChange: "transform, opacity" }}
       >
         <motion.div
           animate={{
             y: [0, -10, 0],
             x: [0, -5, 0],
-            rotate: [0, -5, 0],
           }}
           transition={{
             duration: 5,
@@ -222,6 +220,7 @@ export function Hero() {
             repeatType: "reverse",
           }}
           className="w-full h-full"
+          style={{ willChange: "transform" }}
         />
       </motion.div>
 
@@ -518,54 +517,17 @@ export function Hero() {
                       repeatType: "reverse",
                     },
                   }}
+                  style={{ willChange: "transform" }}
                 />
 
                 <motion.div
                   animate={{
                     rotate: [0, -360],
-                    scale: [1, 1.15, 1],
-                  }}
-                  transition={{
-                    rotate: { duration: 25, repeat: Infinity, ease: "linear" },
-                    scale: {
-                      duration: 6,
-                      repeat: Infinity,
-                      repeatType: "reverse",
-                      delay: 0.5,
-                    },
-                  }}
-                />
-
-                <motion.div
-                  animate={{
-                    rotate: [0, 360],
-                    scale: [1, 1.2, 1],
                   }}
                   transition={{
                     rotate: { duration: 30, repeat: Infinity, ease: "linear" },
-                    scale: {
-                      duration: 7,
-                      repeat: Infinity,
-                      repeatType: "reverse",
-                      delay: 1,
-                    },
                   }}
-                />
-
-                <motion.div
-                  animate={{
-                    rotate: [0, -360],
-                    scale: [1, 1.25, 1],
-                  }}
-                  transition={{
-                    rotate: { duration: 35, repeat: Infinity, ease: "linear" },
-                    scale: {
-                      duration: 8,
-                      repeat: Infinity,
-                      repeatType: "reverse",
-                      delay: 1.5,
-                    },
-                  }}
+                  style={{ willChange: "transform" }}
                 />
 
                 {/* Floating Tech Stack Indicators - Orbital Revolution */}
@@ -584,6 +546,7 @@ export function Hero() {
                     inset: 0,
                     transformOrigin: "center",
                     pointerEvents: "none",
+                    willChange: "transform",
                   }}
                 >
                   {/* Tech Icons in Circular Pattern */}
@@ -637,9 +600,10 @@ export function Hero() {
                             cursor: "pointer",
                             pointerEvents: "auto",
                             transition: "box-shadow 0.3s, filter 0.3s",
+                            willChange: "transform",
                           }}
                         >
-                          <motion.img
+                          <img
                             src={techIcons[icon.key]}
                             alt={icon.label}
                             title={icon.label}
@@ -649,14 +613,7 @@ export function Hero() {
                               objectFit: "contain",
                             }}
                             className="drop-shadow-lg"
-                            animate={{
-                              rotate: [0, -360],
-                            }}
-                            transition={{
-                              duration: 20,
-                              repeat: Infinity,
-                              ease: "linear",
-                            }}
+                            loading="lazy"
                           />
                         </motion.div>
                       );
@@ -670,4 +627,4 @@ export function Hero() {
       </div>
     </section>
   );
-}
+});

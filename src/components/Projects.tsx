@@ -100,11 +100,11 @@ export function Projects() {
   useEffect(() => {
     if (view === "carousel") {
       const interval = setInterval(() => {
-        handleNext();
+        setCarouselIndex((current) => (current < maxIndex ? current + 1 : 0));
       }, 5000);
       return () => clearInterval(interval);
     }
-  }, [carouselIndex, view]);
+  }, [carouselIndex, view, maxIndex]);
 
   return (
     <section
