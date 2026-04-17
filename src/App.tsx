@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import Lenis from 'lenis';
-import { ArrowUpRight, Apple, Carrot, Leaf, Coffee, Cherry, Pizza, Croissant, Milk, Soup } from 'lucide-react';
+import { ArrowUpRight, Apple, Carrot, Leaf, Coffee, Cherry, Pizza, Croissant, Milk, Soup, Shirt, Recycle, Globe, Tag, Briefcase, LineChart, Users, BarChart, TrendingUp, ShoppingCart, CreditCard, Package, Wallet } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -322,8 +322,8 @@ const Expertise = () => {
   );
 };
 
-const PurePlateBackground = ({ active }: { active: boolean }) => {
-  const icons = [Apple, Carrot, Leaf, Cherry, Pizza, Croissant, Coffee, Milk, Soup];
+const ProjectBackground = ({ active, icons, color }: { active: boolean, icons: any[], color: string }) => {
+  if (!icons) return null;
   
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10 md:rounded-[2rem]">
@@ -339,7 +339,7 @@ const PurePlateBackground = ({ active }: { active: boolean }) => {
               initial={{ opacity: 0, y: 50, scale: 0.5, rotate: -30 }}
               animate={{ 
                 opacity: [0, 0.4, 0], 
-                y: -200, 
+                y: -180, 
                 scale: 1.5,
                 rotate: 90 
               }}
@@ -350,10 +350,10 @@ const PurePlateBackground = ({ active }: { active: boolean }) => {
                 delay: delay,
                 ease: "easeOut"
               }}
-              className="absolute text-orange-500/40"
+              className={cn("absolute opacity-40", color)}
               style={{ left: `${left}%`, bottom: '-20px' }}
             >
-              <Icon size={24 + (i % 3) * 12} strokeWidth={1} />
+              <Icon size={24 + (i % 3) * 12} strokeWidth={1} className="max-md:scale-75" />
             </motion.div>
           );
         })}
@@ -362,28 +362,69 @@ const PurePlateBackground = ({ active }: { active: boolean }) => {
   );
 };
 
+const projectConfig: Record<string, any> = {
+  pureplate: {
+    color: "text-[#f97316]",
+    hoverText: "md:hover:text-[#f97316] max-md:text-[#ea580c]",
+    bgIdle: "bg-[#f97316]/20",
+    bgActive: "bg-[#f97316]/40",
+    borderColor: "border-[#f97316]/50",
+    typeColor: "text-[#ea580c]/80",
+    arrowMobile: "max-md:text-[#ea580c]",
+    icons: [Apple, Carrot, Leaf, Cherry, Pizza, Croissant, Coffee, Milk, Soup]
+  },
+  vera: {
+    color: "text-[#10b981]",
+    hoverText: "md:hover:text-[#10b981] max-md:text-[#059669]",
+    bgIdle: "bg-[#10b981]/20",
+    bgActive: "bg-[#10b981]/40",
+    borderColor: "border-[#10b981]/50",
+    typeColor: "text-[#059669]/80",
+    arrowMobile: "max-md:text-[#059669]",
+    icons: [Leaf, Shirt, Recycle, Globe, Tag]
+  },
+  globaljob: {
+    color: "text-[#3b82f6]",
+    hoverText: "md:hover:text-[#3b82f6] max-md:text-[#2563eb]",
+    bgIdle: "bg-[#3b82f6]/20",
+    bgActive: "bg-[#3b82f6]/40",
+    borderColor: "border-[#3b82f6]/50",
+    typeColor: "text-[#2563eb]/80",
+    arrowMobile: "max-md:text-[#2563eb]",
+    icons: [Briefcase, Globe, LineChart, Users, BarChart, TrendingUp]
+  },
+  ecom: {
+    color: "text-[#8b5cf6]",
+    hoverText: "md:hover:text-[#8b5cf6] max-md:text-[#7c3aed]",
+    bgIdle: "bg-[#8b5cf6]/20",
+    bgActive: "bg-[#8b5cf6]/40",
+    borderColor: "border-[#8b5cf6]/50",
+    typeColor: "text-[#7c3aed]/80",
+    arrowMobile: "max-md:text-[#7c3aed]",
+    icons: [ShoppingCart, CreditCard, Package, BarChart, TrendingUp, Wallet]
+  }
+};
+
 const ProjectItem: React.FC<{ project: any }> = ({ project }) => {
-  const isVera = project.isVera;
-  const isPurePlate = project.isPurePlate;
   const [clicked, setClicked] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const config = projectConfig[project.id];
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (isVera || isPurePlate) {
+    if (config || project.link) {
       e.preventDefault();
       setClicked(true);
       setTimeout(() => {
         setClicked(false);
-        window.open(project.link, '_blank', 'noopener,noreferrer');
+        if (project.link) {
+          window.open(project.link, '_blank', 'noopener,noreferrer');
+        }
       }, 500);
     }
   };
 
   const getBorderColor = () => {
-    if (clicked) {
-      if (isPurePlate) return "border-[#f97316]/50";
-      if (isVera) return "border-[#10b981]/50";
-    }
+    if (clicked && config) return config.borderColor;
     return "border-black/10";
   };
 
@@ -396,23 +437,15 @@ const ProjectItem: React.FC<{ project: any }> = ({ project }) => {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {isVera && (
-        <div className={cn(
-          "absolute inset-0 pointer-events-none transition-all duration-700 blur-[80px] -z-10",
-          clicked ? "bg-[#10b981]/40 opacity-100" : "bg-[#10b981]/20",
-          "max-md:opacity-60",
-          "md:opacity-0 md:group-hover:opacity-100"
-        )} />
-      )}
-      {isPurePlate && (
+      {config && (
         <>
           <div className={cn(
             "absolute inset-0 pointer-events-none transition-all duration-700 blur-[80px] -z-10",
-            clicked ? "bg-[#f97316]/40 opacity-100" : "bg-[#f97316]/20",
+            clicked ? `${config.bgActive} opacity-100` : `${config.bgIdle}`,
             "max-md:opacity-60",
             "md:opacity-0 md:group-hover:opacity-100"
           )} />
-          <PurePlateBackground active={hovered || clicked} />
+          <ProjectBackground active={hovered || clicked} icons={config.icons} color={config.color} />
         </>
       )}
       <div className="flex flex-col gap-4 max-w-3xl z-10">
@@ -425,19 +458,16 @@ const ProjectItem: React.FC<{ project: any }> = ({ project }) => {
               onClick={handleClick}
               className={cn(
                 "transition-colors duration-500 flex items-center gap-2 group-hover:gap-4 md:gap-4 md:group-hover:gap-6",
-                isPurePlate 
-                  ? (clicked ? "text-[#f97316]" : "text-black md:hover:text-[#f97316] max-md:text-[#ea580c]")
-                  : isVera 
-                    ? (clicked ? "text-[#10b981]" : "text-black md:hover:text-[#10b981] max-md:text-[#059669]")
-                    : "text-black hover:text-gray-500"
+                config 
+                  ? (clicked ? config.color : `text-black ${config.hoverText}`)
+                  : "text-black hover:text-gray-500"
               )}
             >
               {project.name}
               <ArrowUpRight className={cn(
                 "w-8 h-8 md:w-12 md:h-12 flex-shrink-0 transition-transform duration-500", 
                 clicked && "scale-110", 
-                isVera && "max-md:text-[#059669]",
-                isPurePlate && "max-md:text-[#ea580c]"
+                config && config.arrowMobile
               )} />
             </a>
           ) : (
@@ -448,7 +478,7 @@ const ProjectItem: React.FC<{ project: any }> = ({ project }) => {
       </div>
       <span className={cn(
         "font-mono text-xs md:text-sm uppercase tracking-widest whitespace-nowrap mt-4 md:mt-0 z-10 transition-colors duration-500",
-        isPurePlate ? "text-[#ea580c]/80" : isVera ? "text-[#059669]/80" : "text-gray-500"
+        config ? config.typeColor : "text-gray-500"
       )}>
         {project.type}
       </span>
@@ -458,12 +488,12 @@ const ProjectItem: React.FC<{ project: any }> = ({ project }) => {
 
 const Works = () => {
   const projects = [
-    { name: "PUREPLATE", type: "REACT / NEXT.JS / AI", link: "https://pureplate.arinpattnaik.me/", desc: "A revolutionary food transparency platform. Exposing hidden sugars and complex additives through an AI-powered insights engine, turning deceptive labels into undeniable truth.", isPurePlate: true },
-    { name: "VÉRA", type: "REACT / NLP", link: "https://vera.arinpattnaik.me/", desc: "NLP-powered greenwashing scanner for fashion - paste a product link, get the True Eco-Score.", isVera: true },
-    { name: "GLOBAL JOB MARKET INTELLIGENCE", type: "PYTHON / STREAMLIT", link: "https://global-job-market-intelligence-platform-arin.streamlit.app/", desc: "A data-driven analytics platform providing deep insights into global employment. Analyzes extensive datasets to uncover trends in high-demand skills and salary distributions." },
-    { name: "E-COMMERCE SALES ANALYSIS", type: "PYTHON / STREAMLIT", link: "https://ecommerce-sales-analysis-arin.streamlit.app/", desc: "Universal analytics platform that auto-detects data types to build interactive dashboards, correlation matrices, and AI-powered insights. Includes specialized e-commerce deep-dive features." },
-    { name: "ETL PIPELINE", type: "SQL / PYTHON", desc: "Automated data extraction and transformation pipeline handling 50GB+ daily, reducing manual reporting by 15 hours/week." },
-    { name: "CUSTOMER CHURN", type: "POWERBI", desc: "Predictive dashboard identifying at-risk customers, leading to a 12% increase in retention through targeted interventions." }
+    { id: "pureplate", name: "PUREPLATE", type: "REACT / NEXT.JS / AI", link: "https://pureplate.arinpattnaik.me/", desc: "A revolutionary food transparency platform. Exposing hidden sugars and complex additives through an AI-powered insights engine, turning deceptive labels into undeniable truth." },
+    { id: "vera", name: "VÉRA", type: "REACT / NLP", link: "https://vera.arinpattnaik.me/", desc: "NLP-powered greenwashing scanner for fashion - paste a product link, get the True Eco-Score." },
+    { id: "globaljob", name: "GLOBAL JOB MARKET INTELLIGENCE", type: "PYTHON / STREAMLIT", link: "https://global-job-market-intelligence-platform-arin.streamlit.app/", desc: "A data-driven analytics platform providing deep insights into global employment. Analyzes extensive datasets to uncover trends in high-demand skills and salary distributions." },
+    { id: "ecom", name: "E-COMMERCE SALES ANALYSIS", type: "PYTHON / STREAMLIT", link: "https://ecommerce-sales-analysis-arin.streamlit.app/", desc: "Universal analytics platform that auto-detects data types to build interactive dashboards, correlation matrices, and AI-powered insights. Includes specialized e-commerce deep-dive features." },
+    { id: "etl", name: "ETL PIPELINE", type: "SQL / PYTHON", desc: "Automated data extraction and transformation pipeline handling 50GB+ daily, reducing manual reporting by 15 hours/week." },
+    { id: "churn", name: "CUSTOMER CHURN", type: "POWERBI", desc: "Predictive dashboard identifying at-risk customers, leading to a 12% increase in retention through targeted interventions." }
   ];
 
   return (
