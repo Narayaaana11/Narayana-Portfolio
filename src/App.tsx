@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import Lenis from 'lenis';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Apple, Carrot, Leaf, Coffee, Cherry, Pizza, Croissant, Milk, Soup } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -322,12 +322,54 @@ const Expertise = () => {
   );
 };
 
-const ProjectItem = ({ project }: { project: any }) => {
+const PurePlateBackground = ({ active }: { active: boolean }) => {
+  const icons = [Apple, Carrot, Leaf, Cherry, Pizza, Croissant, Coffee, Milk, Soup];
+  
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10 md:rounded-[2rem]">
+      <AnimatePresence>
+        {active && icons.map((Icon, i) => {
+          const left = 5 + (i * 11) % 90;
+          const delay = i * 0.15;
+          const duration = 2.5 + (i % 4);
+          
+          return (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 50, scale: 0.5, rotate: -30 }}
+              animate={{ 
+                opacity: [0, 0.4, 0], 
+                y: -200, 
+                scale: 1.5,
+                rotate: 90 
+              }}
+              exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.3 } }}
+              transition={{
+                duration: duration,
+                repeat: Infinity,
+                delay: delay,
+                ease: "easeOut"
+              }}
+              className="absolute text-orange-500/40"
+              style={{ left: `${left}%`, bottom: '-20px' }}
+            >
+              <Icon size={24 + (i % 3) * 12} strokeWidth={1} />
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+const ProjectItem: React.FC<{ project: any }> = ({ project }) => {
   const isVera = project.isVera;
+  const isPurePlate = project.isPurePlate;
   const [clicked, setClicked] = useState(false);
+  const [hovered, setHovered] = useState(false);
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (isVera) {
+    if (isVera || isPurePlate) {
       e.preventDefault();
       setClicked(true);
       setTimeout(() => {
@@ -337,11 +379,23 @@ const ProjectItem = ({ project }: { project: any }) => {
     }
   };
 
+  const getBorderColor = () => {
+    if (clicked) {
+      if (isPurePlate) return "border-[#f97316]/50";
+      if (isVera) return "border-[#10b981]/50";
+    }
+    return "border-black/10";
+  };
+
   return (
-    <div className={cn(
-      "group border-b pb-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative transition-colors duration-500",
-      clicked ? "border-[#10b981]/50" : "border-black/10"
-    )}>
+    <div 
+      className={cn(
+        "group border-b pb-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative transition-colors duration-500",
+        getBorderColor()
+      )}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
       {isVera && (
         <div className={cn(
           "absolute inset-0 pointer-events-none transition-all duration-700 blur-[80px] -z-10",
@@ -349,6 +403,17 @@ const ProjectItem = ({ project }: { project: any }) => {
           "max-md:opacity-60",
           "md:opacity-0 md:group-hover:opacity-100"
         )} />
+      )}
+      {isPurePlate && (
+        <>
+          <div className={cn(
+            "absolute inset-0 pointer-events-none transition-all duration-700 blur-[80px] -z-10",
+            clicked ? "bg-[#f97316]/40 opacity-100" : "bg-[#f97316]/20",
+            "max-md:opacity-60",
+            "md:opacity-0 md:group-hover:opacity-100"
+          )} />
+          <PurePlateBackground active={hovered || clicked} />
+        </>
       )}
       <div className="flex flex-col gap-4 max-w-3xl z-10">
         <h3 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter uppercase flex items-center md:items-start gap-3">
@@ -360,15 +425,20 @@ const ProjectItem = ({ project }: { project: any }) => {
               onClick={handleClick}
               className={cn(
                 "transition-colors duration-500 flex items-center gap-2 group-hover:gap-4 md:gap-4 md:group-hover:gap-6",
-                isVera 
-                  ? (clicked 
-                      ? "text-[#10b981]" 
-                      : "text-black md:hover:text-[#10b981] max-md:text-[#059669]")
-                  : "text-black hover:text-gray-500"
+                isPurePlate 
+                  ? (clicked ? "text-[#f97316]" : "text-black md:hover:text-[#f97316] max-md:text-[#ea580c]")
+                  : isVera 
+                    ? (clicked ? "text-[#10b981]" : "text-black md:hover:text-[#10b981] max-md:text-[#059669]")
+                    : "text-black hover:text-gray-500"
               )}
             >
               {project.name}
-              <ArrowUpRight className={cn("w-8 h-8 md:w-12 md:h-12 flex-shrink-0 transition-transform duration-500", clicked && "scale-110", isVera && "max-md:text-[#059669]")} />
+              <ArrowUpRight className={cn(
+                "w-8 h-8 md:w-12 md:h-12 flex-shrink-0 transition-transform duration-500", 
+                clicked && "scale-110", 
+                isVera && "max-md:text-[#059669]",
+                isPurePlate && "max-md:text-[#ea580c]"
+              )} />
             </a>
           ) : (
             <span className="text-black">{project.name}</span>
@@ -378,7 +448,7 @@ const ProjectItem = ({ project }: { project: any }) => {
       </div>
       <span className={cn(
         "font-mono text-xs md:text-sm uppercase tracking-widest whitespace-nowrap mt-4 md:mt-0 z-10 transition-colors duration-500",
-        isVera ? "text-[#059669]/80" : "text-gray-500"
+        isPurePlate ? "text-[#ea580c]/80" : isVera ? "text-[#059669]/80" : "text-gray-500"
       )}>
         {project.type}
       </span>
@@ -388,6 +458,7 @@ const ProjectItem = ({ project }: { project: any }) => {
 
 const Works = () => {
   const projects = [
+    { name: "PUREPLATE", type: "REACT / NEXT.JS / AI", link: "https://pureplate.arinpattnaik.me/", desc: "A revolutionary food transparency platform. Exposing hidden sugars and complex additives through an AI-powered insights engine, turning deceptive labels into undeniable truth.", isPurePlate: true },
     { name: "VÉRA", type: "REACT / NLP", link: "https://vera.arinpattnaik.me/", desc: "NLP-powered greenwashing scanner for fashion - paste a product link, get the True Eco-Score.", isVera: true },
     { name: "GLOBAL JOB MARKET INTELLIGENCE", type: "PYTHON / STREAMLIT", link: "https://global-job-market-intelligence-platform-arin.streamlit.app/", desc: "A data-driven analytics platform providing deep insights into global employment. Analyzes extensive datasets to uncover trends in high-demand skills and salary distributions." },
     { name: "E-COMMERCE SALES ANALYSIS", type: "PYTHON / STREAMLIT", link: "https://ecommerce-sales-analysis-arin.streamlit.app/", desc: "Universal analytics platform that auto-detects data types to build interactive dashboards, correlation matrices, and AI-powered insights. Includes specialized e-commerce deep-dive features." },
