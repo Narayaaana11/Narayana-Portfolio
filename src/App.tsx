@@ -763,8 +763,8 @@ const Insights = () => {
   ];
 
   return (
-    <section id="insights" ref={targetRef} className="relative md:h-[300vh] z-10">
-      <div className="md:sticky md:top-0 md:h-screen flex flex-col justify-center overflow-hidden py-32 md:py-0">
+    <section id="insights" ref={targetRef} className="relative md:h-[250vh] z-10">
+      <div className="md:sticky md:top-0 md:h-screen flex flex-col justify-center overflow-hidden py-24 md:py-0">
         <h2 className="text-sm font-mono text-gray-500 tracking-widest uppercase mb-12 md:mb-16 px-8 md:px-24">Selected Insights</h2>
         <motion.div style={{ x }} className="flex flex-col md:flex-row gap-8 px-8 md:px-24">
           {insights.map((t, i) => (
