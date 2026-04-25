@@ -378,6 +378,7 @@ const Expertise = () => {
   const domains = [
     {
       title: "DATA SCIENCE & ML",
+      shortTitle: "ML",
       icon: Brain,
       color: "#e11d48",
       description: "Building predictive systems that explain themselves. From churn prediction with SHAP explainability to classification pipelines that quantify revenue impact.",
@@ -391,6 +392,7 @@ const Expertise = () => {
     },
     {
       title: "DATA VISUALIZATION",
+      shortTitle: "VISUAL",
       icon: PieChart,
       color: "#0ea5e9",
       description: "Turning complex datasets into stories anyone can understand. Interactive dashboards, statistical plots, and executive-ready reports that drive decisions.",
@@ -404,6 +406,7 @@ const Expertise = () => {
     },
     {
       title: "FULL-STACK DEV",
+      shortTitle: "DEV",
       icon: Code,
       color: "#f97316",
       description: "End-to-end product development from concept to deployment. React frontends, AI-powered features, and responsive interfaces that feel premium.",
@@ -417,6 +420,7 @@ const Expertise = () => {
     },
     {
       title: "DATA ENGINEERING",
+      shortTitle: "ETL",
       icon: Database,
       color: "#10b981",
       description: "Designing the plumbing that makes everything else possible. ETL pipelines processing 50GB+ daily, SQL architecture, and automation that saves hours every week.",
@@ -430,6 +434,7 @@ const Expertise = () => {
     },
     {
       title: "NLP & AI",
+      shortTitle: "NLP",
       icon: Sparkles,
       color: "#a78bfa",
       description: "Harnessing language models to extract meaning at scale. From greenwashing detection to food label analysis — AI that makes the invisible visible.",
@@ -468,7 +473,7 @@ const Expertise = () => {
               >
                 <Icon className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">{domain.title}</span>
-                <span className="sm:hidden">{domain.title.split(" ")[0]}</span>
+                <span className="sm:hidden">{domain.shortTitle}</span>
               </button>
             );
           })}
@@ -615,24 +620,31 @@ const projectConfig: Record<string, any> = {
 
 const ProjectCard: React.FC<{ project: any; index: number }> = ({ project, index }) => {
   const [hovered, setHovered] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const config = projectConfig[project.id];
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 60 }}
+      initial={{ opacity: 0, y: isMobile ? 30 : 60 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ delay: index * 0.08, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+      viewport={{ once: true, margin: "-30px" }}
+      transition={{ delay: isMobile ? 0 : index * 0.08, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
-        "group relative rounded-[28px] overflow-hidden border transition-all duration-700",
-        index < 2 ? "md:col-span-1" : "",
+        "group relative rounded-[20px] md:rounded-[28px] overflow-hidden border transition-all duration-700",
         config ? "border-black/10 hover:border-transparent" : "border-black/10"
       )}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Color glow background */}
-      {config && (
+      {/* Color glow background — desktop only */}
+      {config && !isMobile && (
         <motion.div
           className="absolute inset-0 pointer-events-none -z-10 transition-opacity duration-700"
           style={{
@@ -642,8 +654,16 @@ const ProjectCard: React.FC<{ project: any; index: number }> = ({ project, index
         />
       )}
 
-      {/* Floating icons */}
-      {config && (
+      {/* Subtle color accent on mobile */}
+      {config && isMobile && (
+        <div
+          className="absolute bottom-0 left-0 right-0 h-1 pointer-events-none"
+          style={{ backgroundColor: config.rawColor, opacity: 0.4 }}
+        />
+      )}
+
+      {/* Floating icons — desktop only */}
+      {config && !isMobile && (
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <AnimatePresence>
             {hovered && config.icons.slice(0, 5).map((Icon: any, i: number) => {
