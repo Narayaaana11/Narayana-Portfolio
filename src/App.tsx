@@ -299,7 +299,7 @@ const Hero = () => {
 };
 
 const About = () => {
-  const text = "I transform raw data into strategic narratives. Specializing in predictive modeling and visual architecture, I build systems that reveal hidden patterns and drive decisive action.";
+  const text = "I don't just analyze data — I build products around it. From AI-powered platforms that expose hidden truths in food labels to ML systems that predict customer behavior before it happens.";
   
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -309,21 +309,20 @@ const About = () => {
 
   const words = text.split(" ");
 
-  const stats = [
-    { value: "6+", label: "Projects Shipped" },
-    { value: "50GB+", label: "Data Processed Daily" },
-    { value: "15hrs", label: "Saved Weekly via Automation" },
-    { value: "40%", label: "Faster Pipeline Delivery" }
+  const highlights = [
+    { label: "What I Do", text: "Full-stack data products — from the SQL query to the React frontend. I own the entire pipeline." },
+    { label: "How I Think", text: "Every dataset tells a story. I find the narrative, then build the tool that makes it impossible to ignore." },
+    { label: "What Drives Me", text: "Making the invisible visible. Whether it's greenwashing in fashion or churn risk in SaaS — I build systems that surface what others miss." }
   ];
 
   return (
-    <section id="about" className="min-h-screen w-full flex items-center justify-center px-8 md:px-24 py-32 relative z-10">
+    <section id="about" className="w-full flex items-center justify-center px-8 md:px-24 py-24 relative z-10">
       <FocusSection className="w-full max-w-7xl">
-        <div className="flex flex-col gap-20">
-          <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-start">
-            <div className="flex-1 lg:flex-[2]">
+        <div className="flex flex-col gap-16">
+          <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-start">
+            <div className="flex-1 lg:flex-[3]">
               <h2 className="text-sm font-mono text-gray-500 tracking-widest uppercase mb-10">About</h2>
-              <p ref={ref} className="text-3xl md:text-5xl lg:text-6xl font-medium leading-tight tracking-tight flex flex-wrap text-black">
+              <p ref={ref} className="text-3xl md:text-4xl lg:text-5xl font-medium leading-tight tracking-tight flex flex-wrap text-black">
                 {words.map((word, i) => {
                   const start = i / words.length;
                   const end = start + (1 / words.length);
@@ -336,25 +335,20 @@ const About = () => {
                 })}
               </p>
             </div>
-            <div className="flex-1 flex flex-col gap-3 pt-2 lg:pt-16">
-              <p className="text-gray-500 text-base leading-relaxed mb-6">
-                From building AI-powered food transparency tools to predicting customer churn with explainable ML — I ship products that turn messy data into clear decisions.
-              </p>
-              <div className="grid grid-cols-2 gap-4">
-                {stats.map((stat, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.2 + i * 0.1, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                    className="p-4 rounded-2xl bg-black/[0.02] border border-black/10"
-                  >
-                    <div className="text-2xl md:text-3xl font-black tracking-tighter text-black">{stat.value}</div>
-                    <div className="text-xs font-mono text-gray-500 tracking-wide uppercase mt-1">{stat.label}</div>
-                  </motion.div>
-                ))}
-              </div>
+            <div className="flex-1 lg:flex-[2] flex flex-col gap-6 pt-2 lg:pt-16">
+              {highlights.map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.15 + i * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  className="flex flex-col gap-2"
+                >
+                  <span className="text-xs font-mono text-gray-400 tracking-widest uppercase">{item.label}</span>
+                  <p className="text-gray-600 text-sm leading-relaxed">{item.text}</p>
+                </motion.div>
+              ))}
             </div>
           </div>
 
@@ -364,7 +358,7 @@ const About = () => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 1 }}
-            className="overflow-hidden py-6 border-t border-b border-black/10"
+            className="overflow-hidden py-5 border-t border-b border-black/10"
           >
             <div className="flex gap-12 animate-marquee whitespace-nowrap">
               {["Python", "React", "TypeScript", "SQL", "Streamlit", "PowerBI", "Tailwind CSS", "Next.js", "scikit-learn", "XGBoost", "SHAP", "Framer Motion", "NLP", "Pandas", "NumPy", "Git", "Python", "React", "TypeScript", "SQL", "Streamlit", "PowerBI", "Tailwind CSS", "Next.js", "scikit-learn", "XGBoost", "SHAP", "Framer Motion", "NLP", "Pandas", "NumPy", "Git"].map((tool, i) => (
@@ -453,7 +447,7 @@ const Expertise = () => {
   const ActiveIcon = active.icon;
 
   return (
-    <section id="expertise" className="min-h-screen w-full flex flex-col justify-center px-8 md:px-24 py-32 relative z-10">
+    <section id="expertise" className="w-full flex flex-col justify-center px-8 md:px-24 py-24 relative z-10">
       <FocusSection>
         <h2 className="text-sm font-mono text-gray-500 tracking-widest uppercase mb-16">Expertise</h2>
         
@@ -556,48 +550,10 @@ const Expertise = () => {
   );
 };
 
-const ProjectBackground = ({ active, icons, color }: { active: boolean, icons: any[], color: string }) => {
-  if (!icons) return null;
-  
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10 md:rounded-[2rem]">
-      <AnimatePresence>
-        {active && icons.map((Icon, i) => {
-          const left = 5 + (i * 11) % 90;
-          const delay = i * 0.15;
-          const duration = 2.5 + (i % 4);
-          
-          return (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 50, scale: 0.5, rotate: -30 }}
-              animate={{ 
-                opacity: [0, 0.4, 0], 
-                y: -180, 
-                scale: 1.5,
-                rotate: 90 
-              }}
-              exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.3 } }}
-              transition={{
-                duration: duration,
-                repeat: Infinity,
-                delay: delay,
-                ease: "easeOut"
-              }}
-              className={cn("absolute opacity-40", color)}
-              style={{ left: `${left}%`, bottom: '-20px' }}
-            >
-              <Icon size={24 + (i % 3) * 12} strokeWidth={1} className="max-md:scale-75" />
-            </motion.div>
-          );
-        })}
-      </AnimatePresence>
-    </div>
-  );
-};
-
 const projectConfig: Record<string, any> = {
   pureplate: {
+    rawColor: "#f97316",
+    rawColorClass: "text-[#f97316]",
     color: "text-[#f97316]",
     hoverText: "md:hover:text-[#f97316] max-md:text-[#ea580c]",
     bgIdle: "bg-[#f97316]/20",
@@ -608,6 +564,8 @@ const projectConfig: Record<string, any> = {
     icons: [Apple, Carrot, Leaf, Cherry, Pizza, Croissant, Coffee, Milk, Soup]
   },
   vera: {
+    rawColor: "#10b981",
+    rawColorClass: "text-[#10b981]",
     color: "text-[#10b981]",
     hoverText: "md:hover:text-[#10b981] max-md:text-[#059669]",
     bgIdle: "bg-[#10b981]/20",
@@ -618,6 +576,8 @@ const projectConfig: Record<string, any> = {
     icons: [Leaf, Shirt, Recycle, Globe, Tag]
   },
   globaljob: {
+    rawColor: "#0ea5e9",
+    rawColorClass: "text-[#0ea5e9]",
     color: "text-[#0ea5e9]",
     hoverText: "md:hover:text-[#0ea5e9] max-md:text-[#0284c7]",
     bgIdle: "bg-[#0ea5e9]/20",
@@ -628,6 +588,8 @@ const projectConfig: Record<string, any> = {
     icons: [Briefcase, Globe, LineChart, Users, BarChart, TrendingUp]
   },
   ecom: {
+    rawColor: "#a78bfa",
+    rawColorClass: "text-[#a78bfa]",
     color: "text-[#a78bfa]",
     hoverText: "md:hover:text-[#a78bfa] max-md:text-[#8b5cf6]",
     bgIdle: "bg-[#a78bfa]/20",
@@ -638,6 +600,8 @@ const projectConfig: Record<string, any> = {
     icons: [ShoppingCart, CreditCard, Package, BarChart, TrendingUp, Wallet]
   },
   churnguard: {
+    rawColor: "#e11d48",
+    rawColorClass: "text-[#e11d48]",
     color: "text-[#e11d48]",
     hoverText: "md:hover:text-[#e11d48] max-md:text-[#be123c]",
     bgIdle: "bg-[#e11d48]/20",
@@ -649,104 +613,126 @@ const projectConfig: Record<string, any> = {
   }
 };
 
-const ProjectItem: React.FC<{ project: any }> = ({ project }) => {
-  const [clicked, setClicked] = useState(false);
+const ProjectCard: React.FC<{ project: any; index: number }> = ({ project, index }) => {
   const [hovered, setHovered] = useState(false);
   const config = projectConfig[project.id];
 
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (config || project.link) {
-      e.preventDefault();
-      setClicked(true);
-      setTimeout(() => {
-        setClicked(false);
-        if (project.link) {
-          window.open(project.link, '_blank', 'noopener,noreferrer');
-        }
-      }, 500);
-    }
-  };
-
-  const getBorderColor = () => {
-    if (clicked && config) return config.borderColor;
-    return "border-black/10";
-  };
-
   return (
-    <div 
+    <motion.div
+      initial={{ opacity: 0, y: 60 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ delay: index * 0.08, duration: 1, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
-        "group border-b pb-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative transition-colors duration-500",
-        getBorderColor()
+        "group relative rounded-[28px] overflow-hidden border transition-all duration-700",
+        index < 2 ? "md:col-span-1" : "",
+        config ? "border-black/10 hover:border-transparent" : "border-black/10"
       )}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
+      {/* Color glow background */}
       {config && (
-        <>
-          <div className={cn(
-            "absolute inset-0 pointer-events-none transition-all duration-700 blur-[80px] -z-10",
-            clicked ? `${config.bgActive} opacity-100` : `${config.bgIdle}`,
-            "max-md:opacity-60",
-            "md:opacity-0 md:group-hover:opacity-100"
-          )} />
-          <ProjectBackground active={hovered || clicked} icons={config.icons} color={config.color} />
-        </>
+        <motion.div
+          className="absolute inset-0 pointer-events-none -z-10 transition-opacity duration-700"
+          style={{
+            background: `radial-gradient(ellipse at 50% 100%, ${config.rawColor}20 0%, transparent 70%)`,
+            opacity: hovered ? 1 : 0
+          }}
+        />
       )}
-      <div className="flex flex-col gap-4 max-w-3xl z-10">
-        <h3 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter uppercase flex items-center md:items-start gap-3">
-          {project.link ? (
-            <a 
-              href={project.link} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              onClick={handleClick}
-              className={cn(
-                "transition-colors duration-500 flex items-center gap-2 group-hover:gap-4 md:gap-4 md:group-hover:gap-6",
-                config 
-                  ? (clicked ? config.color : `text-black ${config.hoverText}`)
-                  : "text-black hover:text-gray-500"
-              )}
+
+      {/* Floating icons */}
+      {config && (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <AnimatePresence>
+            {hovered && config.icons.slice(0, 5).map((Icon: any, i: number) => {
+              const left = 10 + (i * 18) % 80;
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 40, scale: 0.5 }}
+                  animate={{ opacity: [0, 0.2, 0], y: -120, scale: 1.2 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 3 + (i % 3), repeat: Infinity, delay: i * 0.2, ease: "easeOut" }}
+                  className="absolute"
+                  style={{ left: `${left}%`, bottom: '0px', color: config.rawColor }}
+                >
+                  <Icon size={20 + (i % 3) * 8} strokeWidth={1} />
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
+      )}
+
+      <div className="relative z-10 p-8 md:p-10 flex flex-col justify-between min-h-[320px] md:min-h-[380px]">
+        {/* Top: type tag */}
+        <div className="flex items-center justify-between">
+          <span className={cn(
+            "font-mono text-[10px] md:text-xs uppercase tracking-widest transition-colors duration-500",
+            config ? config.typeColor : "text-gray-400"
+          )}>
+            {project.type}
+          </span>
+          {project.link && (
+            <motion.div
+              animate={{ rotate: hovered ? 0 : -45, scale: hovered ? 1 : 0.8 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             >
-              {project.name}
               <ArrowUpRight className={cn(
-                "w-8 h-8 md:w-12 md:h-12 flex-shrink-0 transition-transform duration-500", 
-                clicked && "scale-110", 
-                config && config.arrowMobile
+                "w-5 h-5 transition-colors duration-500",
+                config ? (hovered ? config.rawColorClass : "text-gray-300") : "text-gray-300"
               )} />
-            </a>
-          ) : (
-            <span className="text-black">{project.name}</span>
+            </motion.div>
           )}
-        </h3>
-        <p className="text-gray-600 text-lg md:text-xl leading-relaxed">{project.desc}</p>
+        </div>
+
+        {/* Bottom: name + description */}
+        <div className="flex flex-col gap-3">
+          <h3 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tighter uppercase leading-none">
+            {project.link ? (
+              <a
+                href={project.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(
+                  "transition-colors duration-500",
+                  config
+                    ? `text-black ${config.hoverText}`
+                    : "text-black hover:text-gray-500"
+                )}
+              >
+                {project.name}
+              </a>
+            ) : (
+              <span className="text-black">{project.name}</span>
+            )}
+          </h3>
+          <p className="text-gray-500 text-sm leading-relaxed line-clamp-3">{project.desc}</p>
+        </div>
       </div>
-      <span className={cn(
-        "font-mono text-xs md:text-sm uppercase tracking-widest whitespace-nowrap mt-4 md:mt-0 z-10 transition-colors duration-500",
-        config ? config.typeColor : "text-gray-500"
-      )}>
-        {project.type}
-      </span>
-    </div>
+    </motion.div>
   );
 };
 
 const Works = () => {
   const projects = [
-    { id: "pureplate", name: "PUREPLATE", type: "REACT / NEXT.JS / AI", link: "https://pureplate.arinpattnaik.me/", desc: "A revolutionary food transparency platform. Exposing hidden sugars and complex additives through an AI-powered insights engine, turning deceptive labels into undeniable truth." },
-    { id: "vera", name: "VÉRA", type: "REACT / NLP", link: "https://vera.arinpattnaik.me/", desc: "NLP-powered greenwashing scanner for fashion - paste a product link, get the True Eco-Score." },
-    { id: "globaljob", name: "GLOBAL JOB MARKET INTELLIGENCE", type: "PYTHON / STREAMLIT", link: "https://global-job-market-intelligence-platform-arin.streamlit.app/", desc: "A data-driven analytics platform providing deep insights into global employment. Analyzes extensive datasets to uncover trends in high-demand skills and salary distributions." },
-    { id: "ecom", name: "E-COMMERCE SALES ANALYSIS", type: "PYTHON / STREAMLIT", link: "https://ecommerce-sales-analysis-arin.streamlit.app/", desc: "Universal analytics platform that auto-detects data types to build interactive dashboards, correlation matrices, and AI-powered insights. Includes specialized e-commerce deep-dive features." },
-    { id: "etl", name: "ETL PIPELINE", type: "SQL / PYTHON", desc: "Automated data extraction and transformation pipeline handling 50GB+ daily, reducing manual reporting by 15 hours/week." },
-    { id: "churnguard", name: "CHURNGUARD", type: "REACT / ML / SHAP", link: "https://churnguard.arinpattnaik.me/", desc: "ML-powered churn prediction platform that scores customer risk, explains every prediction with SHAP, quantifies revenue at stake, and generates targeted retention strategies — all from a single CSV upload." }
+    { id: "pureplate", name: "PUREPLATE", type: "REACT / NEXT.JS / AI", link: "https://pureplate.arinpattnaik.me/", desc: "AI-powered food transparency platform that exposes hidden sugars and complex additives, turning deceptive labels into undeniable truth." },
+    { id: "vera", name: "VÉRA", type: "REACT / NLP", link: "https://vera.arinpattnaik.me/", desc: "NLP-powered greenwashing scanner for fashion — paste a product link, get the True Eco-Score." },
+    { id: "churnguard", name: "CHURNGUARD", type: "REACT / ML / SHAP", link: "https://churnguard.arinpattnaik.me/", desc: "ML-powered churn prediction that scores risk, explains predictions with SHAP, and generates targeted retention strategies." },
+    { id: "globaljob", name: "GLOBAL JOB MARKET", type: "PYTHON / STREAMLIT", link: "https://global-job-market-intelligence-platform-arin.streamlit.app/", desc: "Data-driven analytics platform uncovering global employment trends, high-demand skills, and salary distributions." },
+    { id: "ecom", name: "E-COMMERCE ANALYTICS", type: "PYTHON / STREAMLIT", link: "https://ecommerce-sales-analysis-arin.streamlit.app/", desc: "Universal analytics platform with auto-detecting schemas, interactive dashboards, and AI-powered insights." },
+    { id: "etl", name: "ETL PIPELINE", type: "SQL / PYTHON", desc: "Automated data extraction and transformation pipeline handling 50GB+ daily, reducing manual reporting by 15 hours/week." }
   ];
 
   return (
-    <section id="projects" className="min-h-screen w-full flex flex-col justify-center px-8 md:px-24 py-32 relative z-10">
+    <section id="projects" className="w-full flex flex-col justify-center px-8 md:px-24 py-24 relative z-10">
       <FocusSection>
-        <h2 className="text-sm font-mono text-gray-500 tracking-widest uppercase mb-16">Selected Works</h2>
-        <div className="flex flex-col w-full gap-12">
+        <h2 className="text-sm font-mono text-gray-500 tracking-widest uppercase mb-12">Selected Works</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {projects.map((project, i) => (
-            <ProjectItem key={i} project={project} />
+            <ProjectCard key={project.id} project={project} index={i} />
           ))}
         </div>
       </FocusSection>
