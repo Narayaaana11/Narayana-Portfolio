@@ -41,3 +41,12 @@ html {
   animation-play-state: paused;
 }
 
+/* Hide scrollbar on horizontal scroll containers */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+

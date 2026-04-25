@@ -192,7 +192,7 @@ const BackToTop = () => {
           exit={{ opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.3 }}
           onClick={scrollToTop}
-          className="fixed bottom-8 right-8 z-50 w-12 h-12 rounded-full bg-black text-white flex items-center justify-center shadow-lg hover:bg-gray-800 transition-colors cursor-pointer"
+          className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black text-white flex items-center justify-center shadow-lg hover:bg-gray-800 transition-colors cursor-pointer"
           aria-label="Back to top"
         >
           <ArrowUp className="w-5 h-5" />
@@ -232,7 +232,7 @@ const Background = () => {
 };
 
 const TopLinks = () => (
-  <div className="fixed top-8 left-1/2 -translate-x-1/2 z-50 flex gap-8 px-8 py-4 rounded-full bg-black/5 backdrop-blur-xl border border-black/10 text-xs font-mono tracking-widest uppercase text-gray-700">
+  <div className="fixed top-6 md:top-8 left-1/2 -translate-x-1/2 z-50 flex gap-4 md:gap-8 px-5 md:px-8 py-3 md:py-4 rounded-full bg-black/5 backdrop-blur-xl border border-black/10 text-[10px] md:text-xs font-mono tracking-widest uppercase text-gray-700">
     <a href="https://github.com/ArinPattnaik" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">GitHub</a>
     <a href="https://www.linkedin.com/in/arinpattnaik" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">LinkedIn</a>
     <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">Resume</a>
@@ -240,7 +240,7 @@ const TopLinks = () => (
 );
 
 const RightNav = () => (
-  <nav className="fixed right-0 top-0 h-full w-16 md:w-24 z-50 flex flex-col justify-center items-center group">
+  <nav className="hidden md:flex fixed right-0 top-0 h-full w-24 z-50 flex-col justify-center items-center group">
     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/[0.02] backdrop-blur-none group-hover:backdrop-blur-xl transition-all duration-500 border-l border-transparent group-hover:border-black/10" />
     <div className="relative flex flex-col gap-12 opacity-30 group-hover:opacity-100 transition-opacity duration-500">
       {['About', 'Expertise', 'Projects', 'Insights'].map((item) => (
@@ -251,7 +251,7 @@ const RightNav = () => (
             e.preventDefault();
             document.getElementById(item.toLowerCase())?.scrollIntoView({ behavior: 'smooth' });
           }}
-          className="text-[10px] md:text-xs font-mono tracking-widest uppercase hover:text-black text-gray-500 transition-colors"
+          className="text-xs font-mono tracking-widest uppercase hover:text-black text-gray-500 transition-colors"
           style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
         >
           {item}
@@ -316,13 +316,13 @@ const About = () => {
   ];
 
   return (
-    <section id="about" className="w-full flex items-center justify-center px-8 md:px-24 py-24 relative z-10">
+    <section id="about" className="w-full flex items-center justify-center px-6 md:px-24 py-16 md:py-24 relative z-10">
       <FocusSection className="w-full max-w-7xl">
-        <div className="flex flex-col gap-16">
+        <div className="flex flex-col gap-12 md:gap-16">
           <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-start">
             <div className="flex-1 lg:flex-[3]">
-              <h2 className="text-sm font-mono text-gray-500 tracking-widest uppercase mb-10">About</h2>
-              <p ref={ref} className="text-3xl md:text-4xl lg:text-5xl font-medium leading-tight tracking-tight flex flex-wrap text-black">
+              <h2 className="text-sm font-mono text-gray-500 tracking-widest uppercase mb-6 md:mb-10">About</h2>
+              <p ref={ref} className="text-2xl md:text-4xl lg:text-5xl font-medium leading-tight tracking-tight flex flex-wrap text-black">
                 {words.map((word, i) => {
                   const start = i / words.length;
                   const end = start + (1 / words.length);
@@ -447,12 +447,12 @@ const Expertise = () => {
   const ActiveIcon = active.icon;
 
   return (
-    <section id="expertise" className="w-full flex flex-col justify-center px-8 md:px-24 py-24 relative z-10">
+    <section id="expertise" className="w-full flex flex-col justify-center px-6 md:px-24 py-16 md:py-24 relative z-10">
       <FocusSection>
-        <h2 className="text-sm font-mono text-gray-500 tracking-widest uppercase mb-16">Expertise</h2>
+        <h2 className="text-sm font-mono text-gray-500 tracking-widest uppercase mb-10 md:mb-16">Expertise</h2>
         
         {/* Tab navigation */}
-        <div className="flex flex-wrap gap-3 mb-12">
+        <div className="flex gap-2 md:gap-3 mb-8 md:mb-12 overflow-x-auto pb-2 -mx-6 px-6 md:mx-0 md:px-0 md:flex-wrap scrollbar-hide">
           {domains.map((domain, i) => {
             const Icon = domain.icon;
             return (
@@ -460,7 +460,7 @@ const Expertise = () => {
                 key={i}
                 onClick={() => setActiveTab(i)}
                 className={cn(
-                  "flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-mono tracking-widest uppercase transition-all duration-500 cursor-pointer border",
+                  "flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-full text-[10px] md:text-xs font-mono tracking-widest uppercase transition-all duration-500 cursor-pointer border whitespace-nowrap flex-shrink-0",
                   activeTab === i
                     ? "bg-black text-white border-black"
                     : "bg-transparent text-gray-500 border-black/10 hover:border-black/30 hover:text-black"
@@ -493,9 +493,9 @@ const Expertise = () => {
                   >
                     <ActiveIcon className="w-6 h-6" style={{ color: active.color }} />
                   </div>
-                  <h3 className="text-3xl md:text-4xl font-black tracking-tighter uppercase">{active.title}</h3>
+                  <h3 className="text-2xl md:text-4xl font-black tracking-tighter uppercase">{active.title}</h3>
                 </div>
-                <p className="text-gray-600 text-lg leading-relaxed">{active.description}</p>
+                <p className="text-gray-600 text-base md:text-lg leading-relaxed">{active.description}</p>
                 
                 {/* Tools */}
                 <div>
@@ -666,7 +666,7 @@ const ProjectCard: React.FC<{ project: any; index: number }> = ({ project, index
         </div>
       )}
 
-      <div className="relative z-10 p-8 md:p-10 flex flex-col justify-between min-h-[320px] md:min-h-[380px]">
+      <div className="relative z-10 p-6 md:p-10 flex flex-col justify-between min-h-[260px] md:min-h-[380px]">
         {/* Top: type tag */}
         <div className="flex items-center justify-between">
           <span className={cn(
@@ -690,7 +690,7 @@ const ProjectCard: React.FC<{ project: any; index: number }> = ({ project, index
 
         {/* Bottom: name + description */}
         <div className="flex flex-col gap-3">
-          <h3 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tighter uppercase leading-none">
+          <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-tighter uppercase leading-none">
             {project.link ? (
               <a
                 href={project.link}
@@ -727,10 +727,10 @@ const Works = () => {
   ];
 
   return (
-    <section id="projects" className="w-full flex flex-col justify-center px-8 md:px-24 py-24 relative z-10">
+    <section id="projects" className="w-full flex flex-col justify-center px-6 md:px-24 py-16 md:py-24 relative z-10">
       <FocusSection>
-        <h2 className="text-sm font-mono text-gray-500 tracking-widest uppercase mb-12">Selected Works</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <h2 className="text-sm font-mono text-gray-500 tracking-widest uppercase mb-8 md:mb-12">Selected Works</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
           {projects.map((project, i) => (
             <ProjectCard key={project.id} project={project} index={i} />
           ))}
@@ -764,12 +764,12 @@ const Insights = () => {
 
   return (
     <section id="insights" ref={targetRef} className="relative md:h-[250vh] z-10">
-      <div className="md:sticky md:top-0 md:h-screen flex flex-col justify-center overflow-hidden py-24 md:py-0">
-        <h2 className="text-sm font-mono text-gray-500 tracking-widest uppercase mb-12 md:mb-16 px-8 md:px-24">Selected Insights</h2>
-        <motion.div style={{ x }} className="flex flex-col md:flex-row gap-8 px-8 md:px-24">
+      <div className="md:sticky md:top-0 md:h-screen flex flex-col justify-center overflow-hidden py-16 md:py-0">
+        <h2 className="text-sm font-mono text-gray-500 tracking-widest uppercase mb-8 md:mb-16 px-6 md:px-24">Selected Insights</h2>
+        <motion.div style={{ x }} className="flex flex-col md:flex-row gap-4 md:gap-8 px-6 md:px-24">
           {insights.map((t, i) => (
-            <SpotlightCard key={i} className="w-full md:w-[40vw] flex-shrink-0 p-8 md:p-12 flex flex-col justify-between min-h-[200px] md:min-h-[300px]">
-              <p className="text-xl md:text-3xl font-medium leading-tight text-black mb-12">"{t.text}"</p>
+            <SpotlightCard key={i} className="w-full md:w-[40vw] flex-shrink-0 p-6 md:p-12 flex flex-col justify-between min-h-[180px] md:min-h-[300px]">
+              <p className="text-lg md:text-3xl font-medium leading-tight text-black mb-8 md:mb-12">"{t.text}"</p>
               <p className="text-xs md:text-sm font-mono text-gray-500 uppercase tracking-widest">{t.author}</p>
             </SpotlightCard>
           ))}
@@ -781,8 +781,8 @@ const Insights = () => {
 
 const Footer = () => {
   return (
-    <footer className="w-full px-8 md:px-24 py-16 flex flex-col gap-16 border-t border-black/10 relative z-10 bg-[#f8f9fa] md:bg-[#f8f9fa]/80 md:backdrop-blur-md">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
+    <footer className="w-full px-6 md:px-24 py-12 md:py-16 flex flex-col gap-12 md:gap-16 border-t border-black/10 relative z-10 bg-[#f8f9fa] md:bg-[#f8f9fa]/80 md:backdrop-blur-md">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8">
         <div className="flex flex-col gap-4">
           <h3 className="text-xs font-mono text-gray-400 tracking-widest uppercase">Get in Touch</h3>
           <a href="mailto:arinpattnaikofficial@gmail.com" className="text-xl md:text-2xl font-bold tracking-tighter uppercase text-black hover:text-gray-500 transition-colors">
