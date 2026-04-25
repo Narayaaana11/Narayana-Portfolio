@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, useScroll, useTransform, AnimatePresence, useMotionValueEvent } from 'motion/react';
 import Lenis from 'lenis';
-import { ArrowUpRight, Apple, Carrot, Leaf, Coffee, Cherry, Pizza, Croissant, Milk, Soup, Shirt, Recycle, Globe, Tag, Briefcase, LineChart, Users, BarChart, TrendingUp, ShoppingCart, CreditCard, Package, Wallet, Shield, UserX, Brain, Target, ChevronDown } from 'lucide-react';
+import { ArrowUpRight, ArrowUp, Apple, Carrot, Leaf, Coffee, Cherry, Pizza, Croissant, Milk, Soup, Shirt, Recycle, Globe, Tag, Briefcase, LineChart, Users, BarChart, TrendingUp, ShoppingCart, CreditCard, Package, Wallet, Shield, UserX, Brain, Target, Code, Database, PieChart, Sparkles } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -159,6 +159,49 @@ const SpotlightCard: React.FC<SpotlightCardProps> = ({ children, className }) =>
   );
 };
 
+// --- Scroll Progress Bar ---
+const ScrollProgress = () => {
+  const { scrollYProgress } = useScroll();
+  return (
+    <motion.div
+      className="fixed top-0 left-0 right-0 h-[2px] bg-black origin-left z-[100]"
+      style={{ scaleX: scrollYProgress }}
+    />
+  );
+};
+
+// --- Back to Top Button ---
+const BackToTop = () => {
+  const { scrollYProgress } = useScroll();
+  const [visible, setVisible] = useState(false);
+
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    setVisible(latest > 0.15);
+  });
+
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          transition={{ duration: 0.3 }}
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 z-50 w-12 h-12 rounded-full bg-black text-white flex items-center justify-center shadow-lg hover:bg-gray-800 transition-colors cursor-pointer"
+          aria-label="Back to top"
+        >
+          <ArrowUp className="w-5 h-5" />
+        </motion.button>
+      )}
+    </AnimatePresence>
+  );
+};
+
 // --- Sections ---
 
 const Background = () => {
@@ -266,158 +309,248 @@ const About = () => {
 
   const words = text.split(" ");
 
+  const stats = [
+    { value: "6+", label: "Projects Shipped" },
+    { value: "50GB+", label: "Data Processed Daily" },
+    { value: "15hrs", label: "Saved Weekly via Automation" },
+    { value: "40%", label: "Faster Pipeline Delivery" }
+  ];
+
   return (
     <section id="about" className="min-h-screen w-full flex items-center justify-center px-8 md:px-24 py-32 relative z-10">
-      <FocusSection className="max-w-5xl">
-        <p ref={ref} className="text-3xl md:text-5xl lg:text-6xl font-medium leading-tight tracking-tight flex flex-wrap text-black">
-          {words.map((word, i) => {
-            const start = i / words.length;
-            const end = start + (1 / words.length);
-            const opacity = useTransform(scrollYProgress, [start, end], [0.2, 1]);
-            return (
-              <motion.span key={i} style={{ opacity }} className="mr-[0.25em] mb-[0.1em]">
-                {word}
-              </motion.span>
-            );
-          })}
-        </p>
+      <FocusSection className="w-full max-w-7xl">
+        <div className="flex flex-col gap-20">
+          <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-start">
+            <div className="flex-1 lg:flex-[2]">
+              <h2 className="text-sm font-mono text-gray-500 tracking-widest uppercase mb-10">About</h2>
+              <p ref={ref} className="text-3xl md:text-5xl lg:text-6xl font-medium leading-tight tracking-tight flex flex-wrap text-black">
+                {words.map((word, i) => {
+                  const start = i / words.length;
+                  const end = start + (1 / words.length);
+                  const opacity = useTransform(scrollYProgress, [start, end], [0.2, 1]);
+                  return (
+                    <motion.span key={i} style={{ opacity }} className="mr-[0.25em] mb-[0.1em]">
+                      {word}
+                    </motion.span>
+                  );
+                })}
+              </p>
+            </div>
+            <div className="flex-1 flex flex-col gap-3 pt-2 lg:pt-16">
+              <p className="text-gray-500 text-base leading-relaxed mb-6">
+                From building AI-powered food transparency tools to predicting customer churn with explainable ML — I ship products that turn messy data into clear decisions.
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                {stats.map((stat, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.2 + i * 0.1, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                    className="p-4 rounded-2xl bg-black/[0.02] border border-black/10"
+                  >
+                    <div className="text-2xl md:text-3xl font-black tracking-tighter text-black">{stat.value}</div>
+                    <div className="text-xs font-mono text-gray-500 tracking-wide uppercase mt-1">{stat.label}</div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Tool belt marquee */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1 }}
+            className="overflow-hidden py-6 border-t border-b border-black/10"
+          >
+            <div className="flex gap-12 animate-marquee whitespace-nowrap">
+              {["Python", "React", "TypeScript", "SQL", "Streamlit", "PowerBI", "Tailwind CSS", "Next.js", "scikit-learn", "XGBoost", "SHAP", "Framer Motion", "NLP", "Pandas", "NumPy", "Git", "Python", "React", "TypeScript", "SQL", "Streamlit", "PowerBI", "Tailwind CSS", "Next.js", "scikit-learn", "XGBoost", "SHAP", "Framer Motion", "NLP", "Pandas", "NumPy", "Git"].map((tool, i) => (
+                <span key={i} className="text-sm font-mono text-gray-400 tracking-widest uppercase flex-shrink-0">{tool}</span>
+              ))}
+            </div>
+          </motion.div>
+        </div>
       </FocusSection>
     </section>
   );
 };
 
-const ExpertiseCard = ({ skill, index }: { skill: { name: string; tagline: string; details: string[] }; index: number }) => {
-  const [expanded, setExpanded] = useState(false);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "0px" }}
-      transition={{ delay: index * 0.08, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-    >
-      <SpotlightCard className="p-6 md:p-8 flex flex-col group">
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="w-full text-left flex flex-col gap-3 cursor-pointer"
-          aria-expanded={expanded}
-        >
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg md:text-xl font-bold tracking-tighter uppercase text-black">{skill.name}</h3>
-            <motion.div
-              animate={{ rotate: expanded ? 180 : 0 }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <ChevronDown className="w-5 h-5 text-gray-400 group-hover:text-black transition-colors" />
-            </motion.div>
-          </div>
-          <p className="text-gray-500 text-sm leading-relaxed">{skill.tagline}</p>
-        </button>
-        <AnimatePresence>
-          {expanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="overflow-hidden"
-            >
-              <ul className="mt-4 pt-4 border-t border-black/10 flex flex-col gap-2">
-                {skill.details.map((detail, i) => (
-                  <motion.li
-                    key={i}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05, duration: 0.4 }}
-                    className="text-gray-600 text-sm leading-relaxed flex items-start gap-2"
-                  >
-                    <span className="text-black/30 mt-1 text-xs">▸</span>
-                    {detail}
-                  </motion.li>
-                ))}
-              </ul>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </SpotlightCard>
-    </motion.div>
-  );
-};
-
 const Expertise = () => {
-  const skills = [
+  const [activeTab, setActiveTab] = useState(0);
+
+  const domains = [
     {
-      name: "PREDICTIVE MODELING",
-      tagline: "Turning historical patterns into future-proof decisions.",
-      details: [
-        "Customer churn prediction with SHAP-powered explainability",
-        "ML classification & regression pipelines (scikit-learn, XGBoost)",
-        "Risk scoring models with revenue impact quantification",
-        "Feature engineering & hyperparameter optimization"
-      ]
+      title: "DATA SCIENCE & ML",
+      icon: Brain,
+      color: "#e11d48",
+      description: "Building predictive systems that explain themselves. From churn prediction with SHAP explainability to classification pipelines that quantify revenue impact.",
+      skills: [
+        { name: "Predictive Modeling", level: 92 },
+        { name: "scikit-learn / XGBoost", level: 88 },
+        { name: "SHAP & Explainable AI", level: 85 },
+        { name: "Feature Engineering", level: 90 },
+      ],
+      tools: ["Python", "scikit-learn", "XGBoost", "SHAP", "Pandas", "NumPy"]
     },
     {
-      name: "DATA VISUALIZATION",
-      tagline: "Making complex data speak through compelling visuals.",
-      details: [
-        "Interactive dashboards with Streamlit & PowerBI",
-        "Correlation matrices & statistical distribution plots",
-        "Real-time analytics with auto-detecting data schemas",
-        "Executive-ready reporting with actionable insights"
-      ]
+      title: "DATA VISUALIZATION",
+      icon: PieChart,
+      color: "#0ea5e9",
+      description: "Turning complex datasets into stories anyone can understand. Interactive dashboards, statistical plots, and executive-ready reports that drive decisions.",
+      skills: [
+        { name: "Streamlit Dashboards", level: 95 },
+        { name: "PowerBI", level: 82 },
+        { name: "Statistical Plotting", level: 88 },
+        { name: "Real-time Analytics", level: 85 },
+      ],
+      tools: ["Streamlit", "PowerBI", "Matplotlib", "Plotly", "Seaborn"]
     },
     {
-      name: "PYTHON AUTOMATION",
-      tagline: "Eliminating repetitive work with intelligent scripts.",
-      details: [
-        "ETL pipelines processing 50GB+ daily data volumes",
-        "Automated data extraction, cleaning & transformation",
-        "Scheduled reporting that saves 15+ hours per week",
-        "API integrations & web scraping workflows"
-      ]
+      title: "FULL-STACK DEV",
+      icon: Code,
+      color: "#f97316",
+      description: "End-to-end product development from concept to deployment. React frontends, AI-powered features, and responsive interfaces that feel premium.",
+      skills: [
+        { name: "React / Next.js", level: 90 },
+        { name: "TypeScript", level: 88 },
+        { name: "Tailwind CSS", level: 92 },
+        { name: "Framer Motion", level: 85 },
+      ],
+      tools: ["React", "Next.js", "TypeScript", "Tailwind", "Vite", "Vercel"]
     },
     {
-      name: "SQL ARCHITECTURE",
-      tagline: "Designing the backbone of reliable data systems.",
-      details: [
-        "Complex multi-table queries & window functions",
-        "Database schema design for analytics workloads",
-        "Query optimization for large-scale datasets",
-        "Data warehouse modeling & stored procedures"
-      ]
+      title: "DATA ENGINEERING",
+      icon: Database,
+      color: "#10b981",
+      description: "Designing the plumbing that makes everything else possible. ETL pipelines processing 50GB+ daily, SQL architecture, and automation that saves hours every week.",
+      skills: [
+        { name: "SQL & Query Optimization", level: 90 },
+        { name: "ETL Pipeline Design", level: 88 },
+        { name: "Python Automation", level: 92 },
+        { name: "Database Architecture", level: 85 },
+      ],
+      tools: ["PostgreSQL", "Python", "SQL Server", "Pandas", "Airflow"]
     },
     {
-      name: "FULL-STACK DEVELOPMENT",
-      tagline: "Building end-to-end products from concept to deployment.",
-      details: [
-        "React & Next.js web applications with TypeScript",
-        "AI-powered features using NLP & generative models",
-        "Responsive design with Tailwind CSS & Framer Motion",
-        "Production deployment & performance optimization"
-      ]
-    },
-    {
-      name: "NLP & AI INTEGRATION",
-      tagline: "Harnessing language models to extract meaning at scale.",
-      details: [
-        "Greenwashing detection through NLP text analysis",
-        "AI-powered food label transparency scoring",
-        "Sentiment analysis & text classification pipelines",
-        "LLM integration for automated insight generation"
-      ]
+      title: "NLP & AI",
+      icon: Sparkles,
+      color: "#a78bfa",
+      description: "Harnessing language models to extract meaning at scale. From greenwashing detection to food label analysis — AI that makes the invisible visible.",
+      skills: [
+        { name: "Text Classification", level: 86 },
+        { name: "Sentiment Analysis", level: 84 },
+        { name: "LLM Integration", level: 82 },
+        { name: "NLP Pipelines", level: 85 },
+      ],
+      tools: ["spaCy", "Hugging Face", "OpenAI API", "NLTK", "Gemini"]
     }
   ];
+
+  const active = domains[activeTab];
+  const ActiveIcon = active.icon;
 
   return (
     <section id="expertise" className="min-h-screen w-full flex flex-col justify-center px-8 md:px-24 py-32 relative z-10">
       <FocusSection>
-        <h2 className="text-sm font-mono text-gray-500 tracking-widest uppercase mb-6">Expertise</h2>
-        <p className="text-gray-400 text-sm font-mono tracking-wide mb-16">Click any card to explore what I bring to the table.</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {skills.map((skill, i) => (
-            <ExpertiseCard key={i} skill={skill} index={i} />
-          ))}
+        <h2 className="text-sm font-mono text-gray-500 tracking-widest uppercase mb-16">Expertise</h2>
+        
+        {/* Tab navigation */}
+        <div className="flex flex-wrap gap-3 mb-12">
+          {domains.map((domain, i) => {
+            const Icon = domain.icon;
+            return (
+              <button
+                key={i}
+                onClick={() => setActiveTab(i)}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-mono tracking-widest uppercase transition-all duration-500 cursor-pointer border",
+                  activeTab === i
+                    ? "bg-black text-white border-black"
+                    : "bg-transparent text-gray-500 border-black/10 hover:border-black/30 hover:text-black"
+                )}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">{domain.title}</span>
+                <span className="sm:hidden">{domain.title.split(" ")[0]}</span>
+              </button>
+            );
+          })}
         </div>
+
+        {/* Active tab content */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
+              {/* Left: Description */}
+              <div className="flex flex-col gap-8">
+                <div className="flex items-center gap-4">
+                  <div 
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center"
+                    style={{ backgroundColor: `${active.color}15`, border: `1px solid ${active.color}30` }}
+                  >
+                    <ActiveIcon className="w-6 h-6" style={{ color: active.color }} />
+                  </div>
+                  <h3 className="text-3xl md:text-4xl font-black tracking-tighter uppercase">{active.title}</h3>
+                </div>
+                <p className="text-gray-600 text-lg leading-relaxed">{active.description}</p>
+                
+                {/* Tools */}
+                <div>
+                  <p className="text-xs font-mono text-gray-400 tracking-widest uppercase mb-3">Tools & Technologies</p>
+                  <div className="flex flex-wrap gap-2">
+                    {active.tools.map((tool, i) => (
+                      <motion.span
+                        key={tool}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: i * 0.05, duration: 0.3 }}
+                        className="px-3 py-1.5 rounded-lg bg-black/[0.03] border border-black/10 text-xs font-mono text-gray-600 tracking-wide"
+                      >
+                        {tool}
+                      </motion.span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: Skill bars */}
+              <div className="flex flex-col gap-5">
+                {active.skills.map((skill, i) => (
+                  <motion.div
+                    key={skill.name}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    className="flex flex-col gap-2"
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-black">{skill.name}</span>
+                      <span className="text-xs font-mono text-gray-400">{skill.level}%</span>
+                    </div>
+                    <div className="h-2 rounded-full bg-black/[0.06] overflow-hidden">
+                      <motion.div
+                        className="h-full rounded-full"
+                        style={{ backgroundColor: active.color }}
+                        initial={{ width: 0 }}
+                        animate={{ width: `${skill.level}%` }}
+                        transition={{ delay: 0.2 + i * 0.1, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                      />
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </FocusSection>
     </section>
   );
@@ -662,16 +795,44 @@ const Insights = () => {
 
 const Footer = () => {
   return (
-    <footer className="w-full px-8 md:px-24 py-12 flex flex-col gap-16 border-t border-black/10 relative z-10 bg-[#f8f9fa] md:bg-[#f8f9fa]/80 md:backdrop-blur-md">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
-        <div className="flex flex-col gap-2">
-          <a href="mailto:arinpattnaikofficial@gmail.com" className="text-2xl md:text-4xl font-bold tracking-tighter uppercase text-black hover:text-gray-500 transition-colors">
-            LET'S TALK <ArrowUpRight className="inline-block w-6 h-6 md:w-8 md:h-8" />
+    <footer className="w-full px-8 md:px-24 py-16 flex flex-col gap-16 border-t border-black/10 relative z-10 bg-[#f8f9fa] md:bg-[#f8f9fa]/80 md:backdrop-blur-md">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
+        <div className="flex flex-col gap-4">
+          <h3 className="text-xs font-mono text-gray-400 tracking-widest uppercase">Get in Touch</h3>
+          <a href="mailto:arinpattnaikofficial@gmail.com" className="text-xl md:text-2xl font-bold tracking-tighter uppercase text-black hover:text-gray-500 transition-colors">
+            LET'S TALK <ArrowUpRight className="inline-block w-5 h-5" />
           </a>
+          <p className="font-mono text-xs text-gray-500 tracking-widest uppercase">
+            BHUBANESWAR, INDIA
+          </p>
         </div>
         
-        <div className="flex flex-col md:items-end gap-4 font-mono text-xs text-gray-500 tracking-widest uppercase">
-          <p>BHUBANESWAR, INDIA [20.27° N, 85.84° E]</p>
+        <div className="flex flex-col gap-4">
+          <h3 className="text-xs font-mono text-gray-400 tracking-widest uppercase">Navigate</h3>
+          <div className="flex flex-col gap-2">
+            {['About', 'Expertise', 'Projects', 'Insights'].map((item) => (
+              <a
+                key={item}
+                href={`#${item.toLowerCase()}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById(item.toLowerCase())?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="text-sm text-gray-600 hover:text-black transition-colors font-mono tracking-wide uppercase"
+              >
+                {item}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <h3 className="text-xs font-mono text-gray-400 tracking-widest uppercase">Connect</h3>
+          <div className="flex flex-col gap-2">
+            <a href="https://github.com/ArinPattnaik" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-600 hover:text-black transition-colors font-mono tracking-wide uppercase">GitHub</a>
+            <a href="https://www.linkedin.com/in/arinpattnaik" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-600 hover:text-black transition-colors font-mono tracking-wide uppercase">LinkedIn</a>
+            <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-600 hover:text-black transition-colors font-mono tracking-wide uppercase">Resume</a>
+          </div>
         </div>
       </div>
       
@@ -720,9 +881,11 @@ function AppContent() {
 
   return (
     <div className="bg-[#f8f9fa] min-h-screen text-black selection:bg-black selection:text-white overflow-hidden">
+      <ScrollProgress />
       <Background />
       <TopLinks />
       <RightNav />
+      <BackToTop />
       
       <main className="w-full flex flex-col items-center">
         <Hero />
