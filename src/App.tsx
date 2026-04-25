@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import Lenis from 'lenis';
-import { ArrowUpRight, Apple, Carrot, Leaf, Coffee, Cherry, Pizza, Croissant, Milk, Soup, Shirt, Recycle, Globe, Tag, Briefcase, LineChart, Users, BarChart, TrendingUp, ShoppingCart, CreditCard, Package, Wallet } from 'lucide-react';
+import { ArrowUpRight, Apple, Carrot, Leaf, Coffee, Cherry, Pizza, Croissant, Milk, Soup, Shirt, Recycle, Globe, Tag, Briefcase, LineChart, Users, BarChart, TrendingUp, ShoppingCart, CreditCard, Package, Wallet, Shield, UserX, Brain, Target, ChevronDown } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -286,35 +286,136 @@ const About = () => {
   );
 };
 
+const ExpertiseCard = ({ skill, index }: { skill: { name: string; tagline: string; details: string[] }; index: number }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "0px" }}
+      transition={{ delay: index * 0.08, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <SpotlightCard className="p-6 md:p-8 flex flex-col group">
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="w-full text-left flex flex-col gap-3 cursor-pointer"
+          aria-expanded={expanded}
+        >
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg md:text-xl font-bold tracking-tighter uppercase text-black">{skill.name}</h3>
+            <motion.div
+              animate={{ rotate: expanded ? 180 : 0 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <ChevronDown className="w-5 h-5 text-gray-400 group-hover:text-black transition-colors" />
+            </motion.div>
+          </div>
+          <p className="text-gray-500 text-sm leading-relaxed">{skill.tagline}</p>
+        </button>
+        <AnimatePresence>
+          {expanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="overflow-hidden"
+            >
+              <ul className="mt-4 pt-4 border-t border-black/10 flex flex-col gap-2">
+                {skill.details.map((detail, i) => (
+                  <motion.li
+                    key={i}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.05, duration: 0.4 }}
+                    className="text-gray-600 text-sm leading-relaxed flex items-start gap-2"
+                  >
+                    <span className="text-black/30 mt-1 text-xs">▸</span>
+                    {detail}
+                  </motion.li>
+                ))}
+              </ul>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </SpotlightCard>
+    </motion.div>
+  );
+};
+
 const Expertise = () => {
-  const tools = [
-    { name: "PREDICTIVE MODELING", desc: "Statistical forecasting & ML algorithms." },
-    { name: "DATA VISUALIZATION", desc: "Tableau & PowerBI dashboards." },
-    { name: "PYTHON AUTOMATION", desc: "Scripting & data pipeline optimization." },
-    { name: "SQL ARCHITECTURE", desc: "Database design & complex querying." }
+  const skills = [
+    {
+      name: "PREDICTIVE MODELING",
+      tagline: "Turning historical patterns into future-proof decisions.",
+      details: [
+        "Customer churn prediction with SHAP-powered explainability",
+        "ML classification & regression pipelines (scikit-learn, XGBoost)",
+        "Risk scoring models with revenue impact quantification",
+        "Feature engineering & hyperparameter optimization"
+      ]
+    },
+    {
+      name: "DATA VISUALIZATION",
+      tagline: "Making complex data speak through compelling visuals.",
+      details: [
+        "Interactive dashboards with Streamlit & PowerBI",
+        "Correlation matrices & statistical distribution plots",
+        "Real-time analytics with auto-detecting data schemas",
+        "Executive-ready reporting with actionable insights"
+      ]
+    },
+    {
+      name: "PYTHON AUTOMATION",
+      tagline: "Eliminating repetitive work with intelligent scripts.",
+      details: [
+        "ETL pipelines processing 50GB+ daily data volumes",
+        "Automated data extraction, cleaning & transformation",
+        "Scheduled reporting that saves 15+ hours per week",
+        "API integrations & web scraping workflows"
+      ]
+    },
+    {
+      name: "SQL ARCHITECTURE",
+      tagline: "Designing the backbone of reliable data systems.",
+      details: [
+        "Complex multi-table queries & window functions",
+        "Database schema design for analytics workloads",
+        "Query optimization for large-scale datasets",
+        "Data warehouse modeling & stored procedures"
+      ]
+    },
+    {
+      name: "FULL-STACK DEVELOPMENT",
+      tagline: "Building end-to-end products from concept to deployment.",
+      details: [
+        "React & Next.js web applications with TypeScript",
+        "AI-powered features using NLP & generative models",
+        "Responsive design with Tailwind CSS & Framer Motion",
+        "Production deployment & performance optimization"
+      ]
+    },
+    {
+      name: "NLP & AI INTEGRATION",
+      tagline: "Harnessing language models to extract meaning at scale.",
+      details: [
+        "Greenwashing detection through NLP text analysis",
+        "AI-powered food label transparency scoring",
+        "Sentiment analysis & text classification pipelines",
+        "LLM integration for automated insight generation"
+      ]
+    }
   ];
 
   return (
     <section id="expertise" className="min-h-screen w-full flex flex-col justify-center px-8 md:px-24 py-32 relative z-10">
       <FocusSection>
-        <h2 className="text-sm font-mono text-gray-500 tracking-widest uppercase mb-16">Expertise</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {tools.map((tool, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "0px" }}
-              transition={{ delay: i * 0.1, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <SpotlightCard className="p-8 aspect-square flex flex-col justify-between group">
-                <div className="w-12 h-12 rounded-full bg-black/5 border border-black/10 backdrop-blur-xl flex items-center justify-center text-black font-mono text-sm shadow-[inset_0_1px_1px_rgba(0,0,0,0.05)]">0{i + 1}</div>
-                <div>
-                  <h3 className="text-xl font-bold tracking-tighter uppercase mb-3 text-black">{tool.name}</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">{tool.desc}</p>
-                </div>
-              </SpotlightCard>
-            </motion.div>
+        <h2 className="text-sm font-mono text-gray-500 tracking-widest uppercase mb-6">Expertise</h2>
+        <p className="text-gray-400 text-sm font-mono tracking-wide mb-16">Click any card to explore what I bring to the table.</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {skills.map((skill, i) => (
+            <ExpertiseCard key={i} skill={skill} index={i} />
           ))}
         </div>
       </FocusSection>
@@ -384,24 +485,34 @@ const projectConfig: Record<string, any> = {
     icons: [Leaf, Shirt, Recycle, Globe, Tag]
   },
   globaljob: {
-    color: "text-[#3b82f6]",
-    hoverText: "md:hover:text-[#3b82f6] max-md:text-[#2563eb]",
-    bgIdle: "bg-[#3b82f6]/20",
-    bgActive: "bg-[#3b82f6]/40",
-    borderColor: "border-[#3b82f6]/50",
-    typeColor: "text-[#2563eb]/80",
-    arrowMobile: "max-md:text-[#2563eb]",
+    color: "text-[#0ea5e9]",
+    hoverText: "md:hover:text-[#0ea5e9] max-md:text-[#0284c7]",
+    bgIdle: "bg-[#0ea5e9]/20",
+    bgActive: "bg-[#0ea5e9]/40",
+    borderColor: "border-[#0ea5e9]/50",
+    typeColor: "text-[#0284c7]/80",
+    arrowMobile: "max-md:text-[#0284c7]",
     icons: [Briefcase, Globe, LineChart, Users, BarChart, TrendingUp]
   },
   ecom: {
-    color: "text-[#8b5cf6]",
-    hoverText: "md:hover:text-[#8b5cf6] max-md:text-[#7c3aed]",
-    bgIdle: "bg-[#8b5cf6]/20",
-    bgActive: "bg-[#8b5cf6]/40",
-    borderColor: "border-[#8b5cf6]/50",
-    typeColor: "text-[#7c3aed]/80",
-    arrowMobile: "max-md:text-[#7c3aed]",
+    color: "text-[#a78bfa]",
+    hoverText: "md:hover:text-[#a78bfa] max-md:text-[#8b5cf6]",
+    bgIdle: "bg-[#a78bfa]/20",
+    bgActive: "bg-[#a78bfa]/40",
+    borderColor: "border-[#a78bfa]/50",
+    typeColor: "text-[#8b5cf6]/80",
+    arrowMobile: "max-md:text-[#8b5cf6]",
     icons: [ShoppingCart, CreditCard, Package, BarChart, TrendingUp, Wallet]
+  },
+  churnguard: {
+    color: "text-[#e11d48]",
+    hoverText: "md:hover:text-[#e11d48] max-md:text-[#be123c]",
+    bgIdle: "bg-[#e11d48]/20",
+    bgActive: "bg-[#e11d48]/40",
+    borderColor: "border-[#e11d48]/50",
+    typeColor: "text-[#be123c]/80",
+    arrowMobile: "max-md:text-[#be123c]",
+    icons: [Shield, UserX, Brain, Target, LineChart, BarChart]
   }
 };
 
@@ -493,7 +604,7 @@ const Works = () => {
     { id: "globaljob", name: "GLOBAL JOB MARKET INTELLIGENCE", type: "PYTHON / STREAMLIT", link: "https://global-job-market-intelligence-platform-arin.streamlit.app/", desc: "A data-driven analytics platform providing deep insights into global employment. Analyzes extensive datasets to uncover trends in high-demand skills and salary distributions." },
     { id: "ecom", name: "E-COMMERCE SALES ANALYSIS", type: "PYTHON / STREAMLIT", link: "https://ecommerce-sales-analysis-arin.streamlit.app/", desc: "Universal analytics platform that auto-detects data types to build interactive dashboards, correlation matrices, and AI-powered insights. Includes specialized e-commerce deep-dive features." },
     { id: "etl", name: "ETL PIPELINE", type: "SQL / PYTHON", desc: "Automated data extraction and transformation pipeline handling 50GB+ daily, reducing manual reporting by 15 hours/week." },
-    { id: "churn", name: "CUSTOMER CHURN", type: "POWERBI", desc: "Predictive dashboard identifying at-risk customers, leading to a 12% increase in retention through targeted interventions." }
+    { id: "churnguard", name: "CHURNGUARD", type: "REACT / ML / SHAP", link: "https://churnguard.arinpattnaik.me/", desc: "ML-powered churn prediction platform that scores customer risk, explains every prediction with SHAP, quantifies revenue at stake, and generates targeted retention strategies — all from a single CSV upload." }
   ];
 
   return (
