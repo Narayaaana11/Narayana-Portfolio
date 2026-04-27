@@ -5,7 +5,15 @@ A modern, interactive portfolio website showcasing data analysis expertise, pred
 **Live**: [arinpattnaik.me](https://arinpattnaik.me)  
 **Repository**: [github.com/ArinPattnaik/Arin-s-Website](https://github.com/ArinPattnaik/Arin-s-Website)
 
-## ✨ Features
+## 🚀 What's New in V2
+
+- **Dark Mode / Nightmode** — Seamless glassmorphism sliding toggle with smart local storage retention.
+- **Expertise Overhaul** — Redesigned tabs and animated progress bars for a premium interactive feel.
+- **Projects Section Update** — Added newly completed projects with premium interactive cards and advanced hover effects.
+- **About Section** — Comprehensive overhaul for better visual storytelling and impact.
+- **Performance Optimisation** — Improved UI responsiveness, rendering performance, and smoother scrolling frame rates.
+
+## ✨ Core Features
 
 - **Smooth Scrolling** — Custom Lenis scroll behavior for premium feel
 - **Animations** — Framer Motion components with staggered text entry and scroll effects  
