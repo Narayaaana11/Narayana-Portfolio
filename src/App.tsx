@@ -231,12 +231,12 @@ const DarkModeToggle = () => {
   return (
     <button
       onClick={toggle}
-      className="fixed top-6 md:top-8 left-6 md:left-8 z-50 w-14 h-8 rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-xl border border-black/10 dark:border-white/10 flex items-center p-1 cursor-pointer transition-colors duration-500"
+      className="fixed top-[4.5rem] md:top-8 left-4 md:left-8 z-50 w-12 md:w-14 h-7 md:h-8 rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-xl border border-black/10 dark:border-white/10 flex items-center p-0.5 md:p-1 cursor-pointer transition-colors duration-500"
       aria-label="Toggle dark mode"
     >
       <motion.div
-        className="w-6 h-6 rounded-full bg-white dark:bg-black border border-black/5 dark:border-white/10 flex items-center justify-center text-black dark:text-white shadow-[0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_8px_rgba(255,255,255,0.1)]"
-        animate={{ x: isDark ? 24 : 0 }}
+        className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-white dark:bg-black border border-black/5 dark:border-white/10 flex items-center justify-center text-black dark:text-white shadow-[0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_8px_rgba(255,255,255,0.1)]"
+        animate={{ x: isDark ? 20 : 0 }}
         transition={{ type: "spring", stiffness: 500, damping: 30 }}
       >
         <AnimatePresence mode="wait" initial={false}>
@@ -248,7 +248,7 @@ const DarkModeToggle = () => {
               exit={{ opacity: 0, rotate: 90 }}
               transition={{ duration: 0.2 }}
             >
-              <Moon className="w-3.5 h-3.5" />
+              <Moon className="w-3 h-3 md:w-3.5 md:h-3.5" />
             </motion.div>
           ) : (
             <motion.div
@@ -258,7 +258,7 @@ const DarkModeToggle = () => {
               exit={{ opacity: 0, rotate: 90 }}
               transition={{ duration: 0.2 }}
             >
-              <Sun className="w-3.5 h-3.5" />
+              <Sun className="w-3 h-3 md:w-3.5 md:h-3.5" />
             </motion.div>
           )}
         </AnimatePresence>
@@ -860,6 +860,15 @@ function AppContent() {
   const location = useLocation();
 
   useEffect(() => {
+    // Detect low-end devices (low-end Android) and add class for CSS-based animation reduction
+    const nav = navigator as any;
+    const cores = nav.hardwareConcurrency || 8;
+    const memory = nav.deviceMemory || 8;
+    const isAndroid = /android/i.test(navigator.userAgent);
+    if (isAndroid && (cores <= 4 || memory <= 4)) {
+      document.documentElement.classList.add('low-end-device');
+    }
+
     // Scroll to top on load and prevent browser scroll restoration
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
