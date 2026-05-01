@@ -39,7 +39,7 @@ export const projectDetails: ProjectDetail[] = [
       { name: "Vercel", role: "Deployment & edge functions" }
     ],
     images: [],
-    video: "/projects/pureplate/PurePlate.mp4"
+    video: "/projects/pureplate/pureplate.mp4"
   },
   {
     id: "vera",
