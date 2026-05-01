@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence, useMotionValueEvent } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 import Lenis from 'lenis';
 import { ArrowUpRight, ArrowUp, Apple, Carrot, Leaf, Coffee, Cherry, Pizza, Croissant, Milk, Soup, Shirt, Recycle, Globe, Tag, Briefcase, LineChart, Users, BarChart, TrendingUp, ShoppingCart, CreditCard, Package, Wallet, Shield, UserX, Brain, Target, Code, Database, PieChart, Sparkles, Moon, Sun } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
@@ -686,6 +687,7 @@ const ProjectCard: React.FC<{ project: any; index: number }> = ({ project, index
   const [hovered, setHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const config = projectConfig[project.id];
+  const navigate = useNavigate();
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -693,6 +695,10 @@ const ProjectCard: React.FC<{ project: any; index: number }> = ({ project, index
     window.addEventListener('resize', check);
     return () => window.removeEventListener('resize', check);
   }, []);
+
+  const handleClick = () => {
+    navigate(`/projects/${project.id}`);
+  };
 
   return (
     <motion.div
@@ -750,7 +756,10 @@ const ProjectCard: React.FC<{ project: any; index: number }> = ({ project, index
         </div>
       )}
 
-      <div className="relative z-10 p-6 md:p-10 flex flex-col justify-between min-h-[260px] md:min-h-[380px]">
+      <div
+        className="relative z-10 p-6 md:p-10 flex flex-col justify-between min-h-[260px] md:min-h-[380px] cursor-pointer"
+        onClick={handleClick}
+      >
         {/* Top: type tag */}
         <div className="flex items-center justify-between">
           <span className={cn(
@@ -775,25 +784,14 @@ const ProjectCard: React.FC<{ project: any; index: number }> = ({ project, index
         {/* Bottom: name + description */}
         <div className="flex flex-col gap-3">
           <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-tighter uppercase leading-none">
-            {project.link ? (
-              <a
-                href={project.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={cn(
-                  "transition-colors duration-500",
-                  config
-                    ? `text-black dark:text-white ${config.hoverText}`
-                    : "text-black dark:text-white hover:text-gray-500 dark:hover:text-gray-400"
-                )}
-              >
-                {project.name}
-              </a>
-            ) : (
-              <span className="text-black dark:text-white transition-colors duration-500">{project.name}</span>
-            )}
+            <span className="text-black transition-colors duration-500">
+              {project.name}
+            </span>
           </h3>
-          <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed line-clamp-3 transition-colors duration-500">{project.desc}</p>
+          <p className="text-gray-500 text-sm leading-relaxed line-clamp-3 transition-colors duration-500">{project.desc}</p>
+          <span className="text-xs font-mono tracking-widest uppercase mt-1 transition-colors duration-500" style={{ color: config?.rawColor || '#9ca3af' }}>
+            View Case Study →
+          </span>
         </div>
       </div>
     </motion.div>
