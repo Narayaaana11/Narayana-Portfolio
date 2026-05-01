@@ -343,12 +343,7 @@ const MobileNav = () => {
       {/* Toggle button */}
       <button
         onClick={() => setOpen(!open)}
-        className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer"
-        style={{
-          background: 'var(--glass-bg)',
-          border: '1px solid rgba(255,255,255,0.5)',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6)',
-        }}
+        className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer bg-black/5 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-colors duration-500"
         aria-label="Navigation menu"
       >
         <div className="flex flex-col gap-[3px] items-center">
@@ -389,12 +384,7 @@ const MobileNav = () => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: -8 }}
               transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="absolute top-12 right-0 rounded-2xl overflow-hidden p-1"
-              style={{
-                background: 'var(--glass-bg)',
-                border: '1px solid rgba(255,255,255,0.5)',
-                boxShadow: '0 12px 40px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.6)',
-              }}
+              className="absolute top-12 right-0 rounded-[20px] overflow-hidden p-1 bg-black/5 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.08)]"
             >
               <div className="flex flex-col min-w-[140px]">
                 {sections.map((item, i) => (
