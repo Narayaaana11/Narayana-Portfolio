@@ -63,3 +63,11 @@ html {
   display: none;
 }
 
+/* Glass card background for light/dark mode */
+:root {
+  --glass-bg: linear-gradient(135deg, rgba(248,249,250,0.92) 0%, rgba(248,249,250,0.78) 100%);
+}
+.dark {
+  --glass-bg: linear-gradient(135deg, rgba(20,20,25,0.92) 0%, rgba(20,20,25,0.78) 100%);
+}
+

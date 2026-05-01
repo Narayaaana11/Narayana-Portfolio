@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence, useMotionValueEvent } from 'motion/react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Lenis from 'lenis';
 import { ArrowUpRight, ArrowUp, Apple, Carrot, Leaf, Coffee, Cherry, Pizza, Croissant, Milk, Soup, Shirt, Recycle, Globe, Tag, Briefcase, LineChart, Users, BarChart, TrendingUp, ShoppingCart, CreditCard, Package, Wallet, Shield, UserX, Brain, Target, Code, Database, PieChart, Sparkles, Moon, Sun } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
@@ -683,135 +683,78 @@ const projectConfig: Record<string, any> = {
   }
 };
 
-const ProjectCard: React.FC<{ project: any; index: number }> = ({ project, index }) => {
-  const [hovered, setHovered] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+const ProjectCard: React.FC<{ project: any; index: number }> = ({ project }) => {
   const config = projectConfig[project.id];
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
-  }, []);
-
-  const handleClick = () => {
-    navigate(`/projects/${project.id}`);
-  };
+  const color = config?.rawColor || '#6b7280';
+  const clickable = !project.noDetail;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: isMobile ? 30 : 60 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-30px" }}
-      transition={{ delay: isMobile ? 0 : index * 0.08, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className={cn(
-        "group relative rounded-[20px] md:rounded-[28px] overflow-hidden border transition-all duration-700",
-        config ? "border-black/10 dark:border-white/10 hover:border-transparent dark:hover:border-transparent" : "border-black/10 dark:border-white/10"
-      )}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+    <div
+      className={cn("group relative rounded-[24px] overflow-hidden", clickable && "cursor-pointer")}
+      style={{ background: `linear-gradient(135deg, ${color}12 0%, ${color}06 50%, ${color}10 100%)` }}
+      onClick={clickable ? () => navigate(`/projects/${project.id}`) : undefined}
     >
-      {/* Color glow background — desktop only */}
-      {config && !isMobile && (
-        <motion.div
-          className="absolute inset-0 pointer-events-none -z-10 transition-opacity duration-700"
-          style={{
-            background: `radial-gradient(ellipse at 50% 100%, ${config.rawColor}20 0%, transparent 70%)`,
-            opacity: hovered ? 1 : 0
-          }}
-        />
-      )}
-
-      {/* Subtle color accent on mobile */}
-      {config && isMobile && (
-        <div
-          className="absolute bottom-0 left-0 right-0 h-1 pointer-events-none"
-          style={{ backgroundColor: config.rawColor, opacity: 0.4 }}
-        />
-      )}
-
-      {/* Floating icons — desktop only */}
-      {config && !isMobile && (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <AnimatePresence>
-            {hovered && config.icons.slice(0, 5).map((Icon: any, i: number) => {
-              const left = 10 + (i * 18) % 80;
-              return (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 40, scale: 0.5 }}
-                  animate={{ opacity: [0, 0.2, 0], y: -120, scale: 1.2 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 3 + (i % 3), repeat: Infinity, delay: i * 0.2, ease: "easeOut" }}
-                  className="absolute"
-                  style={{ left: `${left}%`, bottom: '0px', color: config.rawColor }}
-                >
-                  <Icon size={20 + (i % 3) * 8} strokeWidth={1} />
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
-        </div>
-      )}
-
       <div
-        className="relative z-10 p-6 md:p-10 flex flex-col justify-between min-h-[260px] md:min-h-[380px] cursor-pointer"
-        onClick={handleClick}
+        className="relative m-[1px] rounded-[23px] overflow-hidden transition-shadow duration-300 group-hover:shadow-lg"
+        style={{
+          background: 'var(--glass-bg, linear-gradient(135deg, rgba(248,249,250,0.92) 0%, rgba(248,249,250,0.78) 100%))',
+          boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.8), 0 4px 24px -4px rgba(0,0,0,0.06)',
+          border: '1px solid rgba(255,255,255,0.5)',
+        }}
       >
-        {/* Top: type tag */}
-        <div className="flex items-center justify-between">
-          <span className={cn(
-            "font-mono text-[10px] md:text-xs uppercase tracking-widest transition-colors duration-500",
-            config ? config.typeColor : "text-gray-400 dark:text-gray-500"
-          )}>
-            {project.type}
-          </span>
-          {project.link && (
-            <motion.div
-              animate={{ rotate: hovered ? 0 : -45, scale: hovered ? 1 : 0.8 }}
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <ArrowUpRight className={cn(
-                "w-5 h-5 transition-colors duration-500",
-                config ? (hovered ? config.rawColorClass : "text-gray-300 dark:text-gray-600") : "text-gray-300 dark:text-gray-600"
-              )} />
-            </motion.div>
-          )}
-        </div>
-
-        {/* Bottom: name + description */}
-        <div className="flex flex-col gap-3">
-          <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-tighter uppercase leading-none">
-            <span className="text-black transition-colors duration-500">
-              {project.name}
+        <div
+          className="absolute inset-0 rounded-[23px] pointer-events-none opacity-0 group-hover:opacity-40 transition-opacity duration-300"
+          style={{ boxShadow: `inset 0 0 0 1px ${color}30` }}
+        />
+        <div className="relative z-10 p-6 md:p-8 flex flex-col justify-between min-h-[240px] md:min-h-[320px]">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-[10px] md:text-xs uppercase tracking-widest font-medium" style={{ color }}>
+              {project.type}
             </span>
-          </h3>
-          <p className="text-gray-500 text-sm leading-relaxed line-clamp-3 transition-colors duration-500">{project.desc}</p>
-          <span className="text-xs font-mono tracking-widest uppercase mt-1 transition-colors duration-500" style={{ color: config?.rawColor || '#9ca3af' }}>
-            View Case Study →
-          </span>
+            <div
+              className="w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center"
+              style={{ background: `${color}10`, border: `1px solid ${color}20` }}
+            >
+              <ArrowUpRight className="w-3 h-3 md:w-3.5 md:h-3.5" style={{ color }} />
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <h3 className="text-xl sm:text-2xl md:text-[1.7rem] font-black tracking-tighter uppercase leading-none text-black/90 dark:text-white/90 transition-colors duration-500">
+              {project.name}
+            </h3>
+            <p className="text-black/40 dark:text-white/40 text-xs md:text-sm leading-relaxed line-clamp-2 transition-colors duration-500">{project.desc}</p>
+            <div className="flex items-center gap-1.5 mt-1">
+              {clickable ? (
+                <>
+                  <span className="text-[10px] font-mono tracking-widest uppercase font-medium" style={{ color }}>View Case Study</span>
+                  <span style={{ color }} className="text-xs">→</span>
+                </>
+              ) : (
+                <span className="text-[10px] font-mono tracking-widest uppercase font-medium text-gray-300 dark:text-gray-600 transition-colors duration-500">Coming Soon</span>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
 const Works = () => {
   const projects = [
-    { id: "pureplate", name: "PUREPLATE", type: "REACT / NEXT.JS / AI", link: "https://pureplate.arinpattnaik.me/", desc: "AI-powered food transparency platform that exposes hidden sugars and complex additives, turning deceptive labels into undeniable truth." },
+    { id: "pureplate", name: "PUREPLATE", type: "REACT / NEXT.JS / AI", link: "https://pureplate.arinpattnaik.me/", desc: "AI-powered food transparency platform that exposes hidden sugars and complex additives." },
     { id: "vera", name: "VÉRA", type: "REACT / NLP", link: "https://vera.arinpattnaik.me/", desc: "NLP-powered greenwashing scanner for fashion — paste a product link, get the True Eco-Score." },
-    { id: "churnguard", name: "CHURNGUARD", type: "REACT / ML / SHAP", link: "https://churnguard.arinpattnaik.me/", desc: "ML-powered churn prediction that scores risk, explains predictions with SHAP, and generates targeted retention strategies." },
-    { id: "globaljob", name: "GLOBAL JOB MARKET", type: "PYTHON / STREAMLIT", link: "https://global-job-market-intelligence-platform-arin.streamlit.app/", desc: "Data-driven analytics platform uncovering global employment trends, high-demand skills, and salary distributions." },
-    { id: "ecom", name: "E-COMMERCE ANALYTICS", type: "PYTHON / STREAMLIT", link: "https://ecommerce-sales-analysis-arin.streamlit.app/", desc: "Universal analytics platform with auto-detecting schemas, interactive dashboards, and AI-powered insights." },
-    { id: "etl", name: "ETL PIPELINE", type: "SQL / PYTHON", desc: "Automated data extraction and transformation pipeline handling 50GB+ daily, reducing manual reporting by 15 hours/week." }
+    { id: "churnguard", name: "CHURNGUARD", type: "REACT / ML / SHAP", link: "https://churnguard.arinpattnaik.me/", desc: "ML-powered churn prediction with SHAP explainability and targeted retention strategies." },
+    { id: "globaljob", name: "GLOBAL JOB MARKET", type: "PYTHON / STREAMLIT", link: "https://global-job-market-intelligence-platform-arin.streamlit.app/", desc: "Analytics platform uncovering global employment trends and salary distributions." },
+    { id: "ecom", name: "E-COMMERCE ANALYTICS", type: "PYTHON / STREAMLIT", link: "https://ecommerce-sales-analysis-arin.streamlit.app/", desc: "Universal analytics with auto-detecting schemas and AI-powered insights." },
+    { id: "etl", name: "ETL PIPELINE", type: "SQL / PYTHON", noDetail: true, desc: "Automated pipeline handling 50GB+ daily, reducing manual reporting by 15 hours/week." }
   ];
 
   return (
     <section id="projects" className="w-full flex flex-col justify-center px-6 md:px-24 py-16 md:py-24 relative z-10">
       <FocusSection>
-        <h2 className="text-sm font-mono text-gray-500 dark:text-gray-400 tracking-widest uppercase mb-8 md:mb-12 transition-colors duration-500">Selected Works</h2>
+        <h2 className="text-sm font-mono text-gray-500 tracking-widest uppercase mb-8 md:mb-12">Selected Works</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
           {projects.map((project, i) => (
             <ProjectCard key={project.id} project={project} index={i} />
@@ -914,12 +857,25 @@ const Footer = () => {
 };
 
 function AppContent() {
+  const location = useLocation();
+
   useEffect(() => {
     // Scroll to top on load and prevent browser scroll restoration
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
     }
-    window.scrollTo(0, 0);
+
+    // Check if we should scroll to a specific section (e.g., from project detail "All Projects" button)
+    const state = location.state as { scrollTo?: string } | null;
+    if (state?.scrollTo) {
+      setTimeout(() => {
+        document.getElementById(state.scrollTo!)?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+      // Clear the state so it doesn't persist on refresh
+      window.history.replaceState({}, document.title);
+    } else {
+      window.scrollTo(0, 0);
+    }
 
     const isMobile = window.innerWidth < 768;
     
