@@ -326,6 +326,98 @@ const RightNav = () => (
   </nav>
 );
 
+// --- Mobile Navigation Panel ---
+const MobileNav = () => {
+  const [open, setOpen] = useState(false);
+  const sections = ['About', 'Expertise', 'Projects', 'Insights'];
+
+  const navigateTo = (id: string) => {
+    setOpen(false);
+    setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    }, 150);
+  };
+
+  return (
+    <div className="md:hidden fixed top-6 right-4 z-50">
+      {/* Toggle button */}
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer"
+        style={{
+          background: 'var(--glass-bg)',
+          border: '1px solid rgba(255,255,255,0.5)',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6)',
+        }}
+        aria-label="Navigation menu"
+      >
+        <div className="flex flex-col gap-[3px] items-center">
+          <motion.span
+            animate={open ? { rotate: 45, y: 4.5 } : { rotate: 0, y: 0 }}
+            transition={{ duration: 0.2 }}
+            className="block w-3.5 h-[1.5px] bg-black/60 dark:bg-white/60 rounded-full transition-colors duration-500"
+          />
+          <motion.span
+            animate={open ? { opacity: 0, scaleX: 0 } : { opacity: 1, scaleX: 1 }}
+            transition={{ duration: 0.15 }}
+            className="block w-3.5 h-[1.5px] bg-black/60 dark:bg-white/60 rounded-full transition-colors duration-500"
+          />
+          <motion.span
+            animate={open ? { rotate: -45, y: -4.5 } : { rotate: 0, y: 0 }}
+            transition={{ duration: 0.2 }}
+            className="block w-3.5 h-[1.5px] bg-black/60 dark:bg-white/60 rounded-full transition-colors duration-500"
+          />
+        </div>
+      </button>
+
+      {/* Panel */}
+      <AnimatePresence>
+        {open && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/20 dark:bg-black/40 -z-10"
+              onClick={() => setOpen(false)}
+            />
+            {/* Glass panel */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: -8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: -8 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute top-12 right-0 rounded-2xl overflow-hidden p-1"
+              style={{
+                background: 'var(--glass-bg)',
+                border: '1px solid rgba(255,255,255,0.5)',
+                boxShadow: '0 12px 40px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.6)',
+              }}
+            >
+              <div className="flex flex-col min-w-[140px]">
+                {sections.map((item, i) => (
+                  <motion.button
+                    key={item}
+                    initial={{ opacity: 0, x: 8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.04, duration: 0.2 }}
+                    onClick={() => navigateTo(item.toLowerCase())}
+                    className="px-4 py-3 text-left text-[11px] font-mono tracking-widest uppercase text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.05] rounded-xl transition-colors cursor-pointer"
+                  >
+                    {item}
+                  </motion.button>
+                ))}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
 const Hero = () => {
   const [subtitleIndex, setSubtitleIndex] = useState(0);
   const subtitles = ["DATA ANALYST", "INSIGHT ARCHITECT", "DESIGNER"];
@@ -919,6 +1011,7 @@ function AppContent() {
       <TopLinks />
       <DarkModeToggle />
       <RightNav />
+      <MobileNav />
       <BackToTop />
       
       <main className="w-full flex flex-col items-center">
