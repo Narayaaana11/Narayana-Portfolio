@@ -231,7 +231,7 @@ const DarkModeToggle = () => {
   return (
     <button
       onClick={toggle}
-      className="fixed top-[4.5rem] md:top-8 left-4 md:left-8 z-50 w-12 md:w-14 h-7 md:h-8 rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-xl border border-black/10 dark:border-white/10 flex items-center p-0.5 md:p-1 cursor-pointer transition-colors duration-500"
+      className="fixed top-6 md:top-8 left-4 md:left-8 z-50 w-12 md:w-14 h-7 md:h-8 rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-xl border border-black/10 dark:border-white/10 flex items-center p-0.5 md:p-1 cursor-pointer transition-colors duration-500"
       aria-label="Toggle dark mode"
     >
       <motion.div
