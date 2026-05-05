@@ -1031,7 +1031,7 @@ const InsightForm = ({ onSubmit, isSubmitting }: { onSubmit: (insight: Omit<Insi
 };
 
 // --- Individual Insight Card ---
-const InsightBubble: React.FC<{ insight: Insight; index: number; onLike: (id: string) => void; isLiked: boolean }> = ({ insight, index, onLike, isLiked }) => {
+const InsightBubble: React.FC<{ insight: Insight; index: number; onLike: (id: string) => void; isLiked: boolean; isAdmin: boolean; onDelete: (id: string) => void }> = ({ insight, index, onLike, isLiked, isAdmin, onDelete }) => {
   const initials = insight.author.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   const timeAgo = (() => {
     const diff = Date.now() - insight.timestamp;
@@ -1051,7 +1051,21 @@ const InsightBubble: React.FC<{ insight: Insight; index: number; onLike: (id: st
       transition={{ delay: index * 0.08, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
       className="group"
     >
-      <SpotlightCard className="p-5 md:p-7">
+      <SpotlightCard className="p-5 md:p-7 relative">
+        {/* Admin delete button */}
+        {isAdmin && (
+          <motion.button
+            onClick={(e) => { e.stopPropagation(); onDelete(insight.id); }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="absolute top-3 right-3 w-7 h-7 rounded-full bg-red-500/10 hover:bg-red-500/20 flex items-center justify-center cursor-pointer transition-colors duration-200 z-20"
+            title="Delete insight"
+          >
+            <svg className="w-3.5 h-3.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </motion.button>
+        )}
         {/* Quote */}
         <p className="text-sm md:text-base text-black/80 dark:text-white/80 leading-relaxed mb-5 transition-colors duration-500">
           "{insight.text}"
@@ -1139,6 +1153,8 @@ const SuccessToast = ({ show, onClose }: { show: boolean; onClose: () => void })
 };
 
 // --- Main Insights Section ---
+const ADMIN_CODE = 'arin2024'; // Owner types this in the admin prompt to unlock
+
 const Insights = () => {
   const [insights, setInsights] = useState<Insight[]>(DEFAULT_INSIGHTS);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -1146,6 +1162,9 @@ const Insights = () => {
   const [activeFilter, setActiveFilter] = useState<'all' | 'recent' | 'top'>('all');
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
   const [visibleCount, setVisibleCount] = useState(6);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [spamError, setSpamError] = useState('');
+  const lastSubmitRef = useRef<number>(0);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -1161,28 +1180,101 @@ const Insights = () => {
     if (storedLikes) {
       try { setLikedIds(new Set(JSON.parse(storedLikes))); } catch { /* ignore */ }
     }
+    // Check admin session
+    if (localStorage.getItem('portfolio-admin') === 'true') {
+      setIsAdmin(true);
+    }
   }, []);
+
+  // Admin mode: Ctrl+Shift+A triggers admin login prompt
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        if (isAdmin) {
+          setIsAdmin(false);
+          localStorage.removeItem('portfolio-admin');
+          return;
+        }
+        const code = prompt('Enter admin code:');
+        if (code === ADMIN_CODE) {
+          setIsAdmin(true);
+          localStorage.setItem('portfolio-admin', 'true');
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isAdmin]);
+
+  // Delete insight (admin only)
+  const handleDelete = useCallback((id: string) => {
+    if (!isAdmin) return;
+    setInsights(prev => prev.filter(i => i.id !== id));
+    // Also remove from localStorage if it's a user-submitted one
+    try {
+      const stored = JSON.parse(localStorage.getItem('portfolio-insights') || '[]') as Insight[];
+      localStorage.setItem('portfolio-insights', JSON.stringify(stored.filter(i => i.id !== id)));
+    } catch { /* ignore */ }
+  }, [isAdmin]);
 
   const handleLike = useCallback((id: string) => {
     setLikedIds(prev => {
+      const wasLiked = prev.has(id);
       const next = new Set(prev);
-      if (next.has(id)) {
+      if (wasLiked) {
         next.delete(id);
       } else {
         next.add(id);
       }
       localStorage.setItem('portfolio-insight-likes', JSON.stringify([...next]));
+
+      // Update likes count in sync with the toggle
+      setInsights(prevInsights => prevInsights.map(insight =>
+        insight.id === id
+          ? { ...insight, likes: insight.likes + (wasLiked ? -1 : 1) }
+          : insight
+      ));
+
       return next;
     });
-    setInsights(prev => prev.map(insight =>
-      insight.id === id
-        ? { ...insight, likes: insight.likes + (likedIds.has(id) ? -1 : 1) }
-        : insight
-    ));
-  }, [likedIds]);
+  }, []);
 
   const handleSubmit = (data: Omit<Insight, 'id' | 'timestamp' | 'likes'>) => {
+    // Spam protection: rate limit (1 submission per 60 seconds)
+    const now = Date.now();
+    if (now - lastSubmitRef.current < 60000) {
+      setSpamError('Please wait a minute before submitting another insight.');
+      setTimeout(() => setSpamError(''), 4000);
+      return;
+    }
+
+    // Spam protection: block obvious spam patterns
+    const spamPatterns = /\b(buy now|click here|free money|viagra|casino|crypto pump|subscribe now|http[s]?:\/\/)\b/i;
+    if (spamPatterns.test(data.text)) {
+      setSpamError('Your message was flagged as spam. Please revise and try again.');
+      setTimeout(() => setSpamError(''), 4000);
+      return;
+    }
+
+    // Spam protection: minimum word count
+    if (data.text.trim().split(/\s+/).length < 5) {
+      setSpamError('Please write at least 5 words for a meaningful insight.');
+      setTimeout(() => setSpamError(''), 4000);
+      return;
+    }
+
+    // Spam protection: max submissions per session (5)
+    const submissionCount = parseInt(localStorage.getItem('portfolio-submit-count') || '0', 10);
+    if (submissionCount >= 5) {
+      setSpamError('You\'ve reached the maximum number of submissions. Thank you for your contributions!');
+      setTimeout(() => setSpamError(''), 4000);
+      return;
+    }
+
     setIsSubmitting(true);
+    lastSubmitRef.current = now;
+
     // Simulate network delay for premium feel
     setTimeout(() => {
       const newInsight: Insight = {
@@ -1196,6 +1288,7 @@ const Insights = () => {
       })();
       userInsights.push(newInsight);
       localStorage.setItem('portfolio-insights', JSON.stringify(userInsights));
+      localStorage.setItem('portfolio-submit-count', String(submissionCount + 1));
       setInsights(prev => [newInsight, ...prev]);
       setIsSubmitting(false);
       setShowSuccess(true);
@@ -1221,7 +1314,14 @@ const Insights = () => {
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-20">
           <div>
-            <h2 className="text-sm font-mono text-gray-500 dark:text-gray-400 tracking-widest uppercase mb-4 transition-colors duration-500">Insights & Testimonials</h2>
+            <h2 className="text-sm font-mono text-gray-500 dark:text-gray-400 tracking-widest uppercase mb-4 transition-colors duration-500">
+              Insights & Testimonials
+              {isAdmin && (
+                <span className="ml-3 inline-flex items-center px-2 py-0.5 rounded-md bg-red-500/10 border border-red-500/20 text-red-500 text-[9px] font-bold tracking-wider uppercase">
+                  Admin
+                </span>
+              )}
+            </h2>
             <p className="text-3xl md:text-5xl font-black tracking-tighter text-black dark:text-white transition-colors duration-500">
               What People Say
             </p>
@@ -1267,7 +1367,7 @@ const Insights = () => {
         {/* Insights Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 mb-8">
           {displayedInsights.slice(0, visibleCount).map((insight, i) => (
-            <InsightBubble key={insight.id} insight={insight} index={i} onLike={handleLike} isLiked={likedIds.has(insight.id)} />
+            <InsightBubble key={insight.id} insight={insight} index={i} onLike={handleLike} isLiked={likedIds.has(insight.id)} isAdmin={isAdmin} onDelete={handleDelete} />
           ))}
         </div>
 
@@ -1299,6 +1399,20 @@ const Insights = () => {
           </div>
         )}
         {displayedInsights.length <= 6 && <div className="mb-16 md:mb-24" />}
+
+        {/* Spam error message */}
+        <AnimatePresence>
+          {spamError && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="mb-4 px-5 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm font-medium"
+            >
+              {spamError}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Submission Form */}
         <InsightForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
