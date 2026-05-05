@@ -847,41 +847,465 @@ const Works = () => {
   );
 };
 
-const Insights = () => {
-  const targetRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: targetRef });
-  const [isMobile, setIsMobile] = useState(false);
-  
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+// --- Insights Section ---
 
-  const desktopX = useTransform(scrollYProgress, [0, 1], ["0%", "-65%"]);
-  const x = isMobile ? "0%" : desktopX;
+interface Insight {
+  id: string;
+  text: string;
+  author: string;
+  role: string;
+  timestamp: number;
+  rating: number;
+  likes: number;
+}
 
-  const insights = [
-    { text: "Arin transformed our data pipeline, reducing processing time by 40%.", author: "Tech Lead, DataCorp" },
-    { text: "The visualizations provided deep insights that shifted our entire Q3 strategy.", author: "Product Manager, Insightful" },
-    { text: "Exceptional predictive models. Highly recommend his analytical skills.", author: "CEO, StartupX" },
-    { text: "A rare combination of design sensibility and hardcore data engineering.", author: "Director of Analytics" }
-  ];
+const DEFAULT_INSIGHTS: Insight[] = [
+  { id: "1", text: "Arin transformed our data pipeline, reducing processing time by 40%. His ability to see the full picture — from raw SQL to polished dashboards — is rare.", author: "Sarah Chen", role: "Tech Lead at DataCorp", timestamp: Date.now() - 86400000 * 30, rating: 5, likes: 12 },
+  { id: "2", text: "The visualizations he built didn't just look good — they shifted our entire Q3 strategy. Data storytelling at its finest.", author: "James Miller", role: "Product Manager at Insightful", timestamp: Date.now() - 86400000 * 22, rating: 5, likes: 8 },
+  { id: "3", text: "Exceptional predictive models with SHAP explainability that even our non-technical stakeholders could understand. Game changer.", author: "Priya Sharma", role: "CEO at StartupX", timestamp: Date.now() - 86400000 * 15, rating: 5, likes: 15 },
+  { id: "4", text: "A rare combination of design sensibility and hardcore data engineering. The portfolio site alone proves it.", author: "David Park", role: "Director of Analytics at TechVentures", timestamp: Date.now() - 86400000 * 7, rating: 5, likes: 6 },
+  { id: "5", text: "Built us an NLP pipeline that caught greenwashing claims our legal team missed. Technically brilliant and ethically driven.", author: "Anika Rao", role: "Sustainability Lead at EcoFashion", timestamp: Date.now() - 86400000 * 3, rating: 5, likes: 10 },
+];
+
+// --- Star Rating Component ---
+const StarRating = ({ rating, interactive = false, onRate }: { rating: number; interactive?: boolean; onRate?: (r: number) => void }) => {
+  const [hover, setHover] = useState(0);
+  return (
+    <div className="flex gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          disabled={!interactive}
+          onClick={() => onRate?.(star)}
+          onMouseEnter={() => interactive && setHover(star)}
+          onMouseLeave={() => interactive && setHover(0)}
+          className={cn(
+            "transition-all duration-200",
+            interactive ? "cursor-pointer hover:scale-125" : "cursor-default"
+          )}
+        >
+          <svg
+            className={cn(
+              "w-4 h-4 md:w-5 md:h-5 transition-colors duration-200",
+              (hover || rating) >= star
+                ? "text-yellow-500 fill-yellow-500"
+                : "text-gray-300 dark:text-gray-600 fill-transparent"
+            )}
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1.5}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+          </svg>
+        </button>
+      ))}
+    </div>
+  );
+};
+
+// --- Insight Submission Form ---
+const InsightForm = ({ onSubmit, isSubmitting }: { onSubmit: (insight: Omit<Insight, 'id' | 'timestamp' | 'likes'>) => void; isSubmitting: boolean }) => {
+  const [text, setText] = useState('');
+  const [author, setAuthor] = useState('');
+  const [role, setRole] = useState('');
+  const [rating, setRating] = useState(5);
+  const [charCount, setCharCount] = useState(0);
+  const maxChars = 280;
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value.slice(0, maxChars);
+    setText(val);
+    setCharCount(val.length);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!text.trim() || !author.trim()) return;
+    onSubmit({ text: text.trim(), author: author.trim(), role: role.trim() || 'Anonymous', rating });
+    setText('');
+    setAuthor('');
+    setRole('');
+    setRating(5);
+    setCharCount(0);
+  };
+
+  const isValid = text.trim().length > 10 && author.trim().length > 1;
 
   return (
-    <section id="insights" ref={targetRef} className="relative md:h-[250vh] z-10">
-      <div className="md:sticky md:top-0 md:h-screen flex flex-col justify-center overflow-hidden py-16 md:py-0">
-        <h2 className="text-sm font-mono text-gray-500 dark:text-gray-400 tracking-widest uppercase mb-8 md:mb-16 px-6 md:px-24 transition-colors duration-500">Selected Insights</h2>
-        <motion.div style={{ x }} className="flex flex-col md:flex-row gap-4 md:gap-8 px-6 md:px-24">
-          {insights.map((t, i) => (
-            <SpotlightCard key={i} className="w-full md:w-[40vw] flex-shrink-0 p-6 md:p-12 flex flex-col justify-between min-h-[180px] md:min-h-[300px]">
-              <p className="text-lg md:text-3xl font-medium leading-tight text-black dark:text-white mb-8 md:mb-12 transition-colors duration-500">"{t.text}"</p>
-              <p className="text-xs md:text-sm font-mono text-gray-500 dark:text-gray-400 uppercase tracking-widest transition-colors duration-500">{t.author}</p>
-            </SpotlightCard>
-          ))}
-        </motion.div>
+    <motion.form
+      onSubmit={handleSubmit}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className="w-full"
+    >
+      <div className="relative rounded-[24px] overflow-hidden">
+        {/* Gradient border */}
+        <div className="absolute inset-0 rounded-[24px] bg-gradient-to-br from-black/10 via-transparent to-black/10 dark:from-white/10 dark:via-transparent dark:to-white/10 transition-colors duration-500" />
+        <div className="relative m-[1px] rounded-[23px] p-6 md:p-10 bg-white/80 dark:bg-black/80 backdrop-blur-2xl transition-colors duration-500">
+          {/* Form header */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="text-lg md:text-xl font-bold text-black dark:text-white transition-colors duration-500">Leave an Insight</h3>
+              <p className="text-xs font-mono text-gray-500 tracking-wide mt-1">Share your experience working with me</p>
+            </div>
+            <div className="hidden md:flex items-center gap-2">
+              <span className="text-xs font-mono text-gray-400 tracking-widest uppercase">Rating</span>
+              <StarRating rating={rating} interactive onRate={setRating} />
+            </div>
+          </div>
+
+          {/* Mobile rating */}
+          <div className="flex md:hidden items-center gap-2 mb-4">
+            <span className="text-xs font-mono text-gray-400 tracking-widest uppercase">Rating</span>
+            <StarRating rating={rating} interactive onRate={setRating} />
+          </div>
+
+          {/* Textarea */}
+          <div className="relative mb-4">
+            <textarea
+              value={text}
+              onChange={handleTextChange}
+              placeholder="What was it like working together? What impact did the work have?"
+              rows={3}
+              className="w-full bg-black/[0.03] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 rounded-2xl px-5 py-4 text-sm md:text-base text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 resize-none focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-all duration-300"
+            />
+            <span className={cn(
+              "absolute bottom-3 right-4 text-[10px] font-mono transition-colors duration-300",
+              charCount > maxChars * 0.9 ? "text-red-500" : "text-gray-400"
+            )}>
+              {charCount}/{maxChars}
+            </span>
+          </div>
+
+          {/* Name & Role row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+            <input
+              type="text"
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              placeholder="Your name *"
+              className="bg-black/[0.03] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-all duration-300"
+            />
+            <input
+              type="text"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              placeholder="Role & Company (optional)"
+              className="bg-black/[0.03] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-all duration-300"
+            />
+          </div>
+
+          {/* Submit */}
+          <motion.button
+            type="submit"
+            disabled={!isValid || isSubmitting}
+            whileHover={isValid ? { scale: 1.02 } : {}}
+            whileTap={isValid ? { scale: 0.98 } : {}}
+            className={cn(
+              "w-full md:w-auto px-8 py-3.5 rounded-xl font-medium text-sm tracking-wide transition-all duration-300",
+              isValid && !isSubmitting
+                ? "bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 cursor-pointer"
+                : "bg-black/10 dark:bg-white/10 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+            )}
+          >
+            {isSubmitting ? (
+              <span className="flex items-center gap-2">
+                <motion.span
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full"
+                />
+                Submitting...
+              </span>
+            ) : (
+              "Submit Insight"
+            )}
+          </motion.button>
+        </div>
       </div>
+    </motion.form>
+  );
+};
+
+// --- Individual Insight Card ---
+const InsightBubble: React.FC<{ insight: Insight; index: number; onLike: (id: string) => void; isLiked: boolean }> = ({ insight, index, onLike, isLiked }) => {
+  const initials = insight.author.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  const timeAgo = (() => {
+    const diff = Date.now() - insight.timestamp;
+    const days = Math.floor(diff / 86400000);
+    if (days === 0) return 'Today';
+    if (days === 1) return 'Yesterday';
+    if (days < 7) return `${days}d ago`;
+    if (days < 30) return `${Math.floor(days / 7)}w ago`;
+    return `${Math.floor(days / 30)}mo ago`;
+  })();
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30, scale: 0.95 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ delay: index * 0.08, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      className="group"
+    >
+      <SpotlightCard className="p-5 md:p-7">
+        {/* Quote */}
+        <p className="text-sm md:text-base text-black/80 dark:text-white/80 leading-relaxed mb-5 transition-colors duration-500">
+          "{insight.text}"
+        </p>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {/* Avatar */}
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-black/10 to-black/5 dark:from-white/15 dark:to-white/5 flex items-center justify-center border border-black/5 dark:border-white/10 transition-colors duration-500">
+              <span className="text-[10px] font-bold text-black/60 dark:text-white/60 transition-colors duration-500">{initials}</span>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-black dark:text-white transition-colors duration-500">{insight.author}</p>
+              <p className="text-[10px] font-mono text-gray-500 tracking-wide">{insight.role}</p>
+            </div>
+          </div>
+          <div className="flex flex-col items-end gap-1.5">
+            <div className="flex items-center gap-3">
+              <StarRating rating={insight.rating} />
+              {/* Like button */}
+              <motion.button
+                onClick={() => onLike(insight.id)}
+                whileTap={{ scale: 0.8 }}
+                className="flex items-center gap-1 cursor-pointer group/like"
+              >
+                <motion.svg
+                  animate={isLiked ? { scale: [1, 1.3, 1] } : {}}
+                  transition={{ duration: 0.3 }}
+                  className={cn(
+                    "w-4 h-4 transition-colors duration-300",
+                    isLiked
+                      ? "text-red-500 fill-red-500"
+                      : "text-gray-400 dark:text-gray-500 fill-transparent group-hover/like:text-red-400 group-hover/like:fill-red-400/20"
+                  )}
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                </motion.svg>
+                <span className={cn(
+                  "text-[10px] font-mono tabular-nums transition-colors duration-300",
+                  isLiked ? "text-red-500" : "text-gray-400 dark:text-gray-500"
+                )}>
+                  {insight.likes}
+                </span>
+              </motion.button>
+            </div>
+            <span className="text-[10px] font-mono text-gray-400 tracking-wide">{timeAgo}</span>
+          </div>
+        </div>
+      </SpotlightCard>
+    </motion.div>
+  );
+};
+
+// --- Success Toast ---
+const SuccessToast = ({ show, onClose }: { show: boolean; onClose: () => void }) => {
+  useEffect(() => {
+    if (show) {
+      const timer = setTimeout(onClose, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [show, onClose]);
+
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -10, scale: 0.95 }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[200] px-6 py-3.5 rounded-2xl bg-black dark:bg-white text-white dark:text-black text-sm font-medium shadow-2xl flex items-center gap-3"
+        >
+          <svg className="w-5 h-5 text-green-400 dark:text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Insight submitted successfully!
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+// --- Main Insights Section ---
+const Insights = () => {
+  const [insights, setInsights] = useState<Insight[]>(DEFAULT_INSIGHTS);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<'all' | 'recent' | 'top'>('all');
+  const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+  const [visibleCount, setVisibleCount] = useState(6);
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem('portfolio-insights');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored) as Insight[];
+        setInsights([...DEFAULT_INSIGHTS, ...parsed]);
+      } catch { /* ignore */ }
+    }
+    // Load liked IDs
+    const storedLikes = localStorage.getItem('portfolio-insight-likes');
+    if (storedLikes) {
+      try { setLikedIds(new Set(JSON.parse(storedLikes))); } catch { /* ignore */ }
+    }
+  }, []);
+
+  const handleLike = useCallback((id: string) => {
+    setLikedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      localStorage.setItem('portfolio-insight-likes', JSON.stringify([...next]));
+      return next;
+    });
+    setInsights(prev => prev.map(insight =>
+      insight.id === id
+        ? { ...insight, likes: insight.likes + (likedIds.has(id) ? -1 : 1) }
+        : insight
+    ));
+  }, [likedIds]);
+
+  const handleSubmit = (data: Omit<Insight, 'id' | 'timestamp' | 'likes'>) => {
+    setIsSubmitting(true);
+    // Simulate network delay for premium feel
+    setTimeout(() => {
+      const newInsight: Insight = {
+        ...data,
+        id: crypto.randomUUID(),
+        timestamp: Date.now(),
+        likes: 0,
+      };
+      const userInsights = (() => {
+        try { return JSON.parse(localStorage.getItem('portfolio-insights') || '[]'); } catch { return []; }
+      })();
+      userInsights.push(newInsight);
+      localStorage.setItem('portfolio-insights', JSON.stringify(userInsights));
+      setInsights(prev => [newInsight, ...prev]);
+      setIsSubmitting(false);
+      setShowSuccess(true);
+    }, 1200);
+  };
+
+  // Filtered & sorted insights
+  const displayedInsights = (() => {
+    let sorted = [...insights];
+    switch (activeFilter) {
+      case 'recent': sorted.sort((a, b) => b.timestamp - a.timestamp); break;
+      case 'top': sorted.sort((a, b) => b.likes - a.likes || b.timestamp - a.timestamp); break;
+      default: break; // 'all' keeps original order
+    }
+    return sorted;
+  })();
+
+  const avgRating = insights.length > 0 ? (insights.reduce((sum, i) => sum + i.rating, 0) / insights.length).toFixed(1) : '0';
+
+  return (
+    <section id="insights" className="w-full px-6 md:px-24 py-16 md:py-32 relative z-10">
+      <FocusSection className="w-full max-w-7xl mx-auto">
+        {/* Section Header */}
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-20">
+          <div>
+            <h2 className="text-sm font-mono text-gray-500 dark:text-gray-400 tracking-widest uppercase mb-4 transition-colors duration-500">Insights & Testimonials</h2>
+            <p className="text-3xl md:text-5xl font-black tracking-tighter text-black dark:text-white transition-colors duration-500">
+              What People Say
+            </p>
+          </div>
+          {/* Stats pill */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="flex items-center gap-4 px-5 py-3 rounded-2xl bg-black/[0.03] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 transition-colors duration-500"
+          >
+            <div className="flex items-center gap-1.5">
+              <span className="text-2xl font-black text-black dark:text-white transition-colors duration-500">{avgRating}</span>
+              <StarRating rating={Math.round(Number(avgRating))} />
+            </div>
+            <div className="w-px h-8 bg-black/10 dark:bg-white/10 transition-colors duration-500" />
+            <div className="text-center">
+              <span className="text-lg font-bold text-black dark:text-white transition-colors duration-500">{insights.length}</span>
+              <p className="text-[10px] font-mono text-gray-500 tracking-widest uppercase">Reviews</p>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Filter tabs */}
+        <div className="flex gap-2 mb-8">
+          {(['all', 'recent', 'top'] as const).map((filter) => (
+            <button
+              key={filter}
+              onClick={() => { setActiveFilter(filter); setVisibleCount(6); }}
+              className={cn(
+                "px-4 py-2 rounded-xl text-xs font-mono tracking-widest uppercase transition-all duration-300 cursor-pointer border",
+                activeFilter === filter
+                  ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white"
+                  : "bg-transparent text-gray-500 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:text-black dark:hover:text-white"
+              )}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
+
+        {/* Insights Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 mb-8">
+          {displayedInsights.slice(0, visibleCount).map((insight, i) => (
+            <InsightBubble key={insight.id} insight={insight} index={i} onLike={handleLike} isLiked={likedIds.has(insight.id)} />
+          ))}
+        </div>
+
+        {/* Load More / Show Less */}
+        {displayedInsights.length > 6 && (
+          <div className="flex items-center justify-center gap-4 mb-16 md:mb-24">
+            {visibleCount < displayedInsights.length ? (
+              <motion.button
+                onClick={() => setVisibleCount(prev => Math.min(prev + 6, displayedInsights.length))}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="px-6 py-3 rounded-xl border border-black/10 dark:border-white/10 text-sm font-mono tracking-widest uppercase text-gray-600 dark:text-gray-300 hover:border-black/30 dark:hover:border-white/30 hover:text-black dark:hover:text-white transition-all duration-300 cursor-pointer"
+              >
+                Load More ({displayedInsights.length - visibleCount} remaining)
+              </motion.button>
+            ) : (
+              <motion.button
+                onClick={() => setVisibleCount(6)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="px-6 py-3 rounded-xl border border-black/10 dark:border-white/10 text-sm font-mono tracking-widest uppercase text-gray-600 dark:text-gray-300 hover:border-black/30 dark:hover:border-white/30 hover:text-black dark:hover:text-white transition-all duration-300 cursor-pointer"
+              >
+                Show Less
+              </motion.button>
+            )}
+            <span className="text-[10px] font-mono text-gray-400 tracking-wide">
+              Showing {Math.min(visibleCount, displayedInsights.length)} of {displayedInsights.length}
+            </span>
+          </div>
+        )}
+        {displayedInsights.length <= 6 && <div className="mb-16 md:mb-24" />}
+
+        {/* Submission Form */}
+        <InsightForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
+      </FocusSection>
+
+      {/* Success Toast */}
+      <SuccessToast show={showSuccess} onClose={() => setShowSuccess(false)} />
     </section>
   );
 };
