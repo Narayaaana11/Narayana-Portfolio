@@ -1153,7 +1153,17 @@ const SuccessToast = ({ show, onClose }: { show: boolean; onClose: () => void })
 };
 
 // --- Main Insights Section ---
-const ADMIN_CODE = 'arin2024'; // Owner types this in the admin prompt to unlock
+// Admin hash (SHA-256 of the admin code) — plaintext never stored in source
+const ADMIN_HASH = '9f895aa43bb435e31058fd8892b6bbb00899b0d73a2e35d7749c2d51c6e8fb6b'; // SHA-256 hash — password not stored in source
+
+// Hash function for admin verification
+async function hashCode(input: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(input);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 const Insights = () => {
   const [insights, setInsights] = useState<Insight[]>(DEFAULT_INSIGHTS);
@@ -1188,7 +1198,7 @@ const Insights = () => {
 
   // Admin mode: Ctrl+Shift+A triggers admin login prompt
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = async (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key === 'A') {
         e.preventDefault();
         if (isAdmin) {
@@ -1197,7 +1207,9 @@ const Insights = () => {
           return;
         }
         const code = prompt('Enter admin code:');
-        if (code === ADMIN_CODE) {
+        if (!code) return;
+        const hashed = await hashCode(code);
+        if (hashed === ADMIN_HASH) {
           setIsAdmin(true);
           localStorage.setItem('portfolio-admin', 'true');
         }
