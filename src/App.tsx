@@ -1178,18 +1178,36 @@ const Insights = () => {
 
   // Load from localStorage on mount
   useEffect(() => {
+    // Load liked IDs first so we can apply them to counts
+    let userLikedIds = new Set<string>();
+    const storedLikes = localStorage.getItem('portfolio-insight-likes');
+    if (storedLikes) {
+      try { userLikedIds = new Set(JSON.parse(storedLikes)); } catch { /* ignore */ }
+    }
+    setLikedIds(userLikedIds);
+
+    // Build insights list with like counts adjusted for user's likes
+    const baseInsights = DEFAULT_INSIGHTS.map(insight => ({
+      ...insight,
+      likes: insight.likes + (userLikedIds.has(insight.id) ? 1 : 0),
+    }));
+
     const stored = localStorage.getItem('portfolio-insights');
     if (stored) {
       try {
         const parsed = JSON.parse(stored) as Insight[];
-        setInsights([...DEFAULT_INSIGHTS, ...parsed]);
-      } catch { /* ignore */ }
+        const userInsights = parsed.map(insight => ({
+          ...insight,
+          likes: insight.likes + (userLikedIds.has(insight.id) ? 1 : 0),
+        }));
+        setInsights([...baseInsights, ...userInsights]);
+      } catch {
+        setInsights(baseInsights);
+      }
+    } else {
+      setInsights(baseInsights);
     }
-    // Load liked IDs
-    const storedLikes = localStorage.getItem('portfolio-insight-likes');
-    if (storedLikes) {
-      try { setLikedIds(new Set(JSON.parse(storedLikes))); } catch { /* ignore */ }
-    }
+
     // Check admin session
     if (localStorage.getItem('portfolio-admin') === 'true') {
       setIsAdmin(true);
