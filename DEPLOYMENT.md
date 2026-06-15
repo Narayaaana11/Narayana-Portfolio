@@ -362,7 +362,6 @@ ${{ secrets.DEPLOY_KEY }}
 | **Blank page after deploy** | React not rendering | Check console errors, verify `index.html` paths |
 | **Custom domain shows 404** | DNS not propagated | Wait 30 minutes, then clear browser cache |
 | **Environment variables undefined** | Missing `VITE_` prefix | Prefix client vars with `VITE_` in `.env` |
-| **Resume link broken** | Missing `public/resume.pdf` | Add resume PDF to `public/` folder |
 | **TypeScript errors on deploy** | Strict checks enabled | Run `npm run lint` locally, fix before push |
 
 ### Debug Checklist

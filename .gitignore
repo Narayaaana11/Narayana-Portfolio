@@ -4,5 +4,13 @@ dist/
 coverage/
 .DS_Store
 *.log
-.env*
-!.env.example
+
+# Environment / secrets — never commit these
+.env
+.env.*
+*.pem
+*.key
+
+# Editor
+.vscode/
+.idea/

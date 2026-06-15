@@ -1,1585 +1,941 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence, useMotionValueEvent } from 'motion/react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Lenis from 'lenis';
-import { ArrowUpRight, ArrowUp, Apple, Carrot, Leaf, Coffee, Cherry, Pizza, Croissant, Milk, Soup, Shirt, Recycle, Globe, Tag, Briefcase, LineChart, Users, BarChart, TrendingUp, ShoppingCart, CreditCard, Package, Wallet, Shield, UserX, Brain, Target, Code, Database, PieChart, Sparkles, Moon, Sun } from 'lucide-react';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { ArrowUpRight, ArrowRight, Heart, X, Check } from 'lucide-react';
+import { cn, useIsDesktop, usePrefersReducedMotion } from './lib/utils';
+import {
+  ScrollProgress, BackToTop, Magnetic, Reveal, RevealLines, ScrollRevealText, Marquee, EASE,
+} from './components/ui';
 
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+/* ============================================================
+   Content
+   ============================================================ */
+interface WorkItem {
+  id: string;
+  name: string;
+  discipline: string;
+  year: string;
+  preview: string;
+  detail: boolean;
 }
 
-// --- Error Boundary ---
-interface ErrorBoundaryState {
-  hasError: boolean;
-}
+const WORK: WorkItem[] = [
+  { id: 'pureplate', name: 'PurePlate', discipline: 'AI Food Transparency', year: 'May 2026', preview: '/projects/pureplate/ai ingredeient analysis.png', detail: true },
+  { id: 'vera', name: 'Véra', discipline: 'Greenwashing Scanner', year: 'Apr 2026', preview: '/projects/vera/true eco score.png', detail: true },
+  { id: 'churnguard', name: 'ChurnGuard', discipline: 'Churn Prediction · SHAP', year: 'Mar 2026', preview: '/projects/churnguard/risk scoring.png', detail: true },
+  { id: 'globaljob', name: 'Global Job Market', discipline: 'Employment Analytics', year: 'Feb 2026', preview: '/projects/globaljob/trend analysis.png', detail: true },
+  { id: 'ecom', name: 'E-Commerce Analytics', discipline: 'Universal BI Engine', year: 'Jan 2026', preview: '/projects/ecom/ai powered insights.png', detail: true },
+  { id: 'etl', name: 'ETL Pipeline', discipline: 'Data Infrastructure', year: 'Jun 2026', preview: '', detail: false },
+];
 
-interface ErrorBoundaryProps {
-  children: React.ReactNode;
-}
+const CAPABILITIES = [
+  { no: '01', title: 'Machine Learning', body: 'Predictive systems that explain themselves — churn models with SHAP attribution, classification pipelines that quantify real revenue impact, not just accuracy.', tools: ['scikit-learn', 'XGBoost', 'SHAP'] },
+  { no: '02', title: 'Data Visualisation', body: 'Dense datasets turned into a narrative anyone can act on — interactive dashboards and executive-ready reports built for decisions, not decoration.', tools: ['Streamlit', 'PowerBI', 'Plotly'] },
+  { no: '03', title: 'Full-Stack Engineering', body: 'End-to-end products from concept to deployment. Type-safe React frontends and AI-powered features engineered to feel considered.', tools: ['React', 'Next.js', 'TypeScript'] },
+  { no: '04', title: 'Data Engineering', body: 'The plumbing that makes everything else possible — ETL pipelines moving 50GB+ daily, SQL architecture and automation that returns hours to the week.', tools: ['PostgreSQL', 'Python', 'Airflow'] },
+  { no: '05', title: 'Applied NLP & AI', body: 'Language models put to work at scale — greenwashing detection, food-label analysis and pipelines that surface what others overlook.', tools: ['spaCy', 'Hugging Face', 'Gemini'] },
+];
 
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  declare state: ErrorBoundaryState;
-  declare props: ErrorBoundaryProps;
+const GALLERY = [
+  '/projects/churnguard/shap explaination.png',
+  '/projects/pureplate/ai ingredeient analysis.png',
+  '/projects/vera/Greenwashing dection.png',
+  '/projects/globaljob/salary intelligence.png',
+  '/projects/ecom/coorelation.png',
+  '/projects/churnguard/revenue impact.png',
+  '/projects/pureplate/Sugar alias detection.png',
+  '/projects/vera/Claim BreakDown.png',
+  '/projects/globaljob/skills demand.png',
+  '/projects/ecom/auto sceme detection.png',
+];
 
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false };
-  }
+const STACK = ['Python', 'React', 'TypeScript', 'SQL', 'Streamlit', 'PowerBI', 'scikit-learn', 'XGBoost', 'SHAP', 'Next.js', 'Tailwind', 'Pandas', 'NLP'];
 
-  static getDerivedStateFromError(): ErrorBoundaryState {
-    return { hasError: true };
-  }
+const NAV = [
+  { no: '00', label: 'Index', target: 'top', image: '/projects/pureplate/ai ingredeient analysis.png' },
+  { no: '01', label: 'About', target: 'about', image: '/projects/vera/true eco score.png' },
+  { no: '02', label: 'Work', target: 'work', image: '/projects/churnguard/risk scoring.png' },
+  { no: '03', label: 'Studio', target: 'capabilities', image: '/projects/globaljob/trend analysis.png' },
+  { no: '04', label: 'Guestbook', target: 'guestbook', image: '/projects/ecom/ai powered insights.png' },
+  { no: '05', label: 'Contact', target: 'contact', image: '/projects/pureplate/Sugar alias detection.png' },
+];
 
-  componentDidCatch(error: Error) {
-    console.error('Application error:', error);
-  }
-
+/* ============================================================
+   Error boundary
+   ============================================================ */
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
+  declare props: { children: React.ReactNode };
+  state = { hasError: false };
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(error: Error) { console.error('Application error:', error); }
   render() {
     if (this.state.hasError) {
       return (
-        <div className="bg-[#f8f9fa] dark:bg-[#050505] min-h-screen text-black dark:text-white flex items-center justify-center px-4">
+        <div className="bg-base min-h-screen flex items-center justify-center px-6">
           <div className="text-center max-w-md">
-            <h1 className="text-4xl font-bold mb-4">Oops!</h1>
-            <p className="text-gray-600 mb-8">Something went wrong. Please try refreshing the page.</p>
-            <button 
-              onClick={() => window.location.reload()} 
-              className="px-6 py-3 bg-black dark:bg-white text-white dark:text-black font-bold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
-            >
-              Refresh Page
-            </button>
+            <h1 className="font-display text-giant text-cream mb-4">Broke.</h1>
+            <p className="text-muted mb-8">Something went wrong. A refresh usually sorts it.</p>
+            <button onClick={() => window.location.reload()} className="px-6 py-3 bg-cream text-ink font-medium rounded-full">Reload</button>
           </div>
         </div>
       );
     }
-
     return this.props.children;
   }
 }
 
-// --- Staggered Text Entry ---
-const StaggeredText = ({ text, className }: { text: string, className?: string }) => {
-  const words = text.split(" ");
-  
-  return (
-    <motion.div 
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "0px" }}
-      variants={{
-        visible: { transition: { staggerChildren: 0.1 } },
-        hidden: {}
-      }}
-      className={cn("flex flex-wrap", className)}
-    >
-      {words.map((word, i) => (
-        <span key={i} className="overflow-hidden inline-block mr-[0.25em] mb-[0.1em]">
-          <motion.span
-            variants={{
-              hidden: { y: "100%", opacity: 0 },
-              visible: { y: 0, opacity: 1, transition: { duration: 1.5, ease: [0.16, 1, 0.3, 1] } }
-            }}
-            className="inline-block"
-          >
-            {word}
-          </motion.span>
-        </span>
-      ))}
-    </motion.div>
-  );
-};
-
-// --- Scroll-Linked Opacity Wrapper ---
-const FocusSection = ({ children, className }: { children: React.ReactNode, className?: string }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
-
-  const opacity = useTransform(
-    scrollYProgress,
-    [0, 0.15, 0.5, 0.85, 1],
-    [0.3, 1, 1, 1, 0.3]
-  );
-
-  return (
-    <motion.div ref={ref} style={{ opacity }} className={className}>
-      {children}
-    </motion.div>
-  );
-};
-
-// --- Spotlight Card ---
-interface SpotlightCardProps {
-  children: React.ReactNode;
-  className?: string;
-}
-
-const SpotlightCard: React.FC<SpotlightCardProps> = ({ children, className }) => {
-  const divRef = useRef<HTMLDivElement>(null);
-  const [isFocused, setIsFocused] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [opacity, setOpacity] = useState(0);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!divRef.current || isFocused) return;
-    const div = divRef.current;
-    const rect = div.getBoundingClientRect();
-    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-  };
-
-  const handleFocus = () => { setIsFocused(true); setOpacity(1); };
-  const handleBlur = () => { setIsFocused(false); setOpacity(0); };
-  const handleMouseEnter = () => { setOpacity(1); };
-  const handleMouseLeave = () => { setOpacity(0); };
-
-  return (
-    <div
-      ref={divRef}
-      onMouseMove={handleMouseMove}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      className={cn("relative overflow-hidden rounded-[24px] bg-black/[0.02] dark:bg-white/[0.02] border border-black/10 dark:border-white/10 md:backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.05)] dark:shadow-[0_8px_32px_0_rgba(255,255,255,0.02)] transition-colors duration-500", className)}
-    >
-      <div className="absolute inset-0 bg-gradient-to-br from-black/5 dark:from-white/5 to-transparent opacity-50 pointer-events-none transition-colors duration-500" />
-      <div
-        className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
-        style={{
-          opacity,
-          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(0,0,0,.04), transparent 40%)`,
-        }}
-      />
-      <div className="relative z-10 h-full">
-        {children}
-      </div>
-    </div>
-  );
-};
-
-// --- Scroll Progress Bar ---
-const ScrollProgress = () => {
-  const { scrollYProgress } = useScroll();
-  return (
-    <motion.div
-      className="fixed top-0 left-0 right-0 h-[2px] bg-black dark:bg-white origin-left z-[100] transition-colors duration-500"
-      style={{ scaleX: scrollYProgress }}
-    />
-  );
-};
-
-// --- Back to Top Button ---
-const BackToTop = () => {
-  const { scrollYProgress } = useScroll();
-  const [visible, setVisible] = useState(false);
-
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    setVisible(latest > 0.15);
-  });
-
-  const scrollToTop = useCallback(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
-
-  return (
-    <AnimatePresence>
-      {visible && (
-        <motion.button
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          transition={{ duration: 0.3 }}
-          onClick={scrollToTop}
-          className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black dark:bg-white text-white dark:text-black flex items-center justify-center shadow-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors cursor-pointer"
-          aria-label="Back to top"
-        >
-          <ArrowUp className="w-5 h-5" />
-        </motion.button>
-      )}
-    </AnimatePresence>
-  );
-};
-
-// --- Dark Mode Toggle ---
-const DarkModeToggle = () => {
-  const [isDark, setIsDark] = useState(false);
-
+/* ============================================================
+   Local time
+   ============================================================ */
+const LocalTime: React.FC<{ className?: string }> = ({ className }) => {
+  const [time, setTime] = useState('');
   useEffect(() => {
-    // Check local storage, default to light if not found
-    const saved = localStorage.getItem('theme');
-    if (saved === 'dark') {
-      setIsDark(true);
-      document.documentElement.classList.add('dark');
-    }
+    const u = () => setTime(new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Kolkata' }));
+    u();
+    const i = setInterval(u, 30000);
+    return () => clearInterval(i);
   }, []);
+  return <span className={className}>{time} IST</span>;
+};
 
-  const toggle = () => {
-    const newTheme = !isDark;
-    setIsDark(newTheme);
-    if (newTheme) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  };
+/* ============================================================
+   Stacked wordmark
+   ============================================================ */
+const Wordmark: React.FC<{ className?: string; onClick?: () => void }> = ({ className, onClick }) => (
+  <button onClick={onClick} data-cursor="top" className={cn('text-left leading-[0.95]', className)} aria-label="Arin Pattnaik — top">
+    <span className="block font-display text-cream" style={{ fontSize: '0.95rem', fontStretch: '110%', letterSpacing: '0.02em' }}>Arin</span>
+    <span className="block font-display text-cream" style={{ fontSize: '0.95rem', fontStretch: '110%', letterSpacing: '0.02em' }}>Pattnaik</span>
+  </button>
+);
 
+/* ============================================================
+   Top bar
+   ============================================================ */
+const TopBar: React.FC<{ onMenu: () => void; menuOpen: boolean }> = ({ onMenu, menuOpen }) => {
+  const toTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
   return (
-    <button
-      onClick={toggle}
-      className="fixed top-6 md:top-8 left-4 md:left-8 z-50 w-12 md:w-14 h-7 md:h-8 rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-xl border border-black/10 dark:border-white/10 flex items-center p-0.5 md:p-1 cursor-pointer transition-colors duration-500"
-      aria-label="Toggle dark mode"
-    >
+    <header className="fixed top-0 left-0 right-0 z-[200] flex items-start justify-between px-5 md:px-8 py-5 md:py-7 pointer-events-none">
       <motion.div
-        className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-white dark:bg-black border border-black/5 dark:border-white/10 flex items-center justify-center text-black dark:text-white shadow-[0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_8px_rgba(255,255,255,0.1)]"
-        animate={{ x: isDark ? 20 : 0 }}
-        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+        animate={{ opacity: menuOpen ? 0 : 1 }}
+        transition={{ duration: 0.25, ease: EASE }}
+        className={cn('pointer-events-auto mix-blend-difference', menuOpen && 'pointer-events-none')}
       >
-        <AnimatePresence mode="wait" initial={false}>
-          {isDark ? (
-            <motion.div
-              key="moon"
-              initial={{ opacity: 0, rotate: -90 }}
-              animate={{ opacity: 1, rotate: 0 }}
-              exit={{ opacity: 0, rotate: 90 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Moon className="w-3 h-3 md:w-3.5 md:h-3.5" />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="sun"
-              initial={{ opacity: 0, rotate: -90 }}
-              animate={{ opacity: 1, rotate: 0 }}
-              exit={{ opacity: 0, rotate: 90 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Sun className="w-3 h-3 md:w-3.5 md:h-3.5" />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <Wordmark onClick={toTop} />
       </motion.div>
-    </button>
-  );
-};
-
-// --- Sections ---
-
-const Background = () => {
-  const { scrollYProgress } = useScroll();
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
-
-  return (
-    <motion.div
-      style={{ scale: isMobile ? 1 : scale }}
-      className="fixed inset-0 z-0 w-full h-full pointer-events-none origin-center bg-[#fdfdfd] dark:bg-[#050505] transition-colors duration-500"
-    >
-      <div className="absolute inset-0 opacity-40">
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-black/5 md:blur-[120px] max-md:hidden" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-black/5 md:blur-[120px] max-md:hidden" />
-      </div>
-      <div className="absolute inset-0 md:backdrop-blur-[50px] bg-white/60 dark:bg-black/60 border border-black/5 dark:border-white/5 transition-colors duration-500" />
-    </motion.div>
-  );
-};
-
-const TopLinks = () => (
-  <div className="fixed top-6 md:top-8 left-1/2 -translate-x-1/2 z-50 flex gap-4 md:gap-8 px-5 md:px-8 py-3 md:py-4 rounded-full bg-black/5 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 text-[10px] md:text-xs font-mono tracking-widest uppercase text-gray-700 dark:text-gray-300 transition-colors duration-500">
-    <a href="https://github.com/ArinPattnaik" target="_blank" rel="noopener noreferrer" className="hover:text-black dark:hover:text-white transition-colors duration-500">GitHub</a>
-    <a href="https://www.linkedin.com/in/arinpattnaik" target="_blank" rel="noopener noreferrer" className="hover:text-black dark:hover:text-white transition-colors duration-500">LinkedIn</a>
-    <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-black dark:hover:text-white transition-colors duration-500">Resume</a>
-  </div>
-);
-
-const RightNav = () => (
-  <nav className="hidden md:flex fixed right-0 top-0 h-full w-24 z-50 flex-col justify-center items-center group">
-    <div className="absolute inset-0 bg-black/0 dark:bg-white/0 group-hover:bg-black/[0.02] dark:group-hover:bg-white/[0.02] backdrop-blur-none group-hover:backdrop-blur-xl transition-all duration-500 border-l border-transparent group-hover:border-black/10 dark:group-hover:border-white/10" />
-    <div className="relative flex flex-col gap-12 opacity-30 group-hover:opacity-100 transition-opacity duration-500">
-      {['About', 'Expertise', 'Projects', 'Insights'].map((item) => (
-        <a 
-          key={item} 
-          href={`#${item.toLowerCase()}`}
-          onClick={(e) => {
-            e.preventDefault();
-            document.getElementById(item.toLowerCase())?.scrollIntoView({ behavior: 'smooth' });
-          }}
-          className="text-xs font-mono tracking-widest uppercase hover:text-black dark:hover:text-white text-gray-500 dark:text-gray-400 transition-colors duration-500"
-          style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
-        >
-          {item}
-        </a>
-      ))}
-    </div>
-  </nav>
-);
-
-// --- Mobile Navigation Panel ---
-const MobileNav = () => {
-  const [open, setOpen] = useState(false);
-  const sections = ['About', 'Expertise', 'Projects', 'Insights'];
-
-  const navigateTo = (id: string) => {
-    setOpen(false);
-    setTimeout(() => {
-      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-    }, 150);
-  };
-
-  return (
-    <div className="md:hidden fixed top-6 right-4 z-50">
-      {/* Toggle button */}
       <button
-        onClick={() => setOpen(!open)}
-        className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer bg-black/5 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-colors duration-500"
-        aria-label="Navigation menu"
+        onClick={onMenu}
+        data-cursor="hover"
+        className="pointer-events-auto relative h-9 md:h-10 px-5 rounded-full bg-cream text-ink overflow-hidden"
+        aria-label={menuOpen ? 'Close menu' : 'Open menu'}
       >
-        <div className="flex flex-col gap-[3px] items-center">
-          <motion.span
-            animate={open ? { rotate: 45, y: 4.5 } : { rotate: 0, y: 0 }}
-            transition={{ duration: 0.2 }}
-            className="block w-3.5 h-[1.5px] bg-black/60 dark:bg-white/60 rounded-full transition-colors duration-500"
-          />
-          <motion.span
-            animate={open ? { opacity: 0, scaleX: 0 } : { opacity: 1, scaleX: 1 }}
-            transition={{ duration: 0.15 }}
-            className="block w-3.5 h-[1.5px] bg-black/60 dark:bg-white/60 rounded-full transition-colors duration-500"
-          />
-          <motion.span
-            animate={open ? { rotate: -45, y: -4.5 } : { rotate: 0, y: 0 }}
-            transition={{ duration: 0.2 }}
-            className="block w-3.5 h-[1.5px] bg-black/60 dark:bg-white/60 rounded-full transition-colors duration-500"
-          />
-        </div>
+        <span className="relative block h-full">
+          <motion.span animate={{ y: menuOpen ? '-120%' : '0%' }} transition={{ duration: 0.35, ease: EASE }} className="flex items-center h-full font-mono text-[11px] uppercase tracking-[0.12em]">Menu</motion.span>
+          <motion.span animate={{ y: menuOpen ? '0%' : '120%' }} transition={{ duration: 0.35, ease: EASE }} className="absolute inset-0 flex items-center h-full font-mono text-[11px] uppercase tracking-[0.12em]">Close</motion.span>
+        </span>
       </button>
-
-      {/* Panel */}
-      <AnimatePresence>
-        {open && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-black/20 dark:bg-black/40 -z-10"
-              onClick={() => setOpen(false)}
-            />
-            {/* Glass panel */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: -8 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: -8 }}
-              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="absolute top-12 right-0 rounded-[20px] overflow-hidden p-1 bg-black/5 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.08)]"
-            >
-              <div className="flex flex-col min-w-[140px]">
-                {sections.map((item, i) => (
-                  <motion.button
-                    key={item}
-                    initial={{ opacity: 0, x: 8 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.04, duration: 0.2 }}
-                    onClick={() => navigateTo(item.toLowerCase())}
-                    className="px-4 py-3 text-left text-[11px] font-mono tracking-widest uppercase text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.05] rounded-xl transition-colors cursor-pointer"
-                  >
-                    {item}
-                  </motion.button>
-                ))}
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </div>
+    </header>
   );
 };
 
-const Hero = () => {
-  const [subtitleIndex, setSubtitleIndex] = useState(0);
-  const subtitles = ["DATA ANALYST", "INSIGHT ARCHITECT", "DESIGNER"];
+/* ============================================================
+   Fullscreen menu
+   ============================================================ */
+const Menu: React.FC<{ open: boolean; onClose: () => void }> = ({ open, onClose }) => {
+  const scroller = useRef<HTMLDivElement>(null);
+  const drag = useRef({ down: false, startX: 0, startScroll: 0, moved: false });
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSubtitleIndex((prev) => (prev + 1) % subtitles.length);
-    }, 2000);
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <section className="h-screen w-full flex flex-col justify-center items-center px-4 relative z-10">
-      <div className="w-full flex flex-col items-center">
-        <StaggeredText 
-          text="ARIN PATTNAIK" 
-          className="text-[12vw] font-black uppercase tracking-tighter leading-none text-center w-full justify-center"
-        />
-        <div className="h-8 mt-4 overflow-hidden">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={subtitleIndex}
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -20, opacity: 0 }}
-              transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
-              className="text-gray-500 dark:text-gray-400 font-mono text-sm md:text-base tracking-widest uppercase transition-colors duration-500"
-            >
-              {subtitles[subtitleIndex]}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const About = () => {
-  const text = "I don't just analyze data — I build products around it. From AI-powered platforms that expose hidden truths in food labels to ML systems that predict customer behavior before it happens.";
-  
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start 80%", "end 40%"]
-  });
-
-  const words = text.split(" ");
-
-  const highlights = [
-    { label: "What I Do", text: "Full-stack data products — from the SQL query to the React frontend. I own the entire pipeline." },
-    { label: "How I Think", text: "Every dataset tells a story. I find the narrative, then build the tool that makes it impossible to ignore." },
-    { label: "What Drives Me", text: "Making the invisible visible. Whether it's greenwashing in fashion or churn risk in SaaS — I build systems that surface what others miss." }
-  ];
-
-  return (
-    <section id="about" className="w-full flex items-center justify-center px-6 md:px-24 py-16 md:py-24 relative z-10">
-      <FocusSection className="w-full max-w-7xl">
-        <div className="flex flex-col gap-12 md:gap-16">
-          <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-start">
-            <div className="flex-1 lg:flex-[3]">
-              <h2 className="text-sm font-mono text-gray-500 tracking-widest uppercase mb-6 md:mb-10">About</h2>
-              <p ref={ref} className="text-2xl md:text-4xl lg:text-5xl font-medium leading-tight tracking-tight flex flex-wrap text-black dark:text-white transition-colors duration-500">
-                {words.map((word, i) => {
-                  const start = i / words.length;
-                  const end = start + (1 / words.length);
-                  const opacity = useTransform(scrollYProgress, [start, end], [0.2, 1]);
-                  return (
-                    <motion.span key={i} style={{ opacity }} className="mr-[0.25em] mb-[0.1em]">
-                      {word}
-                    </motion.span>
-                  );
-                })}
-              </p>
-            </div>
-            <div className="flex-1 lg:flex-[2] flex flex-col gap-6 pt-2 lg:pt-16">
-              {highlights.map((item, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.15 + i * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                  className="flex flex-col gap-2"
-                >
-                  <span className="text-xs font-mono text-gray-400 tracking-widest uppercase">{item.label}</span>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed transition-colors duration-500">{item.text}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-
-          {/* Tool belt marquee */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1 }}
-            className="overflow-hidden py-5 border-t border-b border-black/10 dark:border-white/10 transition-colors duration-500"
-          >
-            <div className="flex gap-12 animate-marquee whitespace-nowrap">
-              {["Python", "React", "TypeScript", "SQL", "Streamlit", "PowerBI", "Tailwind CSS", "Next.js", "scikit-learn", "XGBoost", "SHAP", "Framer Motion", "NLP", "Pandas", "NumPy", "Git", "Python", "React", "TypeScript", "SQL", "Streamlit", "PowerBI", "Tailwind CSS", "Next.js", "scikit-learn", "XGBoost", "SHAP", "Framer Motion", "NLP", "Pandas", "NumPy", "Git"].map((tool, i) => (
-                <span key={i} className="text-sm font-mono text-gray-400 dark:text-gray-500 tracking-widest uppercase flex-shrink-0 transition-colors duration-500">{tool}</span>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </FocusSection>
-    </section>
-  );
-};
-
-const Expertise = () => {
-  const [activeTab, setActiveTab] = useState(0);
-
-  const domains = [
-    {
-      title: "DATA SCIENCE & ML",
-      shortTitle: "ML",
-      icon: Brain,
-      color: "#e11d48",
-      description: "Building predictive systems that explain themselves. From churn prediction with SHAP explainability to classification pipelines that quantify revenue impact.",
-      skills: [
-        { name: "Predictive Modeling", level: 92 },
-        { name: "scikit-learn / XGBoost", level: 88 },
-        { name: "SHAP & Explainable AI", level: 85 },
-        { name: "Feature Engineering", level: 90 },
-      ],
-      tools: ["Python", "scikit-learn", "XGBoost", "SHAP", "Pandas", "NumPy"]
-    },
-    {
-      title: "DATA VISUALIZATION",
-      shortTitle: "VISUAL",
-      icon: PieChart,
-      color: "#0ea5e9",
-      description: "Turning complex datasets into stories anyone can understand. Interactive dashboards, statistical plots, and executive-ready reports that drive decisions.",
-      skills: [
-        { name: "Streamlit Dashboards", level: 95 },
-        { name: "PowerBI", level: 82 },
-        { name: "Statistical Plotting", level: 88 },
-        { name: "Real-time Analytics", level: 85 },
-      ],
-      tools: ["Streamlit", "PowerBI", "Matplotlib", "Plotly", "Seaborn"]
-    },
-    {
-      title: "FULL-STACK DEV",
-      shortTitle: "DEV",
-      icon: Code,
-      color: "#f97316",
-      description: "End-to-end product development from concept to deployment. React frontends, AI-powered features, and responsive interfaces that feel premium.",
-      skills: [
-        { name: "React / Next.js", level: 90 },
-        { name: "TypeScript", level: 88 },
-        { name: "Tailwind CSS", level: 92 },
-        { name: "Framer Motion", level: 85 },
-      ],
-      tools: ["React", "Next.js", "TypeScript", "Tailwind", "Vite", "Vercel"]
-    },
-    {
-      title: "DATA ENGINEERING",
-      shortTitle: "ETL",
-      icon: Database,
-      color: "#10b981",
-      description: "Designing the plumbing that makes everything else possible. ETL pipelines processing 50GB+ daily, SQL architecture, and automation that saves hours every week.",
-      skills: [
-        { name: "SQL & Query Optimization", level: 90 },
-        { name: "ETL Pipeline Design", level: 88 },
-        { name: "Python Automation", level: 92 },
-        { name: "Database Architecture", level: 85 },
-      ],
-      tools: ["PostgreSQL", "Python", "SQL Server", "Pandas", "Airflow"]
-    },
-    {
-      title: "NLP & AI",
-      shortTitle: "NLP",
-      icon: Sparkles,
-      color: "#a78bfa",
-      description: "Harnessing language models to extract meaning at scale. From greenwashing detection to food label analysis — AI that makes the invisible visible.",
-      skills: [
-        { name: "Text Classification", level: 86 },
-        { name: "Sentiment Analysis", level: 84 },
-        { name: "LLM Integration", level: 82 },
-        { name: "NLP Pipelines", level: 85 },
-      ],
-      tools: ["spaCy", "Hugging Face", "OpenAI API", "NLTK", "Gemini"]
-    }
-  ];
-
-  const active = domains[activeTab];
-  const ActiveIcon = active.icon;
-
-  return (
-    <section id="expertise" className="w-full flex flex-col justify-center px-6 md:px-24 py-16 md:py-24 relative z-10">
-      <FocusSection>
-        <h2 className="text-sm font-mono text-gray-500 tracking-widest uppercase mb-10 md:mb-16">Expertise</h2>
-        
-        {/* Tab navigation */}
-        <div className="flex gap-2 md:gap-3 mb-8 md:mb-12 overflow-x-auto pb-2 -mx-6 px-6 md:mx-0 md:px-0 md:flex-wrap scrollbar-hide">
-          {domains.map((domain, i) => {
-            const Icon = domain.icon;
-            return (
-              <button
-                key={i}
-                onClick={() => setActiveTab(i)}
-                className={cn(
-                  "flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-full text-[10px] md:text-xs font-mono tracking-widest uppercase transition-all duration-500 cursor-pointer border whitespace-nowrap flex-shrink-0",
-                  activeTab === i
-                    ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white"
-                    : "bg-transparent text-gray-500 dark:text-gray-400 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:text-black dark:hover:text-white"
-                )}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">{domain.title}</span>
-                <span className="sm:hidden">{domain.shortTitle}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Active tab content */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
-              {/* Left: Description */}
-              <div className="flex flex-col gap-8">
-                <div className="flex items-center gap-4">
-                  <div 
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center"
-                    style={{ backgroundColor: `${active.color}15`, border: `1px solid ${active.color}30` }}
-                  >
-                    <ActiveIcon className="w-6 h-6" style={{ color: active.color }} />
-                  </div>
-                  <h3 className="text-2xl md:text-4xl font-black tracking-tighter uppercase">{active.title}</h3>
-                </div>
-                <p className="text-gray-600 dark:text-gray-300 text-base md:text-lg leading-relaxed transition-colors duration-500">{active.description}</p>
-                
-                {/* Tools */}
-                <div>
-                  <p className="text-xs font-mono text-gray-400 tracking-widest uppercase mb-3">Tools & Technologies</p>
-                  <div className="flex flex-wrap gap-2">
-                    {active.tools.map((tool, i) => (
-                      <motion.span
-                        key={tool}
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: i * 0.05, duration: 0.3 }}
-                        className="px-3 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs font-mono text-gray-600 dark:text-gray-300 tracking-wide transition-colors duration-500"
-                      >
-                        {tool}
-                      </motion.span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Right: Skill bars */}
-              <div className="flex flex-col gap-5">
-                {active.skills.map((skill, i) => (
-                  <motion.div
-                    key={skill.name}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.1, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                    className="flex flex-col gap-2"
-                  >
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-black dark:text-white transition-colors duration-500">{skill.name}</span>
-                      <span className="text-xs font-mono text-gray-400">{skill.level}%</span>
-                    </div>
-                    <div className="h-2 rounded-full bg-black/[0.06] dark:bg-white/[0.06] overflow-hidden transition-colors duration-500">
-                      <motion.div
-                        className="h-full rounded-full"
-                        style={{ backgroundColor: active.color }}
-                        initial={{ width: 0 }}
-                        animate={{ width: `${skill.level}%` }}
-                        transition={{ delay: 0.2 + i * 0.1, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                      />
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        </AnimatePresence>
-      </FocusSection>
-    </section>
-  );
-};
-
-const projectConfig: Record<string, any> = {
-  pureplate: {
-    rawColor: "#f97316",
-    rawColorClass: "text-[#f97316]",
-    color: "text-[#f97316]",
-    hoverText: "md:hover:text-[#f97316] max-md:text-[#ea580c]",
-    bgIdle: "bg-[#f97316]/20",
-    bgActive: "bg-[#f97316]/40",
-    borderColor: "border-[#f97316]/50",
-    typeColor: "text-[#ea580c]/80",
-    arrowMobile: "max-md:text-[#ea580c]",
-    icons: [Apple, Carrot, Leaf, Cherry, Pizza, Croissant, Coffee, Milk, Soup]
-  },
-  vera: {
-    rawColor: "#10b981",
-    rawColorClass: "text-[#10b981]",
-    color: "text-[#10b981]",
-    hoverText: "md:hover:text-[#10b981] max-md:text-[#059669]",
-    bgIdle: "bg-[#10b981]/20",
-    bgActive: "bg-[#10b981]/40",
-    borderColor: "border-[#10b981]/50",
-    typeColor: "text-[#059669]/80",
-    arrowMobile: "max-md:text-[#059669]",
-    icons: [Leaf, Shirt, Recycle, Globe, Tag]
-  },
-  globaljob: {
-    rawColor: "#0ea5e9",
-    rawColorClass: "text-[#0ea5e9]",
-    color: "text-[#0ea5e9]",
-    hoverText: "md:hover:text-[#0ea5e9] max-md:text-[#0284c7]",
-    bgIdle: "bg-[#0ea5e9]/20",
-    bgActive: "bg-[#0ea5e9]/40",
-    borderColor: "border-[#0ea5e9]/50",
-    typeColor: "text-[#0284c7]/80",
-    arrowMobile: "max-md:text-[#0284c7]",
-    icons: [Briefcase, Globe, LineChart, Users, BarChart, TrendingUp]
-  },
-  ecom: {
-    rawColor: "#a78bfa",
-    rawColorClass: "text-[#a78bfa]",
-    color: "text-[#a78bfa]",
-    hoverText: "md:hover:text-[#a78bfa] max-md:text-[#8b5cf6]",
-    bgIdle: "bg-[#a78bfa]/20",
-    bgActive: "bg-[#a78bfa]/40",
-    borderColor: "border-[#a78bfa]/50",
-    typeColor: "text-[#8b5cf6]/80",
-    arrowMobile: "max-md:text-[#8b5cf6]",
-    icons: [ShoppingCart, CreditCard, Package, BarChart, TrendingUp, Wallet]
-  },
-  churnguard: {
-    rawColor: "#e11d48",
-    rawColorClass: "text-[#e11d48]",
-    color: "text-[#e11d48]",
-    hoverText: "md:hover:text-[#e11d48] max-md:text-[#be123c]",
-    bgIdle: "bg-[#e11d48]/20",
-    bgActive: "bg-[#e11d48]/40",
-    borderColor: "border-[#e11d48]/50",
-    typeColor: "text-[#be123c]/80",
-    arrowMobile: "max-md:text-[#be123c]",
-    icons: [Shield, UserX, Brain, Target, LineChart, BarChart]
-  }
-};
-
-const ProjectCard: React.FC<{ project: any; index: number }> = ({ project }) => {
-  const config = projectConfig[project.id];
-  const navigate = useNavigate();
-  const color = config?.rawColor || '#6b7280';
-  const clickable = !project.noDetail;
-
-  return (
-    <div
-      className={cn("group relative rounded-[24px] overflow-hidden", clickable && "cursor-pointer")}
-      style={{ background: `linear-gradient(135deg, ${color}12 0%, ${color}06 50%, ${color}10 100%)` }}
-      onClick={clickable ? () => navigate(`/projects/${project.id}`) : undefined}
-    >
-      <div
-        className="relative m-[1px] rounded-[23px] overflow-hidden transition-shadow duration-300 group-hover:shadow-lg"
-        style={{
-          background: 'var(--glass-bg, linear-gradient(135deg, rgba(248,249,250,0.92) 0%, rgba(248,249,250,0.78) 100%))',
-          boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.8), 0 4px 24px -4px rgba(0,0,0,0.06)',
-          border: '1px solid rgba(255,255,255,0.5)',
-        }}
-      >
-        <div
-          className="absolute inset-0 rounded-[23px] pointer-events-none opacity-0 group-hover:opacity-40 transition-opacity duration-300"
-          style={{ boxShadow: `inset 0 0 0 1px ${color}30` }}
-        />
-        <div className="relative z-10 p-6 md:p-8 flex flex-col justify-between min-h-[240px] md:min-h-[320px]">
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-[10px] md:text-xs uppercase tracking-widest font-medium" style={{ color }}>
-              {project.type}
-            </span>
-            <div
-              className="w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center"
-              style={{ background: `${color}10`, border: `1px solid ${color}20` }}
-            >
-              <ArrowUpRight className="w-3 h-3 md:w-3.5 md:h-3.5" style={{ color }} />
-            </div>
-          </div>
-          <div className="flex flex-col gap-2">
-            <h3 className="text-xl sm:text-2xl md:text-[1.7rem] font-black tracking-tighter uppercase leading-none text-black/90 dark:text-white/90 transition-colors duration-500">
-              {project.name}
-            </h3>
-            <p className="text-black/40 dark:text-white/40 text-xs md:text-sm leading-relaxed line-clamp-2 transition-colors duration-500">{project.desc}</p>
-            <div className="flex items-center gap-1.5 mt-1">
-              {clickable ? (
-                <>
-                  <span className="text-[10px] font-mono tracking-widest uppercase font-medium" style={{ color }}>View Case Study</span>
-                  <span style={{ color }} className="text-xs">→</span>
-                </>
-              ) : (
-                <span className="text-[10px] font-mono tracking-widest uppercase font-medium text-gray-300 dark:text-gray-600 transition-colors duration-500">Coming Soon</span>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const Works = () => {
-  const projects = [
-    { id: "pureplate", name: "PUREPLATE", type: "REACT / NEXT.JS / AI", link: "https://pureplate.arinpattnaik.me/", desc: "AI-powered food transparency platform that exposes hidden sugars and complex additives." },
-    { id: "vera", name: "VÉRA", type: "REACT / NLP", link: "https://vera.arinpattnaik.me/", desc: "NLP-powered greenwashing scanner for fashion — paste a product link, get the True Eco-Score." },
-    { id: "churnguard", name: "CHURNGUARD", type: "REACT / ML / SHAP", link: "https://churnguard.arinpattnaik.me/", desc: "ML-powered churn prediction with SHAP explainability and targeted retention strategies." },
-    { id: "globaljob", name: "GLOBAL JOB MARKET", type: "PYTHON / STREAMLIT", link: "https://global-job-market-intelligence-platform-arin.streamlit.app/", desc: "Analytics platform uncovering global employment trends and salary distributions." },
-    { id: "ecom", name: "E-COMMERCE ANALYTICS", type: "PYTHON / STREAMLIT", link: "https://ecommerce-sales-analysis-arin.streamlit.app/", desc: "Universal analytics with auto-detecting schemas and AI-powered insights." },
-    { id: "etl", name: "ETL PIPELINE", type: "SQL / PYTHON", noDetail: true, desc: "Automated pipeline handling 50GB+ daily, reducing manual reporting by 15 hours/week." }
-  ];
-
-  return (
-    <section id="projects" className="w-full flex flex-col justify-center px-6 md:px-24 py-16 md:py-24 relative z-10">
-      <FocusSection>
-        <h2 className="text-sm font-mono text-gray-500 tracking-widest uppercase mb-8 md:mb-12">Selected Works</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-          {projects.map((project, i) => (
-            <ProjectCard key={project.id} project={project} index={i} />
-          ))}
-        </div>
-      </FocusSection>
-    </section>
-  );
-};
-
-// --- Insights Section ---
-
-interface Insight {
-  id: string;
-  text: string;
-  author: string;
-  role: string;
-  timestamp: number;
-  rating: number;
-  likes: number;
-}
-
-const DEFAULT_INSIGHTS: Insight[] = [
-  { id: "1", text: "Arin transformed our data pipeline, reducing processing time by 40%. His ability to see the full picture — from raw SQL to polished dashboards — is rare.", author: "Sarah Chen", role: "Tech Lead at DataCorp", timestamp: Date.now() - 86400000 * 30, rating: 5, likes: 12 },
-  { id: "2", text: "The visualizations he built didn't just look good — they shifted our entire Q3 strategy. Data storytelling at its finest.", author: "James Miller", role: "Product Manager at Insightful", timestamp: Date.now() - 86400000 * 22, rating: 5, likes: 8 },
-  { id: "3", text: "Exceptional predictive models with SHAP explainability that even our non-technical stakeholders could understand. Game changer.", author: "Priya Sharma", role: "CEO at StartupX", timestamp: Date.now() - 86400000 * 15, rating: 5, likes: 15 },
-  { id: "4", text: "A rare combination of design sensibility and hardcore data engineering. The portfolio site alone proves it.", author: "David Park", role: "Director of Analytics at TechVentures", timestamp: Date.now() - 86400000 * 7, rating: 5, likes: 6 },
-  { id: "5", text: "Built us an NLP pipeline that caught greenwashing claims our legal team missed. Technically brilliant and ethically driven.", author: "Anika Rao", role: "Sustainability Lead at EcoFashion", timestamp: Date.now() - 86400000 * 3, rating: 5, likes: 10 },
-];
-
-// --- Star Rating Component ---
-const StarRating = ({ rating, interactive = false, onRate }: { rating: number; interactive?: boolean; onRate?: (r: number) => void }) => {
-  const [hover, setHover] = useState(0);
-  return (
-    <div className="flex gap-0.5">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <button
-          key={star}
-          type="button"
-          disabled={!interactive}
-          onClick={() => onRate?.(star)}
-          onMouseEnter={() => interactive && setHover(star)}
-          onMouseLeave={() => interactive && setHover(0)}
-          className={cn(
-            "transition-all duration-200",
-            interactive ? "cursor-pointer hover:scale-125" : "cursor-default"
-          )}
-        >
-          <svg
-            className={cn(
-              "w-4 h-4 md:w-5 md:h-5 transition-colors duration-200",
-              (hover || rating) >= star
-                ? "text-yellow-500 fill-yellow-500"
-                : "text-gray-300 dark:text-gray-600 fill-transparent"
-            )}
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={1.5}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
-          </svg>
-        </button>
-      ))}
-    </div>
-  );
-};
-
-// --- Insight Submission Form ---
-const InsightForm = ({ onSubmit, isSubmitting }: { onSubmit: (insight: Omit<Insight, 'id' | 'timestamp' | 'likes'>) => void; isSubmitting: boolean }) => {
-  const [text, setText] = useState('');
-  const [author, setAuthor] = useState('');
-  const [role, setRole] = useState('');
-  const [rating, setRating] = useState(5);
-  const [charCount, setCharCount] = useState(0);
-  const maxChars = 280;
-
-  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const val = e.target.value.slice(0, maxChars);
-    setText(val);
-    setCharCount(val.length);
+  const go = (target: string) => {
+    if (drag.current.moved) return;
+    onClose();
+    setTimeout(() => {
+      if (target === 'top') window.scrollTo({ top: 0, behavior: 'smooth' });
+      else document.getElementById(target)?.scrollIntoView({ behavior: 'smooth' });
+    }, 560);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!text.trim() || !author.trim()) return;
-    onSubmit({ text: text.trim(), author: author.trim(), role: role.trim() || 'Anonymous', rating });
-    setText('');
-    setAuthor('');
-    setRole('');
-    setRating(5);
-    setCharCount(0);
+  const onDown = (e: React.PointerEvent) => {
+    const el = scroller.current;
+    if (!el) return;
+    drag.current = { down: true, startX: e.clientX, startScroll: el.scrollLeft, moved: false };
+    el.setPointerCapture(e.pointerId);
+  };
+  const onMove = (e: React.PointerEvent) => {
+    const el = scroller.current;
+    if (!el || !drag.current.down) return;
+    const dx = e.clientX - drag.current.startX;
+    if (Math.abs(dx) > 5) drag.current.moved = true;
+    el.scrollLeft = drag.current.startScroll - dx;
+  };
+  const onUp = (e: React.PointerEvent) => {
+    drag.current.down = false;
+    try { scroller.current?.releasePointerCapture(e.pointerId); } catch { /* ignore */ }
   };
 
-  const isValid = text.trim().length > 10 && author.trim().length > 1;
-
-  return (
-    <motion.form
-      onSubmit={handleSubmit}
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className="w-full"
-    >
-      <div className="relative rounded-[24px] overflow-hidden">
-        {/* Gradient border */}
-        <div className="absolute inset-0 rounded-[24px] bg-gradient-to-br from-black/10 via-transparent to-black/10 dark:from-white/10 dark:via-transparent dark:to-white/10 transition-colors duration-500" />
-        <div className="relative m-[1px] rounded-[23px] p-6 md:p-10 bg-white/80 dark:bg-black/80 backdrop-blur-2xl transition-colors duration-500">
-          {/* Form header */}
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className="text-lg md:text-xl font-bold text-black dark:text-white transition-colors duration-500">Leave an Insight</h3>
-              <p className="text-xs font-mono text-gray-500 tracking-wide mt-1">Share your experience working with me</p>
-            </div>
-            <div className="hidden md:flex items-center gap-2">
-              <span className="text-xs font-mono text-gray-400 tracking-widest uppercase">Rating</span>
-              <StarRating rating={rating} interactive onRate={setRating} />
-            </div>
-          </div>
-
-          {/* Mobile rating */}
-          <div className="flex md:hidden items-center gap-2 mb-4">
-            <span className="text-xs font-mono text-gray-400 tracking-widest uppercase">Rating</span>
-            <StarRating rating={rating} interactive onRate={setRating} />
-          </div>
-
-          {/* Textarea */}
-          <div className="relative mb-4">
-            <textarea
-              value={text}
-              onChange={handleTextChange}
-              placeholder="What was it like working together? What impact did the work have?"
-              rows={3}
-              className="w-full bg-black/[0.03] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 rounded-2xl px-5 py-4 text-sm md:text-base text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 resize-none focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-all duration-300"
-            />
-            <span className={cn(
-              "absolute bottom-3 right-4 text-[10px] font-mono transition-colors duration-300",
-              charCount > maxChars * 0.9 ? "text-red-500" : "text-gray-400"
-            )}>
-              {charCount}/{maxChars}
-            </span>
-          </div>
-
-          {/* Name & Role row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
-            <input
-              type="text"
-              value={author}
-              onChange={(e) => setAuthor(e.target.value)}
-              placeholder="Your name *"
-              className="bg-black/[0.03] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-all duration-300"
-            />
-            <input
-              type="text"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              placeholder="Role & Company (optional)"
-              className="bg-black/[0.03] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-all duration-300"
-            />
-          </div>
-
-          {/* Submit */}
-          <motion.button
-            type="submit"
-            disabled={!isValid || isSubmitting}
-            whileHover={isValid ? { scale: 1.02 } : {}}
-            whileTap={isValid ? { scale: 0.98 } : {}}
-            className={cn(
-              "w-full md:w-auto px-8 py-3.5 rounded-xl font-medium text-sm tracking-wide transition-all duration-300",
-              isValid && !isSubmitting
-                ? "bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 cursor-pointer"
-                : "bg-black/10 dark:bg-white/10 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-            )}
-          >
-            {isSubmitting ? (
-              <span className="flex items-center gap-2">
-                <motion.span
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full"
-                />
-                Submitting...
-              </span>
-            ) : (
-              "Submit Insight"
-            )}
-          </motion.button>
-        </div>
-      </div>
-    </motion.form>
-  );
-};
-
-// --- Individual Insight Card ---
-const InsightBubble: React.FC<{ insight: Insight; index: number; onLike: (id: string) => void; isLiked: boolean; isAdmin: boolean; onDelete: (id: string) => void }> = ({ insight, index, onLike, isLiked, isAdmin, onDelete }) => {
-  const initials = insight.author.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  const timeAgo = (() => {
-    const diff = Date.now() - insight.timestamp;
-    const days = Math.floor(diff / 86400000);
-    if (days === 0) return 'Today';
-    if (days === 1) return 'Yesterday';
-    if (days < 7) return `${days}d ago`;
-    if (days < 30) return `${Math.floor(days / 7)}w ago`;
-    return `${Math.floor(days / 30)}mo ago`;
-  })();
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30, scale: 0.95 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ delay: index * 0.08, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="group"
-    >
-      <SpotlightCard className="p-5 md:p-7 relative">
-        {/* Admin delete button */}
-        {isAdmin && (
-          <motion.button
-            onClick={(e) => { e.stopPropagation(); onDelete(insight.id); }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="absolute top-3 right-3 w-7 h-7 rounded-full bg-red-500/10 hover:bg-red-500/20 flex items-center justify-center cursor-pointer transition-colors duration-200 z-20"
-            title="Delete insight"
-          >
-            <svg className="w-3.5 h-3.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </motion.button>
-        )}
-        {/* Quote */}
-        <p className="text-sm md:text-base text-black/80 dark:text-white/80 leading-relaxed mb-5 transition-colors duration-500">
-          "{insight.text}"
-        </p>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {/* Avatar */}
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-black/10 to-black/5 dark:from-white/15 dark:to-white/5 flex items-center justify-center border border-black/5 dark:border-white/10 transition-colors duration-500">
-              <span className="text-[10px] font-bold text-black/60 dark:text-white/60 transition-colors duration-500">{initials}</span>
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-black dark:text-white transition-colors duration-500">{insight.author}</p>
-              <p className="text-[10px] font-mono text-gray-500 tracking-wide">{insight.role}</p>
-            </div>
-          </div>
-          <div className="flex flex-col items-end gap-1.5">
-            <div className="flex items-center gap-3">
-              <StarRating rating={insight.rating} />
-              {/* Like button */}
-              <motion.button
-                onClick={() => onLike(insight.id)}
-                whileTap={{ scale: 0.8 }}
-                className="flex items-center gap-1 cursor-pointer group/like"
-              >
-                <motion.svg
-                  animate={isLiked ? { scale: [1, 1.3, 1] } : {}}
-                  transition={{ duration: 0.3 }}
-                  className={cn(
-                    "w-4 h-4 transition-colors duration-300",
-                    isLiked
-                      ? "text-red-500 fill-red-500"
-                      : "text-gray-400 dark:text-gray-500 fill-transparent group-hover/like:text-red-400 group-hover/like:fill-red-400/20"
-                  )}
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                </motion.svg>
-                <span className={cn(
-                  "text-[10px] font-mono tabular-nums transition-colors duration-300",
-                  isLiked ? "text-red-500" : "text-gray-400 dark:text-gray-500"
-                )}>
-                  {insight.likes}
-                </span>
-              </motion.button>
-            </div>
-            <span className="text-[10px] font-mono text-gray-400 tracking-wide">{timeAgo}</span>
-          </div>
-        </div>
-      </SpotlightCard>
-    </motion.div>
-  );
-};
-
-// --- Success Toast ---
-const SuccessToast = ({ show, onClose }: { show: boolean; onClose: () => void }) => {
+  // reset scroll position to the start whenever the menu opens
   useEffect(() => {
-    if (show) {
-      const timer = setTimeout(onClose, 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [show, onClose]);
+    if (open && scroller.current) scroller.current.scrollLeft = 0;
+  }, [open]);
 
   return (
     <AnimatePresence>
-      {show && (
+      {open && (
         <motion.div
-          initial={{ opacity: 0, y: 20, scale: 0.9 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -10, scale: 0.95 }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[200] px-6 py-3.5 rounded-2xl bg-black dark:bg-white text-white dark:text-black text-sm font-medium shadow-2xl flex items-center gap-3"
+          initial={{ clipPath: 'inset(0 0 100% 0)' }}
+          animate={{ clipPath: 'inset(0 0 0% 0)' }}
+          exit={{ clipPath: 'inset(0 0 100% 0)' }}
+          transition={{ duration: 0.7, ease: EASE }}
+          className="fixed inset-0 z-[150] bg-base flex flex-col"
+          data-lenis-prevent
         >
-          <svg className="w-5 h-5 text-green-400 dark:text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          Insight submitted successfully!
+          {/* top label */}
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
+            className="px-5 md:px-10 pt-6 md:pt-7 o-mono text-cream"
+          >
+            Menu — 06 sections · drag to explore
+          </motion.div>
+
+          {/* rotated card row — drag/scroll on every device */}
+          <div
+            ref={scroller}
+            onPointerDown={onDown}
+            onPointerMove={onMove}
+            onPointerUp={onUp}
+            onPointerCancel={onUp}
+            data-cursor="drag"
+            className="flex-1 flex items-center overflow-x-auto scrollbar-hide px-5 md:px-10 select-none"
+            style={{ touchAction: 'pan-x' }}
+          >
+            <div className="flex gap-4 md:gap-5 md:mx-auto items-center">
+              {NAV.map((item, i) => {
+                const sign = i % 2 === 0 ? -1 : 1;
+                return (
+                  <motion.button
+                    key={item.label}
+                    initial={{ y: 70, opacity: 0, rotate: sign * 6 }}
+                    animate={{ y: 0, opacity: 1, rotate: sign * 3 }}
+                    transition={{ delay: 0.3 + i * 0.07, duration: 0.7, ease: EASE }}
+                    whileHover={{ rotate: 0, scale: 1.05, transition: { duration: 0.4, ease: EASE } }}
+                    onClick={() => go(item.target)}
+                    data-cursor="open"
+                    className="group relative shrink-0 w-[58vw] sm:w-[40vw] md:w-[15.5vw] min-w-[160px] aspect-[3/4] overflow-hidden"
+                    draggable={false}
+                  >
+                    <div
+                      className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                      style={{ backgroundImage: `url("${item.image}")` }}
+                    />
+                    <div className="absolute inset-0 bg-black/45 group-hover:bg-black/20 transition-colors duration-500" />
+                    <span className="absolute top-3 left-1/2 -translate-x-1/2 o-mono text-cream/90">{item.no}</span>
+                    <span
+                      className="absolute inset-x-0 bottom-[40%] text-center font-display text-cream px-1"
+                      style={{ fontSize: 'clamp(1.05rem, 2vw, 2.1rem)' }}
+                    >
+                      {item.label}
+                    </span>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* footer */}
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
+            className="px-5 md:px-10 py-5 grid grid-cols-1 md:grid-cols-3 gap-5 items-center"
+          >
+            <div className="o-mono">
+              <p>Bhubaneswar, India</p>
+              <p className="text-cream break-all">arinpattnaikofficial@gmail.com</p>
+            </div>
+            <div className="flex md:justify-center">
+              <Magnetic as="a" href="mailto:arinpattnaikofficial@gmail.com" cursor="email" className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-line text-cream o-mono">
+                Let's work together <ArrowRight className="w-4 h-4" />
+              </Magnetic>
+            </div>
+            <div className="o-mono md:text-right">
+              <a href="https://github.com/ArinPattnaik" target="_blank" rel="noreferrer" data-cursor="open" className="block link-underline w-fit md:ml-auto">GitHub</a>
+              <a href="https://www.linkedin.com/in/arinpattnaik" target="_blank" rel="noreferrer" data-cursor="open" className="block link-underline w-fit md:ml-auto">LinkedIn</a>
+            </div>
+          </motion.div>
+
+          {/* giant wordmark */}
+          <div className="overflow-hidden px-5 md:px-10 pb-5">
+            <motion.h2
+              initial={{ y: 50 }} animate={{ y: 0 }} transition={{ delay: 0.5, duration: 0.8, ease: EASE }}
+              className="font-display text-cream whitespace-nowrap text-center leading-[0.8] select-none"
+              style={{ fontSize: 'clamp(2.2rem, 12.5vw, 11rem)' }}
+            >
+              Arin Pattnaik
+            </motion.h2>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
   );
 };
 
-// --- Main Insights Section ---
-// Admin hash (SHA-256 of the admin code) — plaintext never stored in source
-const ADMIN_HASH = '9f895aa43bb435e31058fd8892b6bbb00899b0d73a2e35d7749c2d51c6e8fb6b'; // SHA-256 hash — password not stored in source
+/* ============================================================
+   Hero
+   ============================================================ */
+const Hero: React.FC = () => {
+  const ref = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
+  const mediaScale = useTransform(scrollYProgress, [0, 1], [1, 1.18]);
+  const titleY = useTransform(scrollYProgress, [0, 1], [0, -90]);
+  const fade = useTransform(scrollYProgress, [0, 0.9], [1, 0]);
 
-// Hash function for admin verification
-async function hashCode(input: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(input);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-const Insights = () => {
-  const [insights, setInsights] = useState<Insight[]>(DEFAULT_INSIGHTS);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [activeFilter, setActiveFilter] = useState<'all' | 'recent' | 'top'>('all');
-  const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
-  const [visibleCount, setVisibleCount] = useState(6);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [spamError, setSpamError] = useState('');
-  const lastSubmitRef = useRef<number>(0);
-
-  // Load from localStorage on mount
   useEffect(() => {
-    // Load liked IDs first so we can apply them to counts
-    let userLikedIds = new Set<string>();
-    const storedLikes = localStorage.getItem('portfolio-insight-likes');
-    if (storedLikes) {
-      try { userLikedIds = new Set(JSON.parse(storedLikes)); } catch { /* ignore */ }
-    }
-    setLikedIds(userLikedIds);
-
-    // Build insights list with like counts adjusted for user's likes
-    const baseInsights = DEFAULT_INSIGHTS.map(insight => ({
-      ...insight,
-      likes: insight.likes + (userLikedIds.has(insight.id) ? 1 : 0),
-    }));
-
-    const stored = localStorage.getItem('portfolio-insights');
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored) as Insight[];
-        const userInsights = parsed.map(insight => ({
-          ...insight,
-          likes: insight.likes + (userLikedIds.has(insight.id) ? 1 : 0),
-        }));
-        setInsights([...baseInsights, ...userInsights]);
-      } catch {
-        setInsights(baseInsights);
-      }
-    } else {
-      setInsights(baseInsights);
-    }
-
-    // Check admin session
-    if (localStorage.getItem('portfolio-admin') === 'true') {
-      setIsAdmin(true);
-    }
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = true;
+    v.play().catch(() => {});
   }, []);
-
-  // Admin mode: Ctrl+Shift+A triggers admin login prompt
-  useEffect(() => {
-    const handleKeyDown = async (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.shiftKey && e.key === 'A') {
-        e.preventDefault();
-        if (isAdmin) {
-          setIsAdmin(false);
-          localStorage.removeItem('portfolio-admin');
-          return;
-        }
-        const code = prompt('Enter admin code:');
-        if (!code) return;
-        const hashed = await hashCode(code);
-        if (hashed === ADMIN_HASH) {
-          setIsAdmin(true);
-          localStorage.setItem('portfolio-admin', 'true');
-        }
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isAdmin]);
-
-  // Delete insight (admin only)
-  const handleDelete = useCallback((id: string) => {
-    if (!isAdmin) return;
-    setInsights(prev => prev.filter(i => i.id !== id));
-    // Also remove from localStorage if it's a user-submitted one
-    try {
-      const stored = JSON.parse(localStorage.getItem('portfolio-insights') || '[]') as Insight[];
-      localStorage.setItem('portfolio-insights', JSON.stringify(stored.filter(i => i.id !== id)));
-    } catch { /* ignore */ }
-  }, [isAdmin]);
-
-  const handleLike = useCallback((id: string) => {
-    setLikedIds(prev => {
-      const wasLiked = prev.has(id);
-      const next = new Set(prev);
-      if (wasLiked) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      localStorage.setItem('portfolio-insight-likes', JSON.stringify([...next]));
-
-      // Update likes count in sync with the toggle
-      setInsights(prevInsights => prevInsights.map(insight =>
-        insight.id === id
-          ? { ...insight, likes: insight.likes + (wasLiked ? -1 : 1) }
-          : insight
-      ));
-
-      return next;
-    });
-  }, []);
-
-  const handleSubmit = (data: Omit<Insight, 'id' | 'timestamp' | 'likes'>) => {
-    // Spam protection: rate limit (1 submission per 60 seconds)
-    const now = Date.now();
-    if (now - lastSubmitRef.current < 60000) {
-      setSpamError('Please wait a minute before submitting another insight.');
-      setTimeout(() => setSpamError(''), 4000);
-      return;
-    }
-
-    // Spam protection: block obvious spam patterns
-    const spamPatterns = /\b(buy now|click here|free money|viagra|casino|crypto pump|subscribe now|http[s]?:\/\/)\b/i;
-    if (spamPatterns.test(data.text)) {
-      setSpamError('Your message was flagged as spam. Please revise and try again.');
-      setTimeout(() => setSpamError(''), 4000);
-      return;
-    }
-
-    // Spam protection: minimum word count
-    if (data.text.trim().split(/\s+/).length < 5) {
-      setSpamError('Please write at least 5 words for a meaningful insight.');
-      setTimeout(() => setSpamError(''), 4000);
-      return;
-    }
-
-    // Spam protection: max submissions per session (5)
-    const submissionCount = parseInt(localStorage.getItem('portfolio-submit-count') || '0', 10);
-    if (submissionCount >= 5) {
-      setSpamError('You\'ve reached the maximum number of submissions. Thank you for your contributions!');
-      setTimeout(() => setSpamError(''), 4000);
-      return;
-    }
-
-    setIsSubmitting(true);
-    lastSubmitRef.current = now;
-
-    // Simulate network delay for premium feel
-    setTimeout(() => {
-      const newInsight: Insight = {
-        ...data,
-        id: crypto.randomUUID(),
-        timestamp: Date.now(),
-        likes: 0,
-      };
-      const userInsights = (() => {
-        try { return JSON.parse(localStorage.getItem('portfolio-insights') || '[]'); } catch { return []; }
-      })();
-      userInsights.push(newInsight);
-      localStorage.setItem('portfolio-insights', JSON.stringify(userInsights));
-      localStorage.setItem('portfolio-submit-count', String(submissionCount + 1));
-      setInsights(prev => [newInsight, ...prev]);
-      setIsSubmitting(false);
-      setShowSuccess(true);
-    }, 1200);
-  };
-
-  // Filtered & sorted insights
-  const displayedInsights = (() => {
-    let sorted = [...insights];
-    switch (activeFilter) {
-      case 'recent': sorted.sort((a, b) => b.timestamp - a.timestamp); break;
-      case 'top': sorted.sort((a, b) => b.likes - a.likes || b.timestamp - a.timestamp); break;
-      default: break; // 'all' keeps original order
-    }
-    return sorted;
-  })();
-
-  const avgRating = insights.length > 0 ? (insights.reduce((sum, i) => sum + i.rating, 0) / insights.length).toFixed(1) : '0';
 
   return (
-    <section id="insights" className="w-full px-6 md:px-24 py-16 md:py-32 relative z-10">
-      <FocusSection className="w-full max-w-7xl mx-auto">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-20">
-          <div>
-            <h2 className="text-sm font-mono text-gray-500 dark:text-gray-400 tracking-widest uppercase mb-4 transition-colors duration-500">
-              Insights & Testimonials
-              {isAdmin && (
-                <span className="ml-3 inline-flex items-center px-2 py-0.5 rounded-md bg-red-500/10 border border-red-500/20 text-red-500 text-[9px] font-bold tracking-wider uppercase">
-                  Admin
-                </span>
-              )}
-            </h2>
-            <p className="text-3xl md:text-5xl font-black tracking-tighter text-black dark:text-white transition-colors duration-500">
-              What People Say
-            </p>
-          </div>
-          {/* Stats pill */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="flex items-center gap-4 px-5 py-3 rounded-2xl bg-black/[0.03] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 transition-colors duration-500"
-          >
-            <div className="flex items-center gap-1.5">
-              <span className="text-2xl font-black text-black dark:text-white transition-colors duration-500">{avgRating}</span>
-              <StarRating rating={Math.round(Number(avgRating))} />
-            </div>
-            <div className="w-px h-8 bg-black/10 dark:bg-white/10 transition-colors duration-500" />
-            <div className="text-center">
-              <span className="text-lg font-bold text-black dark:text-white transition-colors duration-500">{insights.length}</span>
-              <p className="text-[10px] font-mono text-gray-500 tracking-widest uppercase">Reviews</p>
-            </div>
-          </motion.div>
-        </div>
+    <section ref={ref} className="relative h-[100svh] w-full overflow-hidden bg-base">
+      {/* full-bleed video hero */}
+      <motion.div style={{ scale: mediaScale }} className="absolute inset-0">
+        <video
+          ref={videoRef}
+          className="w-full h-full object-cover"
+          src="/hero.mp4"
+          poster="/projects/pureplate/ai ingredeient analysis.png"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+        />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(16,12,7,0.55) 0%, rgba(16,12,7,0.28) 36%, rgba(16,12,7,0.5) 70%, rgba(16,12,7,0.92) 100%)' }} />
+      </motion.div>
 
-        {/* Filter tabs */}
-        <div className="flex gap-2 mb-8">
-          {(['all', 'recent', 'top'] as const).map((filter) => (
-            <button
-              key={filter}
-              onClick={() => { setActiveFilter(filter); setVisibleCount(6); }}
-              className={cn(
-                "px-4 py-2 rounded-xl text-xs font-mono tracking-widest uppercase transition-all duration-300 cursor-pointer border",
-                activeFilter === filter
-                  ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white"
-                  : "bg-transparent text-gray-500 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:text-black dark:hover:text-white"
-              )}
-            >
-              {filter}
-            </button>
-          ))}
-        </div>
+      {/* availability */}
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4, duration: 0.8, ease: EASE }}
+        className="absolute top-[15vh] md:top-[16vh] left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-10"
+      >
+        <span className="relative flex h-2 w-2">
+          <span className="animate-soft-pulse absolute inline-flex h-full w-full rounded-full bg-emerald-400" />
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+        </span>
+        <span className="o-mono text-cream">Available for select projects — 2026</span>
+      </motion.div>
 
-        {/* Insights Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 mb-8">
-          {displayedInsights.slice(0, visibleCount).map((insight, i) => (
-            <InsightBubble key={insight.id} insight={insight} index={i} onLike={handleLike} isLiked={likedIds.has(insight.id)} isAdmin={isAdmin} onDelete={handleDelete} />
-          ))}
-        </div>
+      {/* edge claims — left: build practice + motto */}
+      <motion.div
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9, duration: 1 }}
+        className="absolute left-5 md:left-10 top-1/2 -translate-y-1/2 z-10 max-w-[80vw] md:max-w-[52vw]"
+      >
+        <p className="o-mono text-cream/50 mb-3 md:mb-4">Build</p>
+        <ul className="o-mono space-y-1 text-cream/70 mb-6 md:mb-9">
+          <li>Full-Stack Developer</li>
+          <li>LLM Engineering</li>
+          <li>Data &amp; ML</li>
+        </ul>
+        <h2
+          className="font-display text-cream leading-[0.9]"
+          style={{ fontSize: 'clamp(2rem, 5.2vw, 4.6rem)', letterSpacing: '-0.01em' }}
+        >
+          No Peace<br />Without War.
+        </h2>
+      </motion.div>
 
-        {/* Load More / Show Less */}
-        {displayedInsights.length > 6 && (
-          <div className="flex items-center justify-center gap-4 mb-16 md:mb-24">
-            {visibleCount < displayedInsights.length ? (
-              <motion.button
-                onClick={() => setVisibleCount(prev => Math.min(prev + 6, displayedInsights.length))}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="px-6 py-3 rounded-xl border border-black/10 dark:border-white/10 text-sm font-mono tracking-widest uppercase text-gray-600 dark:text-gray-300 hover:border-black/30 dark:hover:border-white/30 hover:text-black dark:hover:text-white transition-all duration-300 cursor-pointer"
-              >
-                Load More ({displayedInsights.length - visibleCount} remaining)
-              </motion.button>
-            ) : (
-              <motion.button
-                onClick={() => setVisibleCount(6)}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="px-6 py-3 rounded-xl border border-black/10 dark:border-white/10 text-sm font-mono tracking-widest uppercase text-gray-600 dark:text-gray-300 hover:border-black/30 dark:hover:border-white/30 hover:text-black dark:hover:text-white transition-all duration-300 cursor-pointer"
-              >
-                Show Less
-              </motion.button>
-            )}
-            <span className="text-[10px] font-mono text-gray-400 tracking-wide">
-              Showing {Math.min(visibleCount, displayedInsights.length)} of {displayedInsights.length}
-            </span>
-          </div>
-        )}
-        {displayedInsights.length <= 6 && <div className="mb-16 md:mb-24" />}
+      {/* edge claims — right: other practice */}
+      <motion.div
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.0, duration: 1 }}
+        className="absolute right-5 md:right-10 top-1/2 -translate-y-1/2 o-mono text-cream text-right z-10 max-w-[44vw] md:max-w-none"
+      >
+        <p className="text-cream/50 mb-3 md:mb-4">Also</p>
+        <ul className="space-y-1 text-cream/70">
+          <li>Designer</li>
+          <li>Music Production</li>
+          <li>Digital Art</li>
+        </ul>
+      </motion.div>
 
-        {/* Spam error message */}
-        <AnimatePresence>
-          {spamError && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="mb-4 px-5 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm font-medium"
-            >
-              {spamError}
-            </motion.div>
-          )}
-        </AnimatePresence>
+      {/* title */}
+      <motion.h1
+        style={{ y: titleY, opacity: fade }}
+        className="absolute bottom-[5vh] left-0 right-0 px-4 text-center font-display text-mega text-cream z-10"
+      >
+        <RevealLines lines={['Arin']} delay={0.15} />
+        <RevealLines lines={['Pattnaik']} delay={0.24} />
+      </motion.h1>
 
-        {/* Submission Form */}
-        <InsightForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
-      </FocusSection>
-
-      {/* Success Toast */}
-      <SuccessToast show={showSuccess} onClose={() => setShowSuccess(false)} />
+      {/* scroll cue */}
+      <button
+        onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
+        data-cursor="hover"
+        className="absolute bottom-5 right-5 md:right-10 z-10 flex-col items-center gap-2 hidden md:flex"
+        aria-label="Scroll down"
+      >
+        <span className="w-5 h-8 rounded-full border border-line flex justify-center pt-1.5">
+          <span className="animate-scroll-cue w-1 h-1.5 rounded-full bg-cream/60" />
+        </span>
+      </button>
     </section>
   );
 };
 
-const Footer = () => {
+/* ============================================================
+   Marquee band (cream)
+   ============================================================ */
+const Band: React.FC = () => (
+  <div className="section-cream py-5 md:py-6 overflow-hidden">
+    <Marquee items={STACK} className="text-ink" />
+  </div>
+);
+
+/* ============================================================
+   Section label
+   ============================================================ */
+const Chapter: React.FC<{ no: string; label: string; className?: string }> = ({ no, label, className }) => (
+  <div className={cn('flex items-center justify-between o-mono', className)}>
+    <span>Chapter {no}</span>
+    <span>{label}</span>
+  </div>
+);
+
+/* ============================================================
+   About — small image, huge statement, body prose
+   ============================================================ */
+const About: React.FC = () => (
+  <section id="about" className="px-5 md:px-10 pt-24 md:pt-36 pb-20 md:pb-32">
+    <Reveal>
+      <Chapter no="01" label="about" className="text-cream border-b border-line pb-4 mb-14 md:mb-20" />
+    </Reveal>
+
+    {/* small centered image */}
+    <Reveal y={50} className="flex justify-center mb-14 md:mb-24">
+      <div className="overflow-hidden w-[62vw] sm:w-[320px] aspect-[5/4]">
+        <motion.div
+          initial={{ scale: 1.16 }}
+          whileInView={{ scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.2, ease: EASE }}
+          className="w-full h-full bg-cover bg-center"
+          style={{ backgroundImage: 'url("/projects/churnguard/risk scoring.png")' }}
+        />
+      </div>
+    </Reveal>
+
+    {/* huge statement — big, bold, appears word-by-word on scroll */}
+    <ScrollRevealText
+      text="There are stories hidden in raw data, and patterns waiting in the noise — I build the tools that drag them into the light."
+      className="font-display text-cream"
+      style={{ fontSize: 'clamp(2.3rem, 6.6vw, 6.4rem)', lineHeight: 1.0, letterSpacing: '-0.01em' }}
+    />
+  </section>
+);
+
+/* ============================================================
+   Work — alternating story rows
+   ============================================================ */
+const WorkRow: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) => {
+  const navigate = useNavigate();
+  const cream = index % 2 === 1;
+  const sign = index % 2 === 0 ? -1 : 1;
+
+  const open = () => { if (item.detail) navigate(`/projects/${item.id}`); };
+
   return (
-    <footer className="w-full px-6 md:px-24 py-12 md:py-16 flex flex-col gap-12 md:gap-16 border-t border-black/10 dark:border-white/10 relative z-10 bg-[#f8f9fa] dark:bg-[#050505] md:bg-[#f8f9fa]/80 md:dark:bg-[#050505]/80 md:backdrop-blur-md transition-colors duration-500">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8">
-        <div className="flex flex-col gap-4">
-          <h3 className="text-xs font-mono text-gray-400 dark:text-gray-500 tracking-widest uppercase">Get in Touch</h3>
-          <a href="mailto:arinpattnaikofficial@gmail.com" className="text-xl md:text-2xl font-bold tracking-tighter uppercase text-black dark:text-white hover:text-gray-500 dark:hover:text-gray-400 transition-colors duration-500">
-            LET'S TALK <ArrowUpRight className="inline-block w-5 h-5" />
-          </a>
-          <p className="font-mono text-xs text-gray-500 dark:text-gray-400 tracking-widest uppercase transition-colors duration-500">
-            BHUBANESWAR, INDIA
-          </p>
-        </div>
-        
-        <div className="flex flex-col gap-4">
-          <h3 className="text-xs font-mono text-gray-400 dark:text-gray-500 tracking-widest uppercase">Navigate</h3>
-          <div className="flex flex-col gap-2">
-            {['About', 'Expertise', 'Projects', 'Insights'].map((item) => (
-              <a
-                key={item}
-                href={`#${item.toLowerCase()}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  document.getElementById(item.toLowerCase())?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="text-sm text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors duration-500 font-mono tracking-wide uppercase"
-              >
-                {item}
-              </a>
-            ))}
-          </div>
+    <div
+      onClick={open}
+      data-cursor={item.detail ? 'view' : 'soon'}
+      className={cn(
+        'group relative overflow-hidden border-t border-line',
+        cream ? 'section-cream' : 'bg-base',
+        item.detail ? 'cursor-pointer' : 'cursor-default'
+      )}
+    >
+      <div className="relative max-w-[1500px] mx-auto px-5 md:px-10 py-12 md:py-20">
+        <div className="flex items-center">
+        {/* number */}
+        <span className="o-mono shrink-0 w-8 md:w-14 self-start pt-1">{String(index + 1).padStart(2, '0')}</span>
+
+        {/* center group (image + title), nudged by sign */}
+        <div
+          className="flex-1 flex items-center gap-4 md:gap-10 min-w-0"
+          style={{ justifyContent: 'center', transform: `translateX(${sign * 4}%)` }}
+        >
+          {item.detail ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.85, rotate: sign * 6 }}
+              whileInView={{ opacity: 1, scale: 1, rotate: sign * 4 }}
+              viewport={{ once: true, margin: '-20%' }}
+              transition={{ duration: 0.8, ease: EASE }}
+              className="shrink-0 w-24 h-16 md:w-52 md:h-32 bg-cover bg-center shadow-2xl transition-transform duration-500 group-hover:rotate-0 group-hover:scale-105"
+              style={{ backgroundImage: `url("${item.preview}")` }}
+            />
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.85, rotate: sign * 6 }}
+              whileInView={{ opacity: 1, scale: 1, rotate: sign * 4 }}
+              viewport={{ once: true, margin: '-20%' }}
+              transition={{ duration: 0.8, ease: EASE }}
+              className="shrink-0 w-24 h-16 md:w-52 md:h-32 flex flex-col items-center justify-center gap-1 border border-dashed shadow-2xl transition-transform duration-500 group-hover:rotate-0"
+              style={{ backgroundColor: 'var(--bg-2)', borderColor: 'var(--line-strong)' }}
+            >
+              <span className="o-mono text-[8px] md:text-[10px]">In progress</span>
+              <span className="o-mono text-[7px] md:text-[9px] opacity-60">Coming soon</span>
+            </motion.div>
+          )}
+          <h3 className="font-display text-row text-balance min-w-0" style={{ color: 'var(--display-color)' }}>
+            {item.name}
+          </h3>
         </div>
 
-        <div className="flex flex-col gap-4">
-          <h3 className="text-xs font-mono text-gray-400 dark:text-gray-500 tracking-widest uppercase">Connect</h3>
-          <div className="flex flex-col gap-2">
-            <a href="https://github.com/ArinPattnaik" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors duration-500 font-mono tracking-wide uppercase">GitHub</a>
-            <a href="https://www.linkedin.com/in/arinpattnaik" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors duration-500 font-mono tracking-wide uppercase">LinkedIn</a>
-            <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors duration-500 font-mono tracking-wide uppercase">Resume</a>
+        {/* meta / cta */}
+        <div className="hidden md:flex flex-col items-end gap-2 shrink-0 w-44 self-end">
+          <span className="o-mono">{item.discipline}</span>
+          <span className="o-mono">{item.year}</span>
+          <span className="o-mono flex items-center gap-1.5" style={{ color: cream ? 'var(--ink)' : 'var(--cream)' }}>
+            {item.detail ? 'View case study' : 'Coming soon'}
+            {item.detail && <ArrowUpRight className="w-3.5 h-3.5" />}
+          </span>
+        </div>
+        </div>
+
+        {/* mobile meta */}
+        <div className="md:hidden mt-5 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 o-mono text-center" style={{ color: cream ? 'var(--ink)' : 'var(--muted)' }}>
+          <span>{item.discipline}</span>
+          <span aria-hidden>·</span>
+          <span>{item.year}</span>
+          <span aria-hidden>·</span>
+          <span style={{ color: cream ? 'var(--ink)' : 'var(--cream)' }}>{item.detail ? 'View case study' : 'Coming soon'}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Work: React.FC = () => (
+  <section id="work" className="w-full">
+    <div className="max-w-[1500px] mx-auto px-5 md:px-10 pt-20 md:pt-28 pb-6">
+      <Reveal>
+        <Chapter no="02" label="selected work" className="text-cream border-b border-line pb-4" />
+      </Reveal>
+    </div>
+    <div>
+      {WORK.map((item, i) => (
+        <WorkRow key={item.id} item={item} index={i} />
+      ))}
+      <div className="border-t border-line" />
+    </div>
+  </section>
+);
+
+/* ============================================================
+   Capabilities
+   ============================================================ */
+const Capabilities: React.FC = () => (
+  <section id="capabilities" className="px-5 md:px-10 py-20 md:py-32">
+    <div className="max-w-[1500px] mx-auto">
+      <Reveal>
+        <Chapter no="03" label="capabilities" className="text-cream border-b border-line pb-4" />
+      </Reveal>
+      <h2 className="font-display text-h2 text-cream mt-10 md:mt-16 max-w-[16ch]">
+        <RevealLines lines={['Five disciplines,', 'one pipeline.']} />
+      </h2>
+      <div className="mt-12 md:mt-20 border-t border-line">
+        {CAPABILITIES.map((cap, i) => (
+          <Reveal key={cap.no} delay={i * 0.05}>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 py-7 md:py-9 border-b border-line">
+              <span className="o-mono md:col-span-1">{cap.no}</span>
+              <h3 className="md:col-span-4 font-display text-cream" style={{ fontSize: 'clamp(1.5rem,2.6vw,2.4rem)' }}>{cap.title}</h3>
+              <p className="md:col-span-5 text-body text-sm md:text-base leading-relaxed">{cap.body}</p>
+              <div className="md:col-span-2 flex flex-wrap gap-1.5 content-start">
+                {cap.tools.map((t) => (
+                  <span key={t} className="px-2.5 py-1 rounded-full border border-line o-mono text-[9px]">{t}</span>
+                ))}
+              </div>
+            </div>
+          </Reveal>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+/* ============================================================
+   Gallery — draggable frames
+   ============================================================ */
+const Gallery: React.FC = () => {
+  const scroller = useRef<HTMLDivElement>(null);
+  const drag = useRef({ down: false, startX: 0, startScroll: 0, moved: false });
+
+  const onDown = (e: React.PointerEvent) => {
+    const el = scroller.current;
+    if (!el) return;
+    drag.current = { down: true, startX: e.clientX, startScroll: el.scrollLeft, moved: false };
+    el.setPointerCapture(e.pointerId);
+  };
+  const onMove = (e: React.PointerEvent) => {
+    const el = scroller.current;
+    if (!el || !drag.current.down) return;
+    const dx = e.clientX - drag.current.startX;
+    if (Math.abs(dx) > 4) drag.current.moved = true;
+    el.scrollLeft = drag.current.startScroll - dx;
+  };
+  const onUp = (e: React.PointerEvent) => {
+    drag.current.down = false;
+    scroller.current?.releasePointerCapture(e.pointerId);
+  };
+
+  return (
+    <section className="py-12 md:py-20 overflow-hidden">
+      <div
+        ref={scroller}
+        onPointerDown={onDown}
+        onPointerMove={onMove}
+        onPointerUp={onUp}
+        onPointerCancel={onUp}
+        data-cursor="drag"
+        className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide px-5 md:px-10 select-none"
+        style={{ touchAction: 'pan-y' }}
+      >
+        {GALLERY.map((src, i) => (
+          <div
+            key={i}
+            className="shrink-0 w-[82vw] sm:w-[54vw] md:w-[34vw] aspect-[16/10] bg-cover bg-center border border-line"
+            style={{ backgroundImage: `url("${src}")`, backgroundColor: 'var(--bg-2)' }}
+            draggable={false}
+          />
+        ))}
+      </div>
+    </section>
+  );
+};
+
+/* ============================================================
+   Guestbook
+   ============================================================ */
+interface Note { id: string; name: string; role: string; message: string; timestamp: number; likes: number; }
+
+const SEED_NOTES: Note[] = [
+  { id: 's1', name: 'Riya', role: 'Frontend Engineer', message: 'The type system and motion here are genuinely tasteful. Bookmarking for inspiration.', timestamp: Date.now() - 86400000 * 9, likes: 7 },
+  { id: 's2', name: 'Marcus', role: 'Data Scientist', message: 'Loved the ChurnGuard breakdown — SHAP done right, explained for humans. Solid work.', timestamp: Date.now() - 86400000 * 4, likes: 11 },
+  { id: 's3', name: 'Aanya', role: 'Designer', message: 'Rare to see a data portfolio with this much craft. The work index interaction is lovely.', timestamp: Date.now() - 86400000 * 1, likes: 5 },
+];
+
+const ADMIN_HASH = '9f895aa43bb435e31058fd8892b6bbb00899b0d73a2e35d7749c2d51c6e8fb6b';
+async function hashCode(input: string): Promise<string> {
+  const data = new TextEncoder().encode(input);
+  const buf = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+const timeAgo = (ts: number) => {
+  const d = Math.floor((Date.now() - ts) / 86400000);
+  if (d <= 0) return 'today';
+  if (d === 1) return 'yesterday';
+  if (d < 7) return `${d}d ago`;
+  if (d < 30) return `${Math.floor(d / 7)}w ago`;
+  return `${Math.floor(d / 30)}mo ago`;
+};
+
+const NoteCard: React.FC<{ note: Note; index: number; liked: boolean; isAdmin: boolean; onLike: (id: string) => void; onDelete: (id: string) => void; }> = ({ note, index, liked, isAdmin, onLike, onDelete }) => {
+  const initials = note.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ delay: Math.min(index, 6) * 0.05, duration: 0.6, ease: EASE }}
+      className="relative break-inside-avoid mb-4 md:mb-5 p-5 md:p-6 border border-line"
+    >
+      {isAdmin && (
+        <button onClick={() => onDelete(note.id)} className="absolute top-3 right-3 w-7 h-7 rounded-full bg-red-500/15 flex items-center justify-center" aria-label="Delete">
+          <X className="w-3.5 h-3.5 text-red-400" />
+        </button>
+      )}
+      <p className="text-body leading-relaxed text-sm md:text-[15px] mb-5">{note.message}</p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <span className="w-9 h-9 rounded-full border border-line flex items-center justify-center o-mono text-[10px] text-cream">{initials}</span>
+          <div className="leading-tight">
+            <p className="text-body text-sm">{note.name}</p>
+            <p className="o-mono text-[9px]">{note.role}</p>
+          </div>
+        </div>
+        <div className="flex flex-col items-end gap-1">
+          <button onClick={() => onLike(note.id)} data-cursor="hover" className="flex items-center gap-1.5 group/like">
+            <Heart className={cn('w-4 h-4 transition-all', liked ? 'fill-current text-cream scale-110' : 'text-muted group-hover/like:text-cream')} />
+            <span className={cn('o-mono text-[10px]', liked ? 'text-cream' : 'text-muted')}>{note.likes}</span>
+          </button>
+          <span className="o-mono text-[9px]">{timeAgo(note.timestamp)}</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const Guestbook: React.FC = () => {
+  const [notes, setNotes] = useState<Note[]>(SEED_NOTES);
+  const [liked, setLiked] = useState<Set<string>>(new Set());
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [name, setName] = useState('');
+  const [role, setRole] = useState('');
+  const [message, setMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [toast, setToast] = useState('');
+  const [error, setError] = useState('');
+  const lastSubmit = useRef(0);
+  const MAX = 240;
+
+  useEffect(() => {
+    let likes = new Set<string>();
+    try { const l = localStorage.getItem('gb-likes'); if (l) likes = new Set(JSON.parse(l)); } catch { /* ignore */ }
+    setLiked(likes);
+    const base = SEED_NOTES.map((n) => ({ ...n, likes: n.likes + (likes.has(n.id) ? 1 : 0) }));
+    try {
+      const stored = localStorage.getItem('gb-notes');
+      if (stored) {
+        const user = (JSON.parse(stored) as Note[]).map((n) => ({ ...n, likes: n.likes + (likes.has(n.id) ? 1 : 0) }));
+        setNotes([...user, ...base]);
+      } else setNotes(base);
+    } catch { setNotes(base); }
+    if (localStorage.getItem('gb-admin') === '1') setIsAdmin(true);
+  }, []);
+
+  useEffect(() => {
+    const onKey = async (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+        e.preventDefault();
+        if (isAdmin) { setIsAdmin(false); localStorage.removeItem('gb-admin'); return; }
+        const code = prompt('Admin code:');
+        if (!code) return;
+        if ((await hashCode(code)) === ADMIN_HASH) { setIsAdmin(true); localStorage.setItem('gb-admin', '1'); }
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isAdmin]);
+
+  const flash = (m: string, err = false) => {
+    if (err) { setError(m); setTimeout(() => setError(''), 4000); }
+    else { setToast(m); setTimeout(() => setToast(''), 3500); }
+  };
+
+  const onLike = useCallback((id: string) => {
+    setLiked((prev) => {
+      const was = prev.has(id);
+      const next = new Set(prev);
+      was ? next.delete(id) : next.add(id);
+      localStorage.setItem('gb-likes', JSON.stringify([...next]));
+      setNotes((ns) => ns.map((n) => (n.id === id ? { ...n, likes: n.likes + (was ? -1 : 1) } : n)));
+      return next;
+    });
+  }, []);
+
+  const onDelete = useCallback((id: string) => {
+    setNotes((ns) => ns.filter((n) => n.id !== id));
+    try {
+      const stored = JSON.parse(localStorage.getItem('gb-notes') || '[]') as Note[];
+      localStorage.setItem('gb-notes', JSON.stringify(stored.filter((n) => n.id !== id)));
+    } catch { /* ignore */ }
+  }, []);
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const now = Date.now();
+    if (now - lastSubmit.current < 60000) return flash('Hold on a minute before signing again.', true);
+    if (message.trim().split(/\s+/).length < 4) return flash('A few more words, please — at least 4.', true);
+    if (/\b(buy now|click here|free money|casino|crypto pump|https?:\/\/)\b/i.test(message)) return flash('That looks like spam. Try rewording it.', true);
+    const count = parseInt(localStorage.getItem('gb-count') || '0', 10);
+    if (count >= 5) return flash("You've hit the signing limit for this session — thank you!", true);
+    setSubmitting(true);
+    lastSubmit.current = now;
+    setTimeout(() => {
+      const note: Note = { id: crypto.randomUUID(), name: name.trim(), role: role.trim() || 'Visitor', message: message.trim(), timestamp: Date.now(), likes: 0 };
+      try {
+        const stored = JSON.parse(localStorage.getItem('gb-notes') || '[]') as Note[];
+        stored.unshift(note);
+        localStorage.setItem('gb-notes', JSON.stringify(stored));
+        localStorage.setItem('gb-count', String(count + 1));
+      } catch { /* ignore */ }
+      setNotes((ns) => [note, ...ns]);
+      setName(''); setRole(''); setMessage('');
+      setSubmitting(false);
+      flash('Signed. Thanks for leaving a mark.');
+    }, 900);
+  };
+
+  const valid = name.trim().length > 1 && message.trim().length > 8;
+
+  return (
+    <section id="guestbook" className="px-5 md:px-10 py-20 md:py-32 border-t border-line">
+      <div className="max-w-[1500px] mx-auto">
+        <Reveal>
+          <Chapter no="04" label={`guestbook — ${notes.length} signatures`} className="text-cream border-b border-line pb-4" />
+        </Reveal>
+        <h2 className="font-display text-h2 text-cream mt-10 md:mt-16">
+          <RevealLines lines={['Sign the wall.']} />
+          {isAdmin && <span className="ml-3 align-middle o-mono text-[9px] text-red-400 border border-red-400/40 rounded px-2 py-0.5">ADMIN</span>}
+        </h2>
+
+        <div className="mt-12 md:mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+          <div className="lg:col-span-4">
+            <form onSubmit={submit} className="lg:sticky lg:top-24 p-6 border border-line flex flex-col gap-4">
+              <h3 className="font-display text-cream text-xl">Leave a note</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name *" className="bg-transparent border border-line px-4 py-3 text-sm text-body placeholder:text-muted focus:outline-none focus:border-line-strong" />
+                <input value={role} onChange={(e) => setRole(e.target.value)} placeholder="Role" className="bg-transparent border border-line px-4 py-3 text-sm text-body placeholder:text-muted focus:outline-none focus:border-line-strong" />
+              </div>
+              <div className="relative">
+                <textarea value={message} onChange={(e) => setMessage(e.target.value.slice(0, MAX))} placeholder="Say something nice (or honest)…" rows={4} className="w-full bg-transparent border border-line px-4 py-3 text-sm text-body placeholder:text-muted resize-none focus:outline-none focus:border-line-strong" />
+                <span className="absolute bottom-2.5 right-3 o-mono text-[9px]">{message.length}/{MAX}</span>
+              </div>
+              <AnimatePresence>
+                {error && <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="text-red-400 text-xs">{error}</motion.p>}
+              </AnimatePresence>
+              <button type="submit" disabled={!valid || submitting} data-cursor="hover" className={cn('inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-sm font-medium transition-all', valid && !submitting ? 'bg-cream text-ink' : 'border border-line text-muted cursor-not-allowed')}>
+                {submitting ? <><motion.span animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }} className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full" /> Signing…</> : <>Sign guestbook <ArrowUpRight className="w-4 h-4" /></>}
+              </button>
+            </form>
+          </div>
+          <div className="lg:col-span-8">
+            <div className="columns-1 sm:columns-2 gap-4 md:gap-5">
+              {notes.map((note, i) => (
+                <NoteCard key={note.id} note={note} index={i} liked={liked.has(note.id)} isAdmin={isAdmin} onLike={onLike} onDelete={onDelete} />
+              ))}
+            </div>
           </div>
         </div>
       </div>
-      
-      <div className="w-full text-center pt-8 border-t border-black/5 dark:border-white/5 transition-colors duration-500">
-        <p className="font-mono text-[10px] md:text-xs text-black dark:text-white tracking-[0.2em] uppercase transition-colors duration-500">
-          "Often Imitated but never duplicated"
-        </p>
+
+      <AnimatePresence>
+        {toast && (
+          <motion.div initial={{ opacity: 0, y: 20, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -10 }} className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[200] px-5 py-3 rounded-full text-sm font-medium flex items-center gap-2.5 bg-cream text-ink shadow-2xl">
+            <Check className="w-4 h-4" /> {toast}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </section>
+  );
+};
+
+/* ============================================================
+   Footer
+   ============================================================ */
+const Footer: React.FC = () => {
+  const year = new Date().getFullYear();
+  return (
+    <footer id="contact" className="px-5 md:px-10 pt-20 md:pt-28 pb-6 border-t border-line">
+      <div className="max-w-[1500px] mx-auto">
+        <Reveal>
+          <Chapter no="05" label="contact" className="text-cream border-b border-line pb-4" />
+        </Reveal>
+
+        <div className="mt-12 md:mt-20 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+          <h2 className="font-display text-h2 text-cream max-w-[14ch]">
+            <RevealLines lines={["Let's build", 'something', 'that matters.']} />
+          </h2>
+          <Magnetic as="a" href="mailto:arinpattnaikofficial@gmail.com" cursor="email" className="group inline-flex items-center gap-3 px-7 py-4 rounded-full bg-cream text-ink text-base font-medium w-fit">
+            arinpattnaikofficial@gmail.com
+            <ArrowUpRight className="w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+          </Magnetic>
+        </div>
+
+        {/* columns */}
+        <div className="mt-20 md:mt-28 grid grid-cols-2 md:grid-cols-4 gap-8 o-mono border-t border-line pt-8">
+          <div>
+            <p className="text-muted mb-3">Sitemap</p>
+            {NAV.slice(1).map((n) => (
+              <button key={n.label} onClick={() => (n.target === 'top' ? window.scrollTo({ top: 0, behavior: 'smooth' }) : document.getElementById(n.target)?.scrollIntoView({ behavior: 'smooth' }))} data-cursor="hover" className="block text-cream link-underline w-fit mb-1">{n.label}</button>
+            ))}
+          </div>
+          <div>
+            <p className="text-muted mb-3">Connect</p>
+            <a href="https://github.com/ArinPattnaik" target="_blank" rel="noreferrer" data-cursor="open" className="block text-cream link-underline w-fit mb-1">GitHub</a>
+            <a href="https://www.linkedin.com/in/arinpattnaik" target="_blank" rel="noreferrer" data-cursor="open" className="block text-cream link-underline w-fit mb-1">LinkedIn</a>
+          </div>
+          <div>
+            <p className="text-muted mb-3">Located</p>
+            <p className="text-cream">Bhubaneswar,<br />India</p>
+          </div>
+          <div>
+            <p className="text-muted mb-3">Local time</p>
+            <LocalTime className="text-cream" />
+          </div>
+        </div>
+
+        {/* oversized wordmark */}
+        <div className="mt-16 md:mt-24">
+          <h2 className="font-display text-mega text-cream leading-[0.82]">Arin<br />Pattnaik</h2>
+        </div>
+
+        <div className="mt-8 flex flex-col md:flex-row md:items-center md:justify-between gap-3 o-mono">
+          <span>© {year} Arin Pattnaik — Often imitated, never duplicated</span>
+          <span>Designed &amp; built by Arin Pattnaik</span>
+        </div>
       </div>
     </footer>
   );
 };
 
-function AppContent() {
+/* ============================================================
+   Page assembly
+   ============================================================ */
+function HomePage() {
   const location = useLocation();
+  const isDesktop = useIsDesktop();
+  const reduced = usePrefersReducedMotion();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const lenisRef = useRef<Lenis | null>(null);
 
+  // boot
   useEffect(() => {
-    // Detect low-end devices (low-end Android) and add class for CSS-based animation reduction
     const nav = navigator as any;
     const cores = nav.hardwareConcurrency || 8;
     const memory = nav.deviceMemory || 8;
-    const isAndroid = /android/i.test(navigator.userAgent);
-    if (isAndroid && (cores <= 4 || memory <= 4)) {
+    if (/android/i.test(navigator.userAgent) && (cores <= 4 || memory <= 4)) {
       document.documentElement.classList.add('low-end-device');
     }
-
-    // Scroll to top on load and prevent browser scroll restoration
-    if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'manual';
-    }
-
-    // Check if we should scroll to a specific section (e.g., from project detail "All Projects" button)
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     const state = location.state as { scrollTo?: string } | null;
     if (state?.scrollTo) {
-      setTimeout(() => {
-        document.getElementById(state.scrollTo!)?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-      // Clear the state so it doesn't persist on refresh
+      setTimeout(() => document.getElementById(state.scrollTo!)?.scrollIntoView({ behavior: 'smooth' }), 150);
       window.history.replaceState({}, document.title);
-    } else {
-      window.scrollTo(0, 0);
     }
+  }, [location.state]);
 
-    const isMobile = window.innerWidth < 768;
-    
-    // Completely disable Lenis on mobile to allow native 60fps/120fps hardware-accelerated scrolling
-    if (isMobile) return;
+  // smooth scroll
+  useEffect(() => {
+    if (!isDesktop || reduced) return;
+    const lenis = new Lenis({ duration: 1.15, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smoothWheel: true });
+    lenisRef.current = lenis;
+    let raf = 0;
+    const loop = (t: number) => { lenis.raf(t); raf = requestAnimationFrame(loop); };
+    raf = requestAnimationFrame(loop);
+    return () => { cancelAnimationFrame(raf); lenis.destroy(); lenisRef.current = null; };
+  }, [isDesktop, reduced]);
 
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 1,
-    });
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-
-    return () => {
-      lenis.destroy();
-    };
-  }, []);
+  // lock scroll while menu is open
+  useEffect(() => {
+    if (menuOpen) { lenisRef.current?.stop(); document.body.style.overflow = 'hidden'; }
+    else { lenisRef.current?.start(); document.body.style.overflow = ''; }
+  }, [menuOpen]);
 
   return (
-    <div className="bg-[#f8f9fa] dark:bg-[#050505] min-h-screen text-black dark:text-white selection:bg-black dark:selection:bg-white selection:text-white dark:selection:text-black overflow-hidden transition-colors duration-500">
+    <div className="bg-base min-h-screen overflow-hidden">
       <ScrollProgress />
-      <Background />
-      <TopLinks />
-      <DarkModeToggle />
-      <RightNav />
-      <MobileNav />
+      <TopBar onMenu={() => setMenuOpen((o) => !o)} menuOpen={menuOpen} />
+      <Menu open={menuOpen} onClose={() => setMenuOpen(false)} />
       <BackToTop />
-      
-      <main className="w-full flex flex-col items-center">
+      <main id="top">
         <Hero />
+        <Band />
         <About />
-        <Expertise />
-        <Works />
-        <Insights />
+        <Work />
+        <Gallery />
+        <Capabilities />
+        <Guestbook />
       </main>
-      
       <Footer />
     </div>
   );
@@ -1588,7 +944,7 @@ function AppContent() {
 export default function App() {
   return (
     <ErrorBoundary>
-      <AppContent />
+      <HomePage />
     </ErrorBoundary>
   );
 }
