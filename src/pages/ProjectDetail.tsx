@@ -133,7 +133,7 @@ const ProjectDetail: React.FC = () => {
   const heroBg = project.features?.[0]?.image || project.images?.[0]?.src || '/projects/pureplate/ai ingredeient analysis.png';
 
   return (
-    <div className="min-h-screen bg-base overflow-hidden">
+    <div className="min-h-screen bg-base overflow-x-clip">
       <AnimatePresence>
         {lightbox && <Lightbox src={lightbox.src} alt={lightbox.alt} onClose={() => setLightbox(null)} />}
       </AnimatePresence>

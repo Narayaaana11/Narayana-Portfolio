@@ -157,6 +157,7 @@ const Menu: React.FC<{ open: boolean; onClose: () => void }> = ({ open, onClose 
   const onDown = (e: React.PointerEvent) => {
     const el = scroller.current;
     if (!el) return;
+    if (e.pointerType !== 'mouse') return; // touch/pen use native momentum scroll
     drag.current = { down: true, startX: e.clientX, startScroll: el.scrollLeft, moved: false };
     el.setPointerCapture(e.pointerId);
   };
@@ -205,7 +206,7 @@ const Menu: React.FC<{ open: boolean; onClose: () => void }> = ({ open, onClose 
             onPointerCancel={onUp}
             data-cursor="drag"
             className="flex-1 flex items-center overflow-x-auto scrollbar-hide px-5 md:px-10 select-none"
-            style={{ touchAction: 'pan-x' }}
+            style={{ touchAction: 'pan-x', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}
           >
             <div className="flex gap-4 md:gap-5 md:mx-auto items-center">
               {NAV.map((item, i) => {
@@ -572,6 +573,7 @@ const Gallery: React.FC = () => {
   const onDown = (e: React.PointerEvent) => {
     const el = scroller.current;
     if (!el) return;
+    if (e.pointerType !== 'mouse') return; // touch/pen use native momentum scroll
     drag.current = { down: true, startX: e.clientX, startScroll: el.scrollLeft, moved: false };
     el.setPointerCapture(e.pointerId);
   };
@@ -584,7 +586,7 @@ const Gallery: React.FC = () => {
   };
   const onUp = (e: React.PointerEvent) => {
     drag.current.down = false;
-    scroller.current?.releasePointerCapture(e.pointerId);
+    try { scroller.current?.releasePointerCapture(e.pointerId); } catch { /* ignore */ }
   };
 
   return (
@@ -597,7 +599,7 @@ const Gallery: React.FC = () => {
         onPointerCancel={onUp}
         data-cursor="drag"
         className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide px-5 md:px-10 select-none"
-        style={{ touchAction: 'pan-y' }}
+        style={{ touchAction: 'pan-x pan-y', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}
       >
         {GALLERY.map((src, i) => (
           <div
@@ -922,7 +924,7 @@ function HomePage() {
   }, [menuOpen]);
 
   return (
-    <div className="bg-base min-h-screen overflow-hidden">
+    <div className="bg-base min-h-screen overflow-x-clip">
       <ScrollProgress />
       <TopBar onMenu={() => setMenuOpen((o) => !o)} menuOpen={menuOpen} />
       <Menu open={menuOpen} onClose={() => setMenuOpen(false)} />
