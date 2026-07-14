@@ -2,11 +2,12 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Lenis from 'lenis';
-import { ArrowUpRight, ArrowRight, Heart, X, Check } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, Heart, X, Check, Code2, Terminal, Settings, Sparkles } from 'lucide-react';
 import { cn, useIsDesktop, usePrefersReducedMotion } from './lib/utils';
 import {
   ScrollProgress, BackToTop, Magnetic, Reveal, RevealLines, ScrollRevealText, Marquee, EASE,
 } from './components/ui';
+import ContactForm from './components/ContactForm';
 
 /* ============================================================
    Content
@@ -20,45 +21,44 @@ interface WorkItem {
   detail: boolean;
 }
 
-const WORK: WorkItem[] = [
-  { id: 'pureplate', name: 'PurePlate', discipline: 'AI Food Transparency', year: 'May 2026', preview: '/projects/pureplate/ai ingredeient analysis.png', detail: true },
-  { id: 'vera', name: 'Véra', discipline: 'Greenwashing Scanner', year: 'Apr 2026', preview: '/projects/vera/true eco score.png', detail: true },
-  { id: 'churnguard', name: 'ChurnGuard', discipline: 'Churn Prediction · SHAP', year: 'Mar 2026', preview: '/projects/churnguard/risk scoring.png', detail: true },
-  { id: 'globaljob', name: 'Global Job Market', discipline: 'Employment Analytics', year: 'Feb 2026', preview: '/projects/globaljob/trend analysis.png', detail: true },
-  { id: 'ecom', name: 'E-Commerce Analytics', discipline: 'Universal BI Engine', year: 'Jan 2026', preview: '/projects/ecom/ai powered insights.png', detail: true },
-  { id: 'etl', name: 'ETL Pipeline', discipline: 'Data Infrastructure', year: 'Jun 2026', preview: '', detail: false },
+const WORK_ITEMS: WorkItem[] = [
+  { id: 'guard-hub', name: 'Guard Hub', discipline: 'Security & Roster Management', year: '2025', preview: '/projects/guard-hub/ai ingredeient analysis.png', detail: true },
+  { id: 'ziege', name: 'Ziege', discipline: 'Generative AI E-Commerce', year: 'In Dev', preview: '/projects/ziege/storefront.png', detail: true },
+  { id: 'aqua-feed-erp', name: 'Aqua Feed ERP', discipline: 'Custom ERP Solution', year: '2024', preview: '/projects/aqua-feed-erp/erp-dashboard.png', detail: true },
+  { id: 'ausvms', name: 'AUSVMS', discipline: 'Multi-Role Visitor Portal', year: '2025', preview: '/projects/ausvms/visitor-dashboard.png', detail: true },
+  { id: 'matrix-lms', name: 'MATRIX LMS', discipline: 'AI-Powered Library System', year: '2025', preview: '/projects/matrix-lms/lms-dashboard.png', detail: true },
 ];
 
 const CAPABILITIES = [
-  { no: '01', title: 'Machine Learning', body: 'Predictive systems that explain themselves — churn models with SHAP attribution, classification pipelines that quantify real revenue impact, not just accuracy.', tools: ['scikit-learn', 'XGBoost', 'SHAP'] },
-  { no: '02', title: 'Data Visualisation', body: 'Dense datasets turned into a narrative anyone can act on — interactive dashboards and executive-ready reports built for decisions, not decoration.', tools: ['Streamlit', 'PowerBI', 'Plotly'] },
-  { no: '03', title: 'Full-Stack Engineering', body: 'End-to-end products from concept to deployment. Type-safe React frontends and AI-powered features engineered to feel considered.', tools: ['React', 'Next.js', 'TypeScript'] },
-  { no: '04', title: 'Data Engineering', body: 'The plumbing that makes everything else possible — ETL pipelines moving 50GB+ daily, SQL architecture and automation that returns hours to the week.', tools: ['PostgreSQL', 'Python', 'Airflow'] },
-  { no: '05', title: 'Applied NLP & AI', body: 'Language models put to work at scale — greenwashing detection, food-label analysis and pipelines that surface what others overlook.', tools: ['spaCy', 'Hugging Face', 'Gemini'] },
+  { no: '01', title: 'Full-Stack Engineering', body: 'End-to-end web applications and custom portals. Type-safe React frontends, scalable Node.js APIs, and MongoDB schemas engineered to feel considered and robust.', tools: ['React.js', 'Node.js', 'MongoDB', 'Express'] },
+  { no: '02', title: 'AI Integration', body: 'Embedding intelligent features into production applications — NLP chatbots that autonomously resolve 70% of user queries and AI pipelines for generative content.', tools: ['NLP', 'Generative AI', 'REST APIs', 'Prompt Eng.'] },
+  { no: '03', title: 'Real-Time Systems & Architecture', body: 'Building live, event-driven applications — from OTP-based check-in flows to live visitor tracking dashboards — using WebSockets and server-sent events.', tools: ['Socket.io', 'JWT', 'Nodemailer', 'Docker'] },
+  { no: '04', title: 'Custom ERP & Business Tools', body: 'Custom enterprise resource planning tools tailored to your industry — inventory, production tracking, and analytics dashboards that replace fragmented spreadsheets.', tools: ['MERN Stack', 'Socket.io', 'Vercel', 'GitHub Actions'] },
 ];
 
 const GALLERY = [
-  '/projects/churnguard/shap explaination.png',
-  '/projects/pureplate/ai ingredeient analysis.png',
-  '/projects/vera/Greenwashing dection.png',
-  '/projects/globaljob/salary intelligence.png',
-  '/projects/ecom/coorelation.png',
-  '/projects/churnguard/revenue impact.png',
-  '/projects/pureplate/Sugar alias detection.png',
-  '/projects/vera/Claim BreakDown.png',
-  '/projects/globaljob/skills demand.png',
-  '/projects/ecom/auto sceme detection.png',
+  '/projects/ausvms/shap explaination.png',
+  '/projects/guard-hub/ai ingredeient analysis.png',
+  '/projects/aqua-feed-erp/Greenwashing dection.png',
+  '/projects/matrix-lms/salary intelligence.png',
+  '/projects/ziege/coorelation.png',
+  '/projects/ausvms/revenue impact.png',
+  '/projects/guard-hub/Sugar alias detection.png',
+  '/projects/aqua-feed-erp/Claim BreakDown.png',
+  '/projects/matrix-lms/skills demand.png',
+  '/projects/ziege/auto sceme detection.png',
 ];
 
-const STACK = ['Python', 'React', 'TypeScript', 'SQL', 'Streamlit', 'PowerBI', 'scikit-learn', 'XGBoost', 'SHAP', 'Next.js', 'Tailwind', 'Pandas', 'NLP'];
+const STACK = ['JavaScript', 'React.js', 'Node.js', 'Express.js', 'MongoDB', 'Tailwind CSS', 'Socket.io', 'Nodemailer', 'Vercel', 'GitHub Actions', 'REST APIs', 'Git'];
 
 const NAV = [
-  { no: '00', label: 'Index', target: 'top', image: '/projects/pureplate/ai ingredeient analysis.png' },
-  { no: '01', label: 'About', target: 'about', image: '/projects/vera/true eco score.png' },
-  { no: '02', label: 'Work', target: 'work', image: '/projects/churnguard/risk scoring.png' },
-  { no: '03', label: 'Studio', target: 'capabilities', image: '/projects/globaljob/trend analysis.png' },
-  { no: '04', label: 'Guestbook', target: 'guestbook', image: '/projects/ecom/ai powered insights.png' },
-  { no: '05', label: 'Contact', target: 'contact', image: '/projects/pureplate/Sugar alias detection.png' },
+  { no: '00', label: 'Index', target: 'top', image: '/menu_index.png' },
+  { no: '01', label: 'About', target: 'about', image: '/menu_about.png' },
+  { no: '02', label: 'Work', target: 'work', image: '/menu_work.png' },
+  { no: '03', label: 'Studio', target: 'capabilities', image: '/menu_studio.png' },
+  { no: '04', label: 'Background', target: 'experience', image: '/menu_studio.png' },
+  { no: '05', label: 'Guestbook', target: 'guestbook', image: '/menu_guestbook.png' },
+  { no: '06', label: 'Contact', target: 'contact', image: '/menu_contact.png' },
 ];
 
 /* ============================================================
@@ -103,9 +103,9 @@ const LocalTime: React.FC<{ className?: string }> = ({ className }) => {
    Stacked wordmark
    ============================================================ */
 const Wordmark: React.FC<{ className?: string; onClick?: () => void }> = ({ className, onClick }) => (
-  <button onClick={onClick} data-cursor="top" className={cn('text-left leading-[0.95]', className)} aria-label="Arin Pattnaik — top">
-    <span className="block font-display text-cream" style={{ fontSize: '0.95rem', fontStretch: '110%', letterSpacing: '0.02em' }}>Arin</span>
-    <span className="block font-display text-cream" style={{ fontSize: '0.95rem', fontStretch: '110%', letterSpacing: '0.02em' }}>Pattnaik</span>
+  <button onClick={onClick} data-cursor="top" className={cn('text-left leading-[0.95]', className)} aria-label="Narayana Thota — top">
+    <span className="block font-display text-cream" style={{ fontSize: '0.95rem', fontStretch: '110%', letterSpacing: '0.02em' }}>Narayana</span>
+    <span className="block font-display text-cream" style={{ fontSize: '0.95rem', fontStretch: '110%', letterSpacing: '0.02em' }}>Thota</span>
   </button>
 );
 
@@ -113,27 +113,58 @@ const Wordmark: React.FC<{ className?: string; onClick?: () => void }> = ({ clas
    Top bar
    ============================================================ */
 const TopBar: React.FC<{ onMenu: () => void; menuOpen: boolean }> = ({ onMenu, menuOpen }) => {
+  const [scrolled, setScrolled] = useState(false);
   const toTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-[200] flex items-start justify-between px-5 md:px-8 py-5 md:py-7 pointer-events-none">
+    <header className={cn(
+      "fixed top-0 left-0 right-0 z-[200] flex items-center justify-between px-5 md:px-8 transition-all duration-300 pointer-events-none",
+      (scrolled && !menuOpen)
+        ? "bg-[#100c07]/80 backdrop-blur-md border-b border-line py-3 md:py-4 pointer-events-auto"
+        : "bg-transparent py-5 md:py-7"
+    )}>
       <motion.div
         animate={{ opacity: menuOpen ? 0 : 1 }}
         transition={{ duration: 0.25, ease: EASE }}
-        className={cn('pointer-events-auto mix-blend-difference', menuOpen && 'pointer-events-none')}
+        className={cn(
+          'pointer-events-auto flex items-center gap-6',
+          (!scrolled || menuOpen) && 'mix-blend-difference',
+          menuOpen && 'pointer-events-none'
+        )}
       >
         <Wordmark onClick={toTop} />
       </motion.div>
-      <button
-        onClick={onMenu}
-        data-cursor="hover"
-        className="pointer-events-auto relative h-9 md:h-10 px-5 rounded-full bg-cream text-ink overflow-hidden"
-        aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-      >
-        <span className="relative block h-full">
-          <motion.span animate={{ y: menuOpen ? '-120%' : '0%' }} transition={{ duration: 0.35, ease: EASE }} className="flex items-center h-full font-mono text-[11px] uppercase tracking-[0.12em]">Menu</motion.span>
-          <motion.span animate={{ y: menuOpen ? '0%' : '120%' }} transition={{ duration: 0.35, ease: EASE }} className="absolute inset-0 flex items-center h-full font-mono text-[11px] uppercase tracking-[0.12em]">Close</motion.span>
-        </span>
-      </button>
+      <div className="flex items-center gap-3 pointer-events-auto">
+        <a 
+          href="/Veera_Venkata_Naga_Satyanarayana_Thota_Resume.pdf" 
+          target="_blank" 
+          rel="noreferrer" 
+          data-cursor="hover" 
+          className="hidden md:flex items-center justify-center h-9 md:h-10 px-5 rounded-full border border-line bg-base text-cream text-[11px] font-mono uppercase tracking-[0.12em] hover:bg-cream hover:text-ink transition-colors"
+        >
+          View Resume
+        </a>
+        <button
+          onClick={onMenu}
+          data-cursor="hover"
+          className="relative h-9 md:h-10 px-5 rounded-full bg-cream text-ink overflow-hidden"
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+        >
+          <span className="relative block h-full">
+            <motion.span animate={{ y: menuOpen ? '-120%' : '0%' }} transition={{ duration: 0.35, ease: EASE }} className="flex items-center h-full font-mono text-[11px] uppercase tracking-[0.12em]">Menu</motion.span>
+            <motion.span animate={{ y: menuOpen ? '0%' : '120%' }} transition={{ duration: 0.35, ease: EASE }} className="absolute inset-0 flex items-center h-full font-mono text-[11px] uppercase tracking-[0.12em]">Close</motion.span>
+          </span>
+        </button>
+      </div>
     </header>
   );
 };
@@ -141,17 +172,12 @@ const TopBar: React.FC<{ onMenu: () => void; menuOpen: boolean }> = ({ onMenu, m
 /* ============================================================
    Fullscreen menu
    ============================================================ */
-const Menu: React.FC<{ open: boolean; onClose: () => void }> = ({ open, onClose }) => {
+const Menu: React.FC<{ open: boolean; onNavigate: (target: string) => void; onClose: () => void }> = ({ open, onNavigate, onClose }) => {
   const scroller = useRef<HTMLDivElement>(null);
   const drag = useRef({ down: false, startX: 0, startScroll: 0, moved: false });
 
   const go = (target: string) => {
-    if (drag.current.moved) return;
-    onClose();
-    setTimeout(() => {
-      if (target === 'top') window.scrollTo({ top: 0, behavior: 'smooth' });
-      else document.getElementById(target)?.scrollIntoView({ behavior: 'smooth' });
-    }, 560);
+    onNavigate(target);
   };
 
   const onDown = (e: React.PointerEvent) => {
@@ -194,7 +220,7 @@ const Menu: React.FC<{ open: boolean; onClose: () => void }> = ({ open, onClose 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
             className="px-5 md:px-10 pt-6 md:pt-7 o-mono text-cream"
           >
-            Menu — 06 sections · drag to explore
+            Menu — 07 sections · drag to explore
           </motion.div>
 
           {/* rotated card row — drag/scroll on every device */}
@@ -247,17 +273,17 @@ const Menu: React.FC<{ open: boolean; onClose: () => void }> = ({ open, onClose 
             className="px-5 md:px-10 py-5 grid grid-cols-1 md:grid-cols-3 gap-5 items-center"
           >
             <div className="o-mono">
-              <p>Bhubaneswar, India</p>
-              <p className="text-cream break-all">arinpattnaikofficial@gmail.com</p>
+              <p>Bhimavaram, India</p>
+              <p className="text-cream break-all">narayananaiduthota@gmail.com</p>
             </div>
             <div className="flex md:justify-center">
-              <Magnetic as="a" href="mailto:arinpattnaikofficial@gmail.com" cursor="email" className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-line text-cream o-mono">
+              <Magnetic as="a" href="mailto:narayananaiduthota@gmail.com" cursor="email" className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-line text-cream o-mono">
                 Let's work together <ArrowRight className="w-4 h-4" />
               </Magnetic>
             </div>
             <div className="o-mono md:text-right">
-              <a href="https://github.com/ArinPattnaik" target="_blank" rel="noreferrer" data-cursor="open" className="block link-underline w-fit md:ml-auto">GitHub</a>
-              <a href="https://www.linkedin.com/in/arinpattnaik" target="_blank" rel="noreferrer" data-cursor="open" className="block link-underline w-fit md:ml-auto">LinkedIn</a>
+              <a href="https://github.com/Narayaaana11" target="_blank" rel="noreferrer" data-cursor="open" className="block link-underline w-fit md:ml-auto">GitHub</a>
+              <a href="https://www.linkedin.com/in/narayaaana/" target="_blank" rel="noreferrer" data-cursor="open" className="block link-underline w-fit md:ml-auto">LinkedIn</a>
             </div>
           </motion.div>
 
@@ -268,7 +294,7 @@ const Menu: React.FC<{ open: boolean; onClose: () => void }> = ({ open, onClose 
               className="font-display text-cream whitespace-nowrap text-center leading-[0.8] select-none"
               style={{ fontSize: 'clamp(2.2rem, 12.5vw, 11rem)' }}
             >
-              Arin Pattnaik
+              Narayana Thota
             </motion.h2>
           </div>
         </motion.div>
@@ -292,7 +318,7 @@ const Hero: React.FC = () => {
     const v = videoRef.current;
     if (!v) return;
     v.muted = true;
-    v.play().catch(() => {});
+    v.play().catch(() => { });
   }, []);
 
   return (
@@ -303,7 +329,6 @@ const Hero: React.FC = () => {
           ref={videoRef}
           className="w-full h-full object-cover"
           src="/hero.mp4"
-          poster="/projects/pureplate/ai ingredeient analysis.png"
           autoPlay
           muted
           loop
@@ -324,7 +349,9 @@ const Hero: React.FC = () => {
           <span className="animate-soft-pulse absolute inline-flex h-full w-full rounded-full bg-emerald-400" />
           <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
         </span>
-        <span className="o-mono text-cream">Available for select projects — 2026</span>
+        <span className="o-mono text-cream w-max">
+          Available for full-time roles & select projects
+        </span>
       </motion.div>
 
       {/* edge claims — left: build practice + motto */}
@@ -332,30 +359,30 @@ const Hero: React.FC = () => {
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9, duration: 1 }}
         className="absolute left-5 md:left-10 top-1/2 -translate-y-1/2 z-10 max-w-[80vw] md:max-w-[52vw]"
       >
-        <p className="o-mono text-cream/50 mb-3 md:mb-4">Build</p>
+        <p className="o-mono text-cream/50 mb-3 md:mb-4">Specialties</p>
         <ul className="o-mono space-y-1 text-cream/70 mb-6 md:mb-9">
-          <li>Full-Stack Developer</li>
-          <li>LLM Engineering</li>
-          <li>Data &amp; ML</li>
+          <li>Full-Stack Development</li>
+          <li>AI Integration</li>
+          <li>Real-Time Systems</li>
         </ul>
         <h2
           className="font-display text-cream leading-[0.9]"
-          style={{ fontSize: 'clamp(2rem, 5.2vw, 4.6rem)', letterSpacing: '-0.01em' }}
+          style={{ fontSize: 'clamp(2.2rem, 5.2vw, 4.6rem)', letterSpacing: '-0.01em' }}
         >
-          No Peace<br />Without War.
+          Code that Ships.<br />Products that Scale.
         </h2>
       </motion.div>
 
-      {/* edge claims — right: other practice */}
+      {/* edge claims — right */}
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.0, duration: 1 }}
         className="absolute right-5 md:right-10 top-1/2 -translate-y-1/2 o-mono text-cream text-right z-10 max-w-[44vw] md:max-w-none"
       >
         <p className="text-cream/50 mb-3 md:mb-4">Also</p>
         <ul className="space-y-1 text-cream/70">
-          <li>Designer</li>
-          <li>Music Production</li>
-          <li>Digital Art</li>
+          <li>Content Creator</li>
+          <li>Video Editor</li>
+          <li>Open Source Contributor</li>
         </ul>
       </motion.div>
 
@@ -364,8 +391,8 @@ const Hero: React.FC = () => {
         style={{ y: titleY, opacity: fade }}
         className="absolute bottom-[5vh] left-0 right-0 px-4 text-center font-display text-mega text-cream z-10"
       >
-        <RevealLines lines={['Arin']} delay={0.15} />
-        <RevealLines lines={['Pattnaik']} delay={0.24} />
+        <RevealLines lines={['Narayana']} delay={0.15} />
+        <RevealLines lines={['Thota']} delay={0.24} />
       </motion.h1>
 
       {/* scroll cue */}
@@ -406,31 +433,71 @@ const Chapter: React.FC<{ no: string; label: string; className?: string }> = ({ 
    About — small image, huge statement, body prose
    ============================================================ */
 const About: React.FC = () => (
-  <section id="about" className="px-5 md:px-10 pt-24 md:pt-36 pb-20 md:pb-32">
+  <section id="about" className="px-5 md:px-10 pt-24 md:pt-36 pb-16 md:pb-24">
     <Reveal>
       <Chapter no="01" label="about" className="text-cream border-b border-line pb-4 mb-14 md:mb-20" />
     </Reveal>
 
-    {/* small centered image */}
-    <Reveal y={50} className="flex justify-center mb-14 md:mb-24">
-      <div className="overflow-hidden w-[62vw] sm:w-[320px] aspect-[5/4]">
-        <motion.div
-          initial={{ scale: 1.16 }}
-          whileInView={{ scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.2, ease: EASE }}
-          className="w-full h-full bg-cover bg-center"
-          style={{ backgroundImage: 'url("/projects/churnguard/risk scoring.png")' }}
-        />
-      </div>
-    </Reveal>
-
-    {/* huge statement — big, bold, appears word-by-word on scroll */}
+    {/* big statement */}
     <ScrollRevealText
-      text="There are stories hidden in raw data, and patterns waiting in the noise — I build the tools that drag them into the light."
+      text="There is incredible potential at the intersection of AI and web development — I build the full-stack architectures and intelligent interfaces that bring it to life."
       className="font-display text-cream"
       style={{ fontSize: 'clamp(2.3rem, 6.6vw, 6.4rem)', lineHeight: 1.0, letterSpacing: '-0.01em' }}
     />
+
+    {/* bio card */}
+    <Reveal>
+      <div className="mt-16 md:mt-24 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 items-start border-t border-line pt-12">
+        {/* avatar + status */}
+        <div className="md:col-span-3 flex flex-col items-start gap-4">
+          <div className="w-20 h-20 rounded-full bg-cream/10 border border-line flex items-center justify-center">
+            <span className="font-display text-cream text-3xl">N</span>
+          </div>
+          <div>
+            <p className="text-cream font-medium">Narayana Thota</p>
+            <p className="o-mono text-muted text-xs mt-0.5">Bhimavaram, India · IST</p>
+          </div>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 o-mono text-[10px] text-emerald-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            Open to opportunities
+          </span>
+        </div>
+
+        {/* bio text */}
+        <div className="md:col-span-5">
+          <p className="text-body leading-relaxed mb-5">
+            I'm a Full-Stack Developer and MCA student at Aditya University (graduating May 2026), based in Bhimavaram, India.
+            I build production-grade web applications — from real-time visitor management systems serving a university campus to AI-powered library platforms handling 500+ daily users — with a focus on clean architecture and measurable impact.
+          </p>
+          <p className="text-body leading-relaxed">
+            Currently open to full-time engineering roles and select freelance projects. I work best on problems where scale, real-time data, or AI capability is part of the answer.
+          </p>
+        </div>
+
+        {/* quick facts */}
+        <div className="md:col-span-4">
+          <p className="o-mono text-muted text-xs mb-4 uppercase tracking-widest">Quick Facts</p>
+          <ul className="space-y-3 o-mono text-sm">
+            <li className="flex justify-between border-b border-line pb-2">
+              <span className="text-muted">Education</span>
+              <span className="text-cream text-right">MCA · Aditya University</span>
+            </li>
+            <li className="flex justify-between border-b border-line pb-2">
+              <span className="text-muted">Graduating</span>
+              <span className="text-cream">May 2026</span>
+            </li>
+            <li className="flex justify-between border-b border-line pb-2">
+              <span className="text-muted">Experience</span>
+              <span className="text-cream">1 Internship + 4 Projects</span>
+            </li>
+            <li className="flex justify-between">
+              <span className="text-muted">Stack</span>
+              <span className="text-cream">MERN · AI · DevOps</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </Reveal>
   </section>
 );
 
@@ -456,50 +523,50 @@ const WorkRow: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) =
     >
       <div className="relative max-w-[1500px] mx-auto px-5 md:px-10 py-12 md:py-20">
         <div className="flex items-center">
-        {/* number */}
-        <span className="o-mono shrink-0 w-8 md:w-14 self-start pt-1">{String(index + 1).padStart(2, '0')}</span>
+          {/* number */}
+          <span className="o-mono shrink-0 w-8 md:w-14 self-start pt-1">{String(index + 1).padStart(2, '0')}</span>
 
-        {/* center group (image + title), nudged by sign */}
-        <div
-          className="flex-1 flex items-center gap-4 md:gap-10 min-w-0"
-          style={{ justifyContent: 'center', transform: `translateX(${sign * 4}%)` }}
-        >
-          {item.detail ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.85, rotate: sign * 6 }}
-              whileInView={{ opacity: 1, scale: 1, rotate: sign * 4 }}
-              viewport={{ once: true, margin: '-20%' }}
-              transition={{ duration: 0.8, ease: EASE }}
-              className="shrink-0 w-24 h-16 md:w-52 md:h-32 bg-cover bg-center shadow-2xl transition-transform duration-500 group-hover:rotate-0 group-hover:scale-105"
-              style={{ backgroundImage: `url("${item.preview}")` }}
-            />
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.85, rotate: sign * 6 }}
-              whileInView={{ opacity: 1, scale: 1, rotate: sign * 4 }}
-              viewport={{ once: true, margin: '-20%' }}
-              transition={{ duration: 0.8, ease: EASE }}
-              className="shrink-0 w-24 h-16 md:w-52 md:h-32 flex flex-col items-center justify-center gap-1 border border-dashed shadow-2xl transition-transform duration-500 group-hover:rotate-0"
-              style={{ backgroundColor: 'var(--bg-2)', borderColor: 'var(--line-strong)' }}
-            >
-              <span className="o-mono text-[8px] md:text-[10px]">In progress</span>
-              <span className="o-mono text-[7px] md:text-[9px] opacity-60">Coming soon</span>
-            </motion.div>
-          )}
-          <h3 className="font-display text-row text-balance min-w-0" style={{ color: 'var(--display-color)' }}>
-            {item.name}
-          </h3>
-        </div>
+          {/* center group (image + title), nudged by sign */}
+          <div
+            className="flex-1 flex items-center gap-4 md:gap-10 min-w-0"
+            style={{ justifyContent: 'center', transform: `translateX(${sign * 4}%)` }}
+          >
+            {item.detail ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.85, rotate: sign * 6 }}
+                whileInView={{ opacity: 1, scale: 1, rotate: sign * 4 }}
+                viewport={{ once: true, margin: '-20%' }}
+                transition={{ duration: 0.8, ease: EASE }}
+                className="shrink-0 w-24 h-16 md:w-52 md:h-32 bg-cover bg-center shadow-2xl transition-transform duration-500 group-hover:rotate-0 group-hover:scale-105"
+                style={{ backgroundImage: `url("${item.preview}")` }}
+              />
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.85, rotate: sign * 6 }}
+                whileInView={{ opacity: 1, scale: 1, rotate: sign * 4 }}
+                viewport={{ once: true, margin: '-20%' }}
+                transition={{ duration: 0.8, ease: EASE }}
+                className="shrink-0 w-24 h-16 md:w-52 md:h-32 flex flex-col items-center justify-center gap-1 border border-dashed shadow-2xl transition-transform duration-500 group-hover:rotate-0"
+                style={{ backgroundColor: 'var(--bg-2)', borderColor: 'var(--line-strong)' }}
+              >
+                <span className="o-mono text-[8px] md:text-[10px]">In progress</span>
+                <span className="o-mono text-[7px] md:text-[9px] opacity-60">Coming soon</span>
+              </motion.div>
+            )}
+            <h3 className="font-display text-row text-balance min-w-0" style={{ color: 'var(--display-color)' }}>
+              {item.name}
+            </h3>
+          </div>
 
-        {/* meta / cta */}
-        <div className="hidden md:flex flex-col items-end gap-2 shrink-0 w-44 self-end">
-          <span className="o-mono">{item.discipline}</span>
-          <span className="o-mono">{item.year}</span>
-          <span className="o-mono flex items-center gap-1.5" style={{ color: cream ? 'var(--ink)' : 'var(--cream)' }}>
-            {item.detail ? 'View case study' : 'Coming soon'}
-            {item.detail && <ArrowUpRight className="w-3.5 h-3.5" />}
-          </span>
-        </div>
+          {/* meta / cta */}
+          <div className="hidden md:flex flex-col items-end gap-2 shrink-0 w-44 self-end">
+            <span className="o-mono">{item.discipline}</span>
+            <span className="o-mono">{item.year}</span>
+            <span className="o-mono flex items-center gap-1.5" style={{ color: cream ? 'var(--ink)' : 'var(--cream)' }}>
+              {item.detail ? 'View case study' : 'Coming soon'}
+              {item.detail && <ArrowUpRight className="w-3.5 h-3.5" />}
+            </span>
+          </div>
         </div>
 
         {/* mobile meta */}
@@ -515,44 +582,123 @@ const WorkRow: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) =
   );
 };
 
-const Work: React.FC = () => (
-  <section id="work" className="w-full">
-    <div className="max-w-[1500px] mx-auto px-5 md:px-10 pt-20 md:pt-28 pb-6">
-      <Reveal>
-        <Chapter no="02" label="selected work" className="text-cream border-b border-line pb-4" />
-      </Reveal>
-    </div>
-    <div>
-      {WORK.map((item, i) => (
-        <WorkRow key={item.id} item={item} index={i} />
-      ))}
-      <div className="border-t border-line" />
-    </div>
-  </section>
-);
+const Work: React.FC = () => {
+  return (
+    <section id="work" className="w-full">
+      <div className="max-w-[1500px] mx-auto px-5 md:px-10 pt-20 md:pt-28 pb-6">
+        <Reveal>
+          <Chapter no="02" label="selected work" className="text-cream border-b border-line pb-4" />
+        </Reveal>
+      </div>
+      <div>
+        {WORK_ITEMS.map((item, i) => (
+          <WorkRow key={item.id} item={item} index={i} />
+        ))}
+        <div className="border-t border-line" />
+      </div>
+    </section>
+  );
+};
 
 /* ============================================================
-   Capabilities
+   Skills
    ============================================================ */
-const Capabilities: React.FC = () => (
-  <section id="capabilities" className="px-5 md:px-10 py-20 md:py-32">
+const SKILL_GROUPS = [
+  {
+    label: 'Frontend',
+    skills: [
+      { name: 'React.js', level: 5 },
+      { name: 'JavaScript (ES6+)', level: 5 },
+      { name: 'TypeScript', level: 4 },
+      { name: 'Tailwind CSS', level: 5 },
+      { name: 'HTML / CSS', level: 5 },
+    ],
+  },
+  {
+    label: 'Backend',
+    skills: [
+      { name: 'Node.js', level: 5 },
+      { name: 'Express.js', level: 5 },
+      { name: 'MongoDB', level: 4 },
+      { name: 'REST APIs', level: 5 },
+      { name: 'Socket.io', level: 4 },
+    ],
+  },
+  {
+    label: 'Tools & DevOps',
+    skills: [
+      { name: 'Git & GitHub', level: 5 },
+      { name: 'GitHub Actions', level: 4 },
+      { name: 'Vercel / Render', level: 5 },
+      { name: 'Nodemailer', level: 4 },
+      { name: 'JWT / Auth', level: 4 },
+    ],
+  },
+  {
+    label: 'AI & Emerging',
+    skills: [
+      { name: 'NLP (Chatbots)', level: 3 },
+      { name: 'Generative AI', level: 3 },
+      { name: 'Prompt Engineering', level: 4 },
+    ],
+  },
+];
+
+const getGroupIcon = (label: string) => {
+  switch (label.toLowerCase()) {
+    case 'frontend':
+      return <Code2 className="w-5 h-5 text-cream" />;
+    case 'backend':
+      return <Terminal className="w-5 h-5 text-cream" />;
+    case 'tools & devops':
+      return <Settings className="w-5 h-5 text-cream" />;
+    case 'ai & emerging':
+      return <Sparkles className="w-5 h-5 text-cream" />;
+    default:
+      return null;
+  }
+};
+
+const Skills: React.FC = () => (
+  <section id="skills" className="px-5 md:px-10 py-20 md:py-28 border-t border-line">
     <div className="max-w-[1500px] mx-auto">
       <Reveal>
-        <Chapter no="03" label="capabilities" className="text-cream border-b border-line pb-4" />
+        <div className="flex items-center justify-between o-mono text-cream border-b border-line pb-4 mb-16">
+          <span>Chapter 02</span>
+          <span>skills & proficiency</span>
+        </div>
       </Reveal>
-      <h2 className="font-display text-h2 text-cream mt-10 md:mt-16 max-w-[16ch]">
-        <RevealLines lines={['Five disciplines,', 'one pipeline.']} />
-      </h2>
-      <div className="mt-12 md:mt-20 border-t border-line">
-        {CAPABILITIES.map((cap, i) => (
-          <Reveal key={cap.no} delay={i * 0.05}>
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 py-7 md:py-9 border-b border-line">
-              <span className="o-mono md:col-span-1">{cap.no}</span>
-              <h3 className="md:col-span-4 font-display text-cream" style={{ fontSize: 'clamp(1.5rem,2.6vw,2.4rem)' }}>{cap.title}</h3>
-              <p className="md:col-span-5 text-body text-sm md:text-base leading-relaxed">{cap.body}</p>
-              <div className="md:col-span-2 flex flex-wrap gap-1.5 content-start">
-                {cap.tools.map((t) => (
-                  <span key={t} className="px-2.5 py-1 rounded-full border border-line o-mono text-[9px]">{t}</span>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 md:gap-8">
+        {SKILL_GROUPS.map((group, gi) => (
+          <Reveal key={group.label} delay={gi * 0.07}>
+            <div className="border border-line bg-cream/[0.01] hover:bg-cream/[0.03] backdrop-blur-sm p-6 md:p-8 flex flex-col hover:border-line-strong transition-all duration-500 group/card relative overflow-hidden h-full">
+              {/* Premium Hover Accent Bar */}
+              <div className="absolute top-0 left-0 w-full h-[2px] bg-cream scale-x-0 group-hover/card:scale-x-100 transition-transform duration-500 origin-left" />
+              
+              <div className="flex items-center gap-3.5 mb-8">
+                <div className="w-9 h-9 rounded-full bg-cream/5 border border-line flex items-center justify-center group-hover/card:bg-cream/15 group-hover/card:border-line-strong transition-all duration-300">
+                  {getGroupIcon(group.label)}
+                </div>
+                <h3 className="font-display text-cream text-lg tracking-wider uppercase">{group.label}</h3>
+              </div>
+
+              <div className="space-y-6 flex-1">
+                {group.skills.map((s) => (
+                  <div key={s.name} className="flex flex-col gap-2 group/skill">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-body font-mono text-cream/90 group-hover/card:text-cream transition-colors">{s.name}</span>
+                      <span className="o-mono text-[9px] text-muted">{s.level * 20}%</span>
+                    </div>
+                    <div className="h-[2px] w-full bg-cream/10 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${s.level * 20}%` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1.2, ease: EASE }}
+                        className="h-full bg-cream"
+                      />
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
@@ -562,6 +708,156 @@ const Capabilities: React.FC = () => (
     </div>
   </section>
 );
+
+/* ============================================================
+   Capabilities
+   ============================================================ */
+const Capabilities: React.FC = () => {
+  return (
+    <section id="capabilities" className="px-5 md:px-10 py-20 md:py-32">
+      <div className="max-w-[1500px] mx-auto">
+        <Reveal>
+          <Chapter no="03" label="capabilities" className="text-cream border-b border-line pb-4" />
+        </Reveal>
+        <h2 className="font-display text-h2 text-cream mt-10 md:mt-16 max-w-[16ch]">
+          <RevealLines lines={['Four disciplines,', 'one developer.']} />
+        </h2>
+        <div className="mt-12 md:mt-20 border-t border-line">
+          {CAPABILITIES.map((cap, i) => (
+            <Reveal key={cap.no} delay={i * 0.05}>
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 py-7 md:py-9 border-b border-line">
+                <span className="o-mono md:col-span-1">{cap.no}</span>
+                <h3 className="md:col-span-4 font-display text-cream" style={{ fontSize: 'clamp(1.5rem,2.6vw,2.4rem)' }}>{cap.title}</h3>
+                <p className="md:col-span-5 text-body text-sm md:text-base leading-relaxed">{cap.body}</p>
+                <div className="md:col-span-2 flex flex-wrap gap-1.5 content-start">
+                  {cap.tools.map((t) => (
+                    <span key={t} className="px-2.5 py-1 rounded-full border border-line o-mono text-[9px]">{t}</span>
+                  ))}
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+/* ============================================================
+   Freelance Process (only shown in freelance mode)
+   ============================================================ */
+const PROCESS_STEPS = [
+  { no: '01', title: 'Discovery', body: 'We discuss your idea, goals, and constraints. I ask questions until I fully understand the problem — no boilerplate forms.' },
+  { no: '02', title: 'Proposal', body: 'I send a detailed written proposal: scope, timeline, deliverables, and a fixed price. No surprise bills.' },
+  { no: '03', title: 'Build', body: 'I design, develop, and test your product — sharing progress at every milestone. You give feedback; I iterate.' },
+  { no: '04', title: 'Launch', body: 'I deploy your product and hand over the keys — full codebase, docs, and 2 weeks of post-launch support included.' },
+];
+
+const FreelanceProcess: React.FC = () => (
+  <section className="px-5 md:px-10 py-20 md:py-28 border-t border-line">
+    <div className="max-w-[1500px] mx-auto">
+      <Reveal>
+        <div className="flex items-center justify-between o-mono text-cream border-b border-line pb-4 mb-14">
+          <span>How it works</span>
+          <span>4-step process</span>
+        </div>
+      </Reveal>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        {PROCESS_STEPS.map((step, i) => (
+          <Reveal key={step.no} delay={i * 0.08}>
+            <div className="border border-line p-6 h-full flex flex-col">
+              <span className="o-mono text-muted text-[10px] mb-4">{step.no}</span>
+              <h3 className="font-display text-cream text-2xl mb-3">{step.title}</h3>
+              <p className="text-body text-sm leading-relaxed flex-1">{step.body}</p>
+            </div>
+          </Reveal>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+const Experience: React.FC = () => {
+  return (
+    <section id="experience" className="px-5 md:px-10 py-20 md:py-32 border-t border-line">
+      <div className="max-w-[1500px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-20">
+        <div className="md:col-span-4">
+          <Reveal>
+            <Chapter no="04" label="background & work" className="text-cream border-b border-line pb-4 mb-10" />
+          </Reveal>
+        </div>
+        <div className="md:col-span-8 flex flex-col gap-16">
+          <Reveal>
+            <h3 className="o-mono text-cream mb-6">Professional Experience</h3>
+            <div className="flex flex-col gap-12">
+              <div className="border-l border-line pl-6 relative">
+                <div className="absolute w-2 h-2 rounded-full bg-cream -left-[4.5px] top-2" />
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                  <h4 className="font-display text-2xl text-cream">Freelance Developer</h4>
+                  <span className="o-mono text-muted text-sm mt-1 md:mt-0">2024 – Present</span>
+                </div>
+                <p className="text-body o-mono text-sm mb-4">Self-Employed</p>
+                <p className="text-body leading-relaxed max-w-2xl">
+                  Building custom full-stack MERN applications for clients — specializing in ERP dashboards, multi-role portals, and e-commerce platforms. Delivered 3 production systems in 2024–2025.
+                </p>
+              </div>
+
+              <div className="border-l border-line pl-6 relative">
+                <div className="absolute w-2 h-2 rounded-full bg-line -left-[4.5px] top-2" />
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                  <h4 className="font-display text-2xl text-cream">Full Stack Developer Intern</h4>
+                  <span className="o-mono text-muted text-sm mt-1 md:mt-0">Jun 2025 – Jul 2025</span>
+                </div>
+                <p className="text-body o-mono text-sm mb-4">Technical Hub Pvt. Ltd — Bhimavaram, India</p>
+                <p className="text-body leading-relaxed max-w-2xl">
+                  Contributed to Guards Hub — a security roster management system for Aditya University. Designed rule-based scheduling logic with constraint validation and real-time collision detection, eliminating 100% of shift conflicts for 100+ campus security guards and saving ~10 hours of admin work per week.
+                </p>
+              </div>
+            </div>
+          </Reveal>
+
+          <Reveal>
+            <h3 className="o-mono text-cream mb-6">Education</h3>
+            <div className="flex flex-col gap-8">
+              <div className="border-l border-line pl-6 relative">
+                <div className="absolute w-2 h-2 rounded-full bg-line -left-[4.5px] top-2" />
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                  <h4 className="font-display text-xl text-cream">Master of Computer Applications (MCA)
+                    <span className="ml-2 inline-block o-mono text-[9px] text-emerald-400 border border-emerald-400/40 rounded px-2 py-0.5 align-middle">Currently Enrolled</span>
+                  </h4>
+                  <span className="o-mono text-muted text-sm mt-1 md:mt-0">Aug 2024 – May 2026 (Expected)</span>
+                </div>
+                <p className="text-body text-sm">Aditya University — CGPA: 7.70</p>
+              </div>
+              <div className="border-l border-line pl-6 relative">
+                <div className="absolute w-2 h-2 rounded-full bg-line -left-[4.5px] top-2" />
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                  <h4 className="font-display text-xl text-cream">Bachelor of Computer Applications (BCA)</h4>
+                  <span className="o-mono text-muted text-sm mt-1 md:mt-0">Aug 2021 – May 2024</span>
+                </div>
+                <p className="text-body text-sm">Aditya Degree College — CGPA: 7.24</p>
+              </div>
+            </div>
+          </Reveal>
+
+          <Reveal>
+            <h3 className="o-mono text-cream mb-6">Certifications & Awards</h3>
+            <ul className="space-y-4">
+              <li className="flex flex-col md:flex-row md:items-center justify-between border-b border-line pb-4">
+                <span className="text-body">Full Stack Developer — Technical Hub Pvt. Ltd</span>
+                <span className="o-mono text-muted text-sm mt-1 md:mt-0">Jun 2025</span>
+              </li>
+              <li className="flex flex-col md:flex-row md:items-center justify-between border-b border-line pb-4">
+                <span className="text-body">Project Space Hackathon — Technical Hub Pvt. Ltd</span>
+                <span className="o-mono text-muted text-sm mt-1 md:mt-0">Jun 2025</span>
+              </li>
+            </ul>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+};
 
 /* ============================================================
    Gallery — draggable frames
@@ -621,7 +917,7 @@ interface Note { id: string; name: string; role: string; message: string; timest
 
 const SEED_NOTES: Note[] = [
   { id: 's1', name: 'Riya', role: 'Frontend Engineer', message: 'The type system and motion here are genuinely tasteful. Bookmarking for inspiration.', timestamp: Date.now() - 86400000 * 9, likes: 7 },
-  { id: 's2', name: 'Marcus', role: 'Data Scientist', message: 'Loved the ChurnGuard breakdown — SHAP done right, explained for humans. Solid work.', timestamp: Date.now() - 86400000 * 4, likes: 11 },
+  { id: 's2', name: 'Marcus', role: 'Full Stack Engineer', message: 'Loved the AUSVMS implementation — clean architecture and smooth OTP flow. Solid work.', timestamp: Date.now() - 86400000 * 4, likes: 11 },
   { id: 's3', name: 'Aanya', role: 'Designer', message: 'Rare to see a data portfolio with this much craft. The work index interaction is lovely.', timestamp: Date.now() - 86400000 * 1, likes: 5 },
 ];
 
@@ -773,7 +1069,7 @@ const Guestbook: React.FC = () => {
     <section id="guestbook" className="px-5 md:px-10 py-20 md:py-32 border-t border-line">
       <div className="max-w-[1500px] mx-auto">
         <Reveal>
-          <Chapter no="04" label={`guestbook — ${notes.length} signatures`} className="text-cream border-b border-line pb-4" />
+          <Chapter no="05" label={`guestbook — ${notes.length} signatures`} className="text-cream border-b border-line pb-4" />
         </Reveal>
         <h2 className="font-display text-h2 text-cream mt-10 md:mt-16">
           <RevealLines lines={['Sign the wall.']} />
@@ -830,18 +1126,27 @@ const Footer: React.FC = () => {
     <footer id="contact" className="px-5 md:px-10 pt-20 md:pt-28 pb-6 border-t border-line">
       <div className="max-w-[1500px] mx-auto">
         <Reveal>
-          <Chapter no="05" label="contact" className="text-cream border-b border-line pb-4" />
+          <Chapter no="06" label="contact" className="text-cream border-b border-line pb-4" />
         </Reveal>
 
         <div className="mt-12 md:mt-20 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
           <h2 className="font-display text-h2 text-cream max-w-[14ch]">
             <RevealLines lines={["Let's build", 'something', 'that matters.']} />
           </h2>
-          <Magnetic as="a" href="mailto:arinpattnaikofficial@gmail.com" cursor="email" className="group inline-flex items-center gap-3 px-7 py-4 rounded-full bg-cream text-ink text-base font-medium w-fit">
-            arinpattnaikofficial@gmail.com
+          <Magnetic as="a" href="mailto:narayananaiduthota@gmail.com" cursor="email" className="group inline-flex items-center gap-3 px-7 py-4 rounded-full bg-cream text-ink text-base font-medium w-fit">
+            narayananaiduthota@gmail.com
             <ArrowUpRight className="w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
           </Magnetic>
         </div>
+
+        {/* Contact form */}
+        <Reveal>
+          <div className="mt-16 md:mt-20 border-t border-line pt-12">
+            <p className="o-mono text-muted mb-2 text-xs uppercase tracking-widest">Start a project</p>
+            <ContactForm />
+          </div>
+        </Reveal>
+
 
         {/* columns */}
         <div className="mt-20 md:mt-28 grid grid-cols-2 md:grid-cols-4 gap-8 o-mono border-t border-line pt-8">
@@ -853,12 +1158,12 @@ const Footer: React.FC = () => {
           </div>
           <div>
             <p className="text-muted mb-3">Connect</p>
-            <a href="https://github.com/ArinPattnaik" target="_blank" rel="noreferrer" data-cursor="open" className="block text-cream link-underline w-fit mb-1">GitHub</a>
-            <a href="https://www.linkedin.com/in/arinpattnaik" target="_blank" rel="noreferrer" data-cursor="open" className="block text-cream link-underline w-fit mb-1">LinkedIn</a>
+            <a href="https://github.com/Narayaaana11" target="_blank" rel="noreferrer" data-cursor="open" className="block text-cream link-underline w-fit mb-1">GitHub</a>
+            <a href="https://www.linkedin.com/in/narayaaana/" target="_blank" rel="noreferrer" data-cursor="open" className="block text-cream link-underline w-fit mb-1">LinkedIn</a>
           </div>
           <div>
             <p className="text-muted mb-3">Located</p>
-            <p className="text-cream">Bhubaneswar,<br />India</p>
+            <p className="text-cream">Bhimavaram,<br />India</p>
           </div>
           <div>
             <p className="text-muted mb-3">Local time</p>
@@ -868,12 +1173,12 @@ const Footer: React.FC = () => {
 
         {/* oversized wordmark */}
         <div className="mt-16 md:mt-24">
-          <h2 className="font-display text-mega text-cream leading-[0.82]">Arin<br />Pattnaik</h2>
+          <h2 className="font-display text-mega text-cream leading-[0.82]">Narayana<br />Thota</h2>
         </div>
 
         <div className="mt-8 flex flex-col md:flex-row md:items-center md:justify-between gap-3 o-mono">
-          <span>© {year} Arin Pattnaik — Often imitated, never duplicated</span>
-          <span>Designed &amp; built by Arin Pattnaik</span>
+          <span>© {year} Narayana Thota — Often imitated, never duplicated</span>
+          <span>Designed &amp; built by Narayana Thota</span>
         </div>
       </div>
     </footer>
@@ -923,19 +1228,36 @@ function HomePage() {
     else { lenisRef.current?.start(); document.body.style.overflow = ''; }
   }, [menuOpen]);
 
+  const handleNavigate = (target: string) => {
+    setMenuOpen(false);
+    setTimeout(() => {
+      const el = target === 'top' ? document.body : document.getElementById(target);
+      if (el) {
+        if (lenisRef.current) {
+          lenisRef.current.scrollTo(el, { offset: 0, duration: 1.2 });
+        } else {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    }, 600); // Wait for menu to mostly close before scrolling
+  };
+
   return (
     <div className="bg-base min-h-screen overflow-x-clip">
       <ScrollProgress />
       <TopBar onMenu={() => setMenuOpen((o) => !o)} menuOpen={menuOpen} />
-      <Menu open={menuOpen} onClose={() => setMenuOpen(false)} />
+      <Menu open={menuOpen} onNavigate={handleNavigate} onClose={() => setMenuOpen(false)} />
       <BackToTop />
       <main id="top">
         <Hero />
         <Band />
         <About />
+        <Skills />
         <Work />
         <Gallery />
         <Capabilities />
+        <FreelanceProcess />
+        <Experience />
         <Guestbook />
       </main>
       <Footer />
@@ -950,3 +1272,4 @@ export default function App() {
     </ErrorBoundary>
   );
 }
+

@@ -1,9 +1,9 @@
-# Arin Pattnaik — Personal Portfolio
+# Narayana Thota — Personal Portfolio
 
 An interactive, editorial portfolio showcasing data, machine-learning, and full-stack work. Built with React 19, TypeScript, Tailwind CSS 4, and Motion.
 
-**Live**: [arinpattnaik.me](https://arinpattnaik.me)
-**Repository**: [github.com/ArinPattnaik/Arin-s-Website](https://github.com/ArinPattnaik/Arin-s-Website)
+**Live**: [narayanathota.me](https://narayanathota.me)
+**Repository**: [github.com/Narayaaana11/Narayana-Portfolio](https://github.com/Narayaaana11/Narayana-Portfolio)
 
 ## 🆕 What's New in V4 — Complete Theme Overhaul
 
@@ -73,11 +73,12 @@ src/
 
 ## 📞 Contact
 
-**Email**: [arinpattnaikofficial@gmail.com](mailto:arinpattnaikofficial@gmail.com)
+**Email**: [narayananaiduthota@gmail.com](mailto:narayananaiduthota@gmail.com)
 **Location**: Bhubaneswar, India [20.27° N, 85.84° E]
-**GitHub**: [@ArinPattnaik](https://github.com/ArinPattnaik)
-**LinkedIn**: [linkedin.com/in/arinpattnaik](https://www.linkedin.com/in/arinpattnaik)
+**GitHub**: [@Narayaaana11](https://github.com/Narayaaana11)
+**LinkedIn**: [linkedin.com/in/narayaaana11](https://www.linkedin.com/in/narayaaana11)
 
 ---
 
 **Built with React + Tailwind + Motion**
+

@@ -39,7 +39,7 @@ git push origin main
 
 1. Click **"New Project"** or go to [vercel.com/new](https://vercel.com/new)
 2. Select **"Import Git Repository"**
-3. Paste: `https://github.com/ArinPattnaik/Arin-s-Website`
+3. Paste: `https://github.com/Narayaaana11/Narayanas-Website`
 4. Click **Import**
 
 ### Step 4: Configure Build Settings
@@ -71,7 +71,7 @@ Vercel automatically deploys on `git push` to `main`. You can configure:
 ### Step 7: Connect Custom Domain
 
 1. In Vercel Dashboard → Settings → Domains
-2. Enter `arinpattnaik.me`
+2. Enter `narayana-thota.vercel.app`
 3. Choose DNS option:
    - **Nameservers** (recommended): Update domain registrar
    - **CNAME**: If registrar doesn't support nameserver changes
@@ -107,7 +107,7 @@ Alternative with similar features to Vercel.
 ### Step 4: Custom Domain
 
 1. Domain Settings → Add Custom Domain
-2. Enter `arinpattnaik.me`
+2. Enter `narayana-thota.vercel.app`
 3. Update DNS at your registrar
 4. Wait for verification
 
@@ -179,12 +179,12 @@ git commit -m "ci: add GitHub Pages deployment workflow"
 git push origin main
 ```
 
-Your site will be live at: `https://ArinPattnaik.github.io/Arin-s-Website`
+Your site will be live at: `https://Narayaaana11.github.io/Narayanas-Website`
 
 ### Step 5: Custom Domain (Optional)
 
 1. In repo Settings → Pages
-2. Under "Custom Domain": Enter `arinpattnaik.me`
+2. Under "Custom Domain": Enter `narayana-thota.vercel.app`
 3. Update DNS records at your registrar
 4. Click "Enforce HTTPS" when ready
 
@@ -233,10 +233,10 @@ package-lock.json
 
 ```bash
 # Build Docker image
-docker build -t arins-portfolio .
+docker build -t narayanas-portfolio .
 
 # Run locally
-docker run -p 3000:3000 arins-portfolio
+docker run -p 3000:3000 narayanas-portfolio
 
 # Visit http://localhost:3000
 ```
@@ -248,10 +248,10 @@ docker run -p 3000:3000 arins-portfolio
 docker login
 
 # Tag image
-docker tag arins-portfolio your-username/arins-portfolio:latest
+docker tag narayanas-portfolio your-username/narayanas-portfolio:latest
 
 # Push
-docker push your-username/arins-portfolio:latest
+docker push your-username/narayanas-portfolio:latest
 ```
 
 ### Step 5: Deploy to Docker-based Hosting
@@ -268,7 +268,7 @@ Services like **Railway**, **Render**, or **Fly.io** support Docker deployment:
 
 ### Prerequisites
 
-- Registered domain (e.g., `arinpattnaik.me`)
+- Registered domain (e.g., `narayana-thota.vercel.app`)
 - Access to domain registrar (GoDaddy, Namecheap, etc.)
 - Chosen hosting platform (Vercel recommended)
 
@@ -276,7 +276,7 @@ Services like **Railway**, **Render**, or **Fly.io** support Docker deployment:
 
 1. **In Vercel Dashboard**:
    - Settings → Domains
-   - Add `arinpattnaik.me`
+   - Add `narayana-thota.vercel.app`
    - Copy nameservers:
      ```
      ns1.vercel-dns.com
@@ -291,7 +291,7 @@ Services like **Railway**, **Render**, or **Fly.io** support Docker deployment:
 
 3. **Verify**:
    ```bash
-   nslookup arinpattnaik.me
+   nslookup narayana-thota.vercel.app
    # Should show Vercel nameservers
    ```
 
@@ -305,13 +305,13 @@ If nameservers don't work:
 2. **At Your Registrar**:
    - Create DNS record:
      - **Type**: CNAME
-     - **Name**: `@` or `arinpattnaik.me`
+     - **Name**: `@` or `narayana-thota.vercel.app`
      - **Value**: `cname.vercel-dns.com`
    - Save changes
 
 3. **Verify**:
    ```bash
-   dig arinpattnaik.me CNAME
+   dig narayana-thota.vercel.app CNAME
    ```
 
 ---
@@ -399,4 +399,5 @@ After successful deployment:
 
 ---
 
-**Questions?** Email [arinpattnaikofficial@gmail.com](mailto:arinpattnaikofficial@gmail.com)
+**Questions?** Email [narayananaiduthota@gmail.com](mailto:narayananaiduthota@gmail.com)
+

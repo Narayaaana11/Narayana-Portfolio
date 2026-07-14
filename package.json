@@ -1,11 +1,11 @@
 {
-  "name": "arins-website",
-  "description": "Personal portfolio website for Arin Pattnaik - Data Analyst & Insight Architect",
-  "author": "Arin Pattnaik <arinpattnaikofficial@gmail.com>",
-  "homepage": "https://arinpattnaik.me",
+  "name": "narayanas-website",
+  "description": "Personal portfolio website for Narayana Thota - Full Stack Developer",
+  "author": "Narayana Thota",
+  "homepage": "https://narayanathota.me/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ArinPattnaik/Arin-s-Website"
+    "url": "https://github.com/Narayaaana11/Narayana-Portfolio"
   },
   "keywords": [
     "portfolio",

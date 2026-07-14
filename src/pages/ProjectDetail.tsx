@@ -309,7 +309,7 @@ const ProjectDetail: React.FC = () => {
                 Live Project <ArrowUpRight className="w-3.5 h-3.5" />
               </Magnetic>
             )}
-            <Magnetic as="a" href="https://github.com/ArinPattnaik" target="_blank" rel="noopener noreferrer" cursor="open" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-line text-ink o-mono">
+            <Magnetic as="a" href="https://github.com/Narayaaana11" target="_blank" rel="noopener noreferrer" cursor="open" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-line text-ink o-mono">
               GitHub <ArrowUpRight className="w-3.5 h-3.5" />
             </Magnetic>
             <Magnetic onClick={() => navigate('/', { state: { scrollTo: 'work' } })} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-line text-ink o-mono">
