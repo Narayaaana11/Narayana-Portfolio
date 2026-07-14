@@ -488,7 +488,7 @@ const About: React.FC = () => (
             </li>
             <li className="flex justify-between border-b border-line pb-2">
               <span className="text-muted">Experience</span>
-              <span className="text-cream">1 Internship + 4 Projects</span>
+              <span className="text-cream">1 Internship + 5 Projects</span>
             </li>
             <li className="flex justify-between">
               <span className="text-muted">Stack</span>
@@ -605,54 +605,51 @@ const Work: React.FC = () => {
    ============================================================ */
 const SKILL_GROUPS = [
   {
-    label: 'Frontend',
+    label: 'Languages',
     skills: [
-      { name: 'React.js', level: 5 },
-      { name: 'JavaScript (ES6+)', level: 5 },
-      { name: 'TypeScript', level: 4 },
-      { name: 'Tailwind CSS', level: 5 },
-      { name: 'HTML / CSS', level: 5 },
+      { name: 'JavaScript', level: 5 },
+      { name: 'Python', level: 4 },
+      { name: 'SQL', level: 4 },
+      { name: 'HTML5', level: 5 },
+      { name: 'CSS3', level: 5 },
     ],
   },
   {
-    label: 'Backend',
+    label: 'Frontend & DB',
+    skills: [
+      { name: 'React.js', level: 5 },
+      { name: 'Tailwind CSS', level: 5 },
+      { name: 'MongoDB', level: 4 },
+    ],
+  },
+  {
+    label: 'Backend & APIs',
     skills: [
       { name: 'Node.js', level: 5 },
       { name: 'Express.js', level: 5 },
-      { name: 'MongoDB', level: 4 },
       { name: 'REST APIs', level: 5 },
-      { name: 'Socket.io', level: 4 },
     ],
   },
   {
-    label: 'Tools & DevOps',
+    label: 'Tools & Platforms',
     skills: [
       { name: 'Git & GitHub', level: 5 },
-      { name: 'GitHub Actions', level: 4 },
-      { name: 'Vercel / Render', level: 5 },
-      { name: 'Nodemailer', level: 4 },
-      { name: 'JWT / Auth', level: 4 },
-    ],
-  },
-  {
-    label: 'AI & Emerging',
-    skills: [
-      { name: 'NLP (Chatbots)', level: 3 },
-      { name: 'Generative AI', level: 3 },
-      { name: 'Prompt Engineering', level: 4 },
+      { name: 'VS Code / Cursor', level: 5 },
+      { name: 'Claude Code', level: 4 },
+      { name: 'Codex / AI Tools', level: 4 },
     ],
   },
 ];
 
 const getGroupIcon = (label: string) => {
   switch (label.toLowerCase()) {
-    case 'frontend':
+    case 'languages':
       return <Code2 className="w-5 h-5 text-cream" />;
-    case 'backend':
+    case 'frontend & db':
       return <Terminal className="w-5 h-5 text-cream" />;
-    case 'tools & devops':
+    case 'backend & apis':
       return <Settings className="w-5 h-5 text-cream" />;
-    case 'ai & emerging':
+    case 'tools & platforms':
       return <Sparkles className="w-5 h-5 text-cream" />;
     default:
       return null;
@@ -793,25 +790,21 @@ const Experience: React.FC = () => {
               <div className="border-l border-line pl-6 relative">
                 <div className="absolute w-2 h-2 rounded-full bg-cream -left-[4.5px] top-2" />
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
-                  <h4 className="font-display text-2xl text-cream">Freelance Developer</h4>
-                  <span className="o-mono text-muted text-sm mt-1 md:mt-0">2024 – Present</span>
-                </div>
-                <p className="text-body o-mono text-sm mb-4">Self-Employed</p>
-                <p className="text-body leading-relaxed max-w-2xl">
-                  Building custom full-stack MERN applications for clients — specializing in ERP dashboards, multi-role portals, and e-commerce platforms. Delivered 3 production systems in 2024–2025.
-                </p>
-              </div>
-
-              <div className="border-l border-line pl-6 relative">
-                <div className="absolute w-2 h-2 rounded-full bg-line -left-[4.5px] top-2" />
-                <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
                   <h4 className="font-display text-2xl text-cream">Full Stack Developer Intern</h4>
                   <span className="o-mono text-muted text-sm mt-1 md:mt-0">Jun 2025 – Jul 2025</span>
                 </div>
                 <p className="text-body o-mono text-sm mb-4">Technical Hub Pvt. Ltd — Bhimavaram, India</p>
-                <p className="text-body leading-relaxed max-w-2xl">
-                  Contributed to Guards Hub — a security roster management system for Aditya University. Designed rule-based scheduling logic with constraint validation and real-time collision detection, eliminating 100% of shift conflicts for 100+ campus security guards and saving ~10 hours of admin work per week.
-                </p>
+                <ul className="text-body leading-relaxed max-w-2xl list-disc pl-4 space-y-2 text-sm md:text-base text-cream/80">
+                  <li>
+                    Contributed to Guards Hub, a security roster management system built for Aditya University, gaining hands-on experience translating a manual, spreadsheet-based process into a full-stack MERN application for 100+ campus security guards.
+                  </li>
+                  <li>
+                    Learned to design and implement rule-based scheduling logic, building a shift assignment engine that auto-rotates General, A, B, and C shifts weekly with constraint validation, collision detection, and manual override handling.
+                  </li>
+                  <li>
+                    Strengthened testing and debugging skills by performing integration testing across the shift engine, attendance tracking, and approval workflows, including edge cases like overlapping shifts, concurrent requests, and role-based access.
+                  </li>
+                </ul>
               </div>
             </div>
           </Reveal>
