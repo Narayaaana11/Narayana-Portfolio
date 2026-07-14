@@ -145,7 +145,7 @@ const TopBar: React.FC<{ onMenu: () => void; menuOpen: boolean }> = ({ onMenu, m
       </motion.div>
       <div className="flex items-center gap-3 pointer-events-auto">
         <a 
-          href="/Veera_Venkata_Naga_Satyanarayana_Thota_Resume.pdf" 
+          href="/Narayana Thota.pdf" 
           target="_blank" 
           rel="noreferrer" 
           data-cursor="hover" 
