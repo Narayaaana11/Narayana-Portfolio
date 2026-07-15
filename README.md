@@ -1,22 +1,39 @@
-# Narayana Thota — Personal Portfolio
+# Narayana Thota — Personal Portfolio & Developer Website
 
-An interactive, editorial portfolio showcasing data, machine-learning, and full-stack work. Built with React 19, TypeScript, Tailwind CSS 4, and Motion.
+The official portfolio of **Narayana Thota** — Full Stack Developer & AI Engineer from Bhimavaram, India. Built with React 19, TypeScript, Tailwind CSS 4, and Motion.
 
-**Live**: [narayanathota.me](https://narayanathota.me)
+**Live Site**: [narayanathota.me](https://narayanathota.me)  
 **Repository**: [github.com/Narayaaana11/Narayana-Portfolio](https://github.com/Narayaaana11/Narayana-Portfolio)
+
+---
+
+## 👨‍💻 About Narayana Thota
+
+**Narayana Thota** is a Full Stack Developer and AI Engineer specializing in:
+- **MERN Stack** (MongoDB, Express.js, React.js, Node.js)
+- **AI Integration** — NLP chatbots, generative AI pipelines
+- **Real-Time Systems** — Socket.io, WebSockets, OTP flows
+- **ERP Development** — Custom enterprise resource planning tools
+
+Currently pursuing MCA at Aditya University (graduating May 2026), based in Bhimavaram, Andhra Pradesh, India. Open to full-time engineering roles and select freelance projects.
+
+📧 [narayananaiduthota@gmail.com](mailto:narayananaiduthota@gmail.com)  
+🔗 [linkedin.com/in/narayaaana](https://www.linkedin.com/in/narayaaana/)  
+🐙 [github.com/Narayaaana11](https://github.com/Narayaaana11)
+
+---
 
 ## 🆕 What's New in V4 — Complete Theme Overhaul
 
 V4 is a full theme change and rebuild of the site, moving from the previous card-based layout to a warm, editorial "Cantina" art direction.
 
 - **New art direction** — Warm near-black + champagne cream palette, oversized Archivo display type, Space Mono micro-labels, and Inter body copy.
-- **Cinematic hero** — Full-bleed looping video with a layered gradient, animated availability badge, and a bold "No Peace Without War." credo.
-- **Editorial sections** — Reworked About, alternating Work case-study rows, draggable image gallery, and a five-discipline Studio breakdown.
+- **Cinematic hero** — Full-bleed looping video with a layered gradient, animated availability badge, and bold display type.
+- **Editorial sections** — Reworked About, alternating Work case-study rows, draggable image gallery, and a four-discipline Studio breakdown.
 - **Project case studies** — Dedicated detail pages per project with autoplay demo video, problem/approach narrative, key features, and tech stack.
 - **Fullscreen menu** — Drag-to-explore card navigation that works on both desktop and touch.
 - **Guestbook** — Visitors can sign the wall, like notes, with built-in spam protection and an admin moderation mode.
 - **Mobile-first pass** — Fixed text clipping, draggable menus, and responsive meta so everything reads cleanly on small screens.
-- **Leaner project** — Removed unused dependencies and dead config; resolved dependency security advisories.
 
 ## ✨ Core Features
 
@@ -61,7 +78,7 @@ npm run preview
 ## 📁 Project Structure
 
 ```
-public/            Static assets (hero video, project media)
+public/            Static assets (hero video, project media, og-image, sitemap)
 src/
   components/      Reusable UI (cursor, reveals, preloader, marquee)
   data/            Project case-study content
@@ -71,14 +88,15 @@ src/
   main.tsx         App entry + routing
 ```
 
-## 📞 Contact
+## 📞 Contact Narayana Thota
 
-**Email**: [narayananaiduthota@gmail.com](mailto:narayananaiduthota@gmail.com)
-**Location**: Bhubaneswar, India [20.27° N, 85.84° E]
-**GitHub**: [@Narayaaana11](https://github.com/Narayaaana11)
-**LinkedIn**: [linkedin.com/in/narayaaana11](https://www.linkedin.com/in/narayaaana11)
+**Narayana Thota** — Full Stack Developer & AI Engineer  
+**Email**: [narayananaiduthota@gmail.com](mailto:narayananaiduthota@gmail.com)  
+**Location**: Bhimavaram, Andhra Pradesh, India  
+**GitHub**: [@Narayaaana11](https://github.com/Narayaaana11)  
+**LinkedIn**: [linkedin.com/in/narayaaana](https://www.linkedin.com/in/narayaaana/)  
+**Portfolio**: [narayanathota.me](https://narayanathota.me)
 
 ---
 
-**Built with React + Tailwind + Motion**
-
+*Built by Narayana Thota with React + TypeScript + Tailwind + Motion*

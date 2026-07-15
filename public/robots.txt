@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+
+# Priority pages for Narayana Thota portfolio
+Allow: /
+Allow: /projects/
+
+# Block utility paths
+Disallow: /src/
+Disallow: /*.json$
+
+# Sitemap location
+Sitemap: https://narayanathota.me/sitemap.xml
+
+# Crawl delay for bots (be a good citizen)
+Crawl-delay: 1

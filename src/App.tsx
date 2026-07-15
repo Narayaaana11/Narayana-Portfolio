@@ -391,9 +391,13 @@ const Hero: React.FC = () => {
       <motion.h1
         style={{ y: titleY, opacity: fade }}
         className="absolute bottom-[5vh] left-0 right-0 px-4 text-center font-display text-mega text-cream z-10"
+        itemProp="name"
       >
-        <RevealLines lines={['Narayana']} delay={0.15} />
-        <RevealLines lines={['Thota']} delay={0.24} />
+        <span className="sr-only">Narayana Thota — Full Stack Developer & AI Engineer</span>
+        <span aria-hidden="true">
+          <RevealLines lines={['Narayana']} delay={0.15} />
+          <RevealLines lines={['Thota']} delay={0.24} />
+        </span>
       </motion.h1>
 
       {/* scroll cue */}
@@ -455,8 +459,8 @@ const About: React.FC = () => (
             <span className="font-display text-cream text-3xl">N</span>
           </div>
           <div>
-            <p className="text-cream font-medium">Narayana Thota</p>
-            <p className="o-mono text-muted text-xs mt-0.5">Bhimavaram, India · IST</p>
+            <p className="text-cream font-medium" itemProp="name">Narayana Thota</p>
+            <p className="o-mono text-muted text-xs mt-0.5" itemProp="address">Bhimavaram, India · IST</p>
           </div>
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 o-mono text-[10px] text-emerald-400">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -466,7 +470,7 @@ const About: React.FC = () => (
 
         {/* bio text */}
         <div className="md:col-span-5">
-          <p className="text-body leading-relaxed mb-5">
+          <p className="text-body leading-relaxed mb-5" itemProp="description">
             I'm a Full-Stack Developer and MCA student at Aditya University (graduating May 2026), based in Bhimavaram, India.
             I build production-grade web applications — from real-time visitor management systems serving a university campus to AI-powered library platforms handling 500+ daily users — with a focus on clean architecture and measurable impact.
           </p>
@@ -1156,8 +1160,8 @@ const Footer: React.FC = () => {
           </div>
           <div>
             <p className="text-muted mb-3">Connect</p>
-            <a href="https://github.com/Narayaaana11" target="_blank" rel="noreferrer" data-cursor="open" className="block text-cream link-underline w-fit mb-1">GitHub</a>
-            <a href="https://www.linkedin.com/in/narayaaana/" target="_blank" rel="noreferrer" data-cursor="open" className="block text-cream link-underline w-fit mb-1">LinkedIn</a>
+            <a href="https://github.com/Narayaaana11" target="_blank" rel="noreferrer me" data-cursor="open" className="block text-cream link-underline w-fit mb-1" aria-label="Narayana Thota on GitHub">GitHub</a>
+            <a href="https://www.linkedin.com/in/narayaaana/" target="_blank" rel="noreferrer me" data-cursor="open" className="block text-cream link-underline w-fit mb-1" aria-label="Narayana Thota on LinkedIn">LinkedIn</a>
           </div>
           <div>
             <p className="text-muted mb-3">Located</p>
@@ -1169,14 +1173,23 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* oversized wordmark */}
+        {/* oversized wordmark + hidden contact address for crawlers */}
         <div className="mt-16 md:mt-24">
-          <h2 className="font-display text-mega text-cream leading-[0.82]">Narayana<br />Thota</h2>
+          <h2 className="font-display text-mega text-cream leading-[0.82]" itemProp="name">Narayana<br />Thota</h2>
+          {/* Hidden address block — helps Google identify the person entity */}
+          <address className="sr-only" itemProp="address" itemScope itemType="https://schema.org/PostalAddress">
+            <span itemProp="addressLocality">Bhimavaram</span>,
+            <span itemProp="addressRegion">Andhra Pradesh</span>,
+            <span itemProp="addressCountry">India</span>.
+            Email: <a href="mailto:narayananaiduthota@gmail.com" itemProp="email">narayananaiduthota@gmail.com</a>.
+            GitHub: <a href="https://github.com/Narayaaana11" rel="me">github.com/Narayaaana11</a>.
+            LinkedIn: <a href="https://www.linkedin.com/in/narayaaana/" rel="me">linkedin.com/in/narayaaana</a>.
+          </address>
         </div>
 
         <div className="mt-8 flex flex-col md:flex-row md:items-center md:justify-between gap-3 o-mono">
           <span>© {year} Narayana Thota — Often imitated, never duplicated</span>
-          <span>Designed &amp; built by Narayana Thota</span>
+          <span>Designed &amp; built by <span itemProp="name">Narayana Thota</span></span>
         </div>
       </div>
     </footer>

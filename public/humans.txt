@@ -1,0 +1,19 @@
+/* TEAM */
+
+Developer: Narayana Thota
+Role: Full Stack Developer & AI Engineer
+Email: narayananaiduthota@gmail.com
+Location: Bhimavaram, Andhra Pradesh, India
+GitHub: https://github.com/Narayaaana11
+LinkedIn: https://www.linkedin.com/in/narayaaana/
+Website: https://narayanathota.me/
+
+/* SITE */
+
+Last update: 2026/07/15
+Language: English
+Doctype: HTML5
+IDE: VS Code / Cursor
+Standards: HTML5, CSS3, ES2023
+Components: React.js, TypeScript, Vite
+Framework: MERN Stack

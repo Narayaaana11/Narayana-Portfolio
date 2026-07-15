@@ -103,6 +103,54 @@ const ProjectDetail: React.FC = () => {
   const isDesktop = useIsDesktop();
   const reduced = usePrefersReducedMotion();
 
+  // Dynamic SEO: update page title and meta description per project
+  useEffect(() => {
+    if (!project) return;
+    const prevTitle = document.title;
+    document.title = `${project.name} — Narayana Thota | Full Stack Developer & AI Engineer`;
+    // Update meta description
+    let metaDesc = document.querySelector('meta[name="description"]');
+    const prevDesc = metaDesc?.getAttribute('content') || '';
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      (metaDesc as HTMLMetaElement).name = 'description';
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute('content', `${project.name} — ${project.tagline}. A case study by Narayana Thota, Full Stack Developer & AI Engineer from Bhimavaram, India.`);
+    // Update og:title
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    const prevOgTitle = ogTitle?.getAttribute('content') || '';
+    ogTitle?.setAttribute('content', `${project.name} — Narayana Thota Portfolio`);
+    // Inject project JSON-LD
+    const existingLd = document.getElementById('project-ld');
+    existingLd?.remove();
+    const ld = document.createElement('script');
+    ld.id = 'project-ld';
+    ld.type = 'application/ld+json';
+    ld.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: project.name,
+      description: project.tagline,
+      applicationCategory: 'WebApplication',
+      author: {
+        '@type': 'Person',
+        name: 'Narayana Thota',
+        url: 'https://narayanathota.me/',
+        sameAs: ['https://github.com/Narayaaana11', 'https://www.linkedin.com/in/narayaaana/'],
+      },
+      url: project.link || `https://narayanathota.me/projects/${project.id}`,
+      isPartOf: { '@id': 'https://narayanathota.me/#website' },
+    });
+    document.head.appendChild(ld);
+    return () => {
+      document.title = prevTitle;
+      metaDesc?.setAttribute('content', prevDesc);
+      ogTitle?.setAttribute('content', prevOgTitle);
+      document.getElementById('project-ld')?.remove();
+    };
+  }, [id, project]);
+
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
     requestAnimationFrame(() => window.scrollTo({ top: 0, left: 0 }));
