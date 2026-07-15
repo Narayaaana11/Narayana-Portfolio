@@ -178,6 +178,7 @@ const Menu: React.FC<{ open: boolean; onNavigate: (target: string) => void; onCl
 
   const go = (target: string) => {
     onNavigate(target);
+    onClose();
   };
 
   const onDown = (e: React.PointerEvent) => {
@@ -506,6 +507,7 @@ const About: React.FC = () => (
    ============================================================ */
 const WorkRow: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) => {
   const navigate = useNavigate();
+  const isDesktop = useIsDesktop();
   const cream = index % 2 === 1;
   const sign = index % 2 === 0 ? -1 : 1;
 
@@ -529,7 +531,10 @@ const WorkRow: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) =
           {/* center group (image + title), nudged by sign */}
           <div
             className="flex-1 flex items-center gap-4 md:gap-10 min-w-0"
-            style={{ justifyContent: 'center', transform: `translateX(${sign * 4}%)` }}
+            style={{ 
+              justifyContent: isDesktop ? 'center' : 'flex-start', 
+              transform: isDesktop ? `translateX(${sign * 4}%)` : 'none' 
+            }}
           >
             {item.detail ? (
               <motion.div
@@ -570,7 +575,7 @@ const WorkRow: React.FC<{ item: WorkItem; index: number }> = ({ item, index }) =
         </div>
 
         {/* mobile meta */}
-        <div className="md:hidden mt-5 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 o-mono text-center" style={{ color: cream ? 'var(--ink)' : 'var(--muted)' }}>
+        <div className="md:hidden mt-4 flex flex-wrap items-center gap-x-2.5 gap-y-1 o-mono text-[10px] sm:text-xs pl-8" style={{ color: cream ? 'var(--ink)' : 'var(--muted)' }}>
           <span>{item.discipline}</span>
           <span aria-hidden>·</span>
           <span>{item.year}</span>
@@ -1073,9 +1078,9 @@ const Guestbook: React.FC = () => {
           <div className="lg:col-span-4">
             <form onSubmit={submit} className="lg:sticky lg:top-24 p-6 border border-line flex flex-col gap-4">
               <h3 className="font-display text-cream text-xl">Leave a note</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name *" className="bg-transparent border border-line px-4 py-3 text-sm text-body placeholder:text-muted focus:outline-none focus:border-line-strong" />
-                <input value={role} onChange={(e) => setRole(e.target.value)} placeholder="Role" className="bg-transparent border border-line px-4 py-3 text-sm text-body placeholder:text-muted focus:outline-none focus:border-line-strong" />
+              <div className="flex flex-col md:flex-row gap-4">
+                <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name *" className="flex-1 bg-transparent border border-line px-4 py-3 text-sm text-body placeholder:text-muted focus:outline-none focus:border-line-strong" />
+                <input value={role} onChange={(e) => setRole(e.target.value)} placeholder="Role" className="flex-1 bg-transparent border border-line px-4 py-3 text-sm text-body placeholder:text-muted focus:outline-none focus:border-line-strong" />
               </div>
               <div className="relative">
                 <textarea value={message} onChange={(e) => setMessage(e.target.value.slice(0, MAX))} placeholder="Say something nice (or honest)…" rows={4} className="w-full bg-transparent border border-line px-4 py-3 text-sm text-body placeholder:text-muted resize-none focus:outline-none focus:border-line-strong" />
