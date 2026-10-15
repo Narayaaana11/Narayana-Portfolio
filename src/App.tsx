@@ -8,13 +8,9 @@ import {
   ScrollProgress, BackToTop, Magnetic, Reveal, RevealLines, ScrollRevealText, Marquee, EASE,
 } from './components/ui';
 import ContactForm from './components/ContactForm';
-import { DecryptedText, ShinyText, SpotlightCard, VoiceVisualizer, SplitText, TiltCard, CountUp, SilkBackground } from './components/reactbits';
+import { DecryptedText, ShinyText, SpotlightCard, TiltCard, CountUp } from './components/reactbits';
 import { MovingBorderButton } from './components/MovingBorder';
-import { TracingBeam } from './components/TracingBeam';
-import { Particles } from './components/magicui/Particles';
 import { CommandMenu } from './components/CommandMenu';
-import { LocationVisualizer } from './components/LocationVisualizer';
-import { TechUniverse } from './components/TechUniverse';
 import { fireCelebrationConfetti } from './lib/confetti';
 
 /* ============================================================
@@ -375,7 +371,6 @@ const Hero: React.FC = () => {
           preload="auto"
         />
         <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(16,12,7,0.55) 0%, rgba(16,12,7,0.28) 36%, rgba(16,12,7,0.5) 70%, rgba(16,12,7,0.92) 100%)' }} />
-        <Particles quantity={40} color="#e7dca8" size={1.4} className="absolute inset-0 z-[1]" />
       </motion.div>
 
       {/* availability */}
@@ -383,7 +378,7 @@ const Hero: React.FC = () => {
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.8, ease: EASE }}
-        className="absolute top-[15vh] md:top-[16vh] left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-10"
+        className="absolute top-[12vh] md:top-[14vh] left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-10"
       >
         <span className="relative flex h-2 w-2">
           <span className="animate-soft-pulse absolute inline-flex h-full w-full rounded-full bg-emerald-400" />
@@ -399,26 +394,26 @@ const Hero: React.FC = () => {
       {/* edge claims — left: build practice + motto */}
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9, duration: 1 }}
-        className="absolute left-5 md:left-10 top-1/2 -translate-y-1/2 z-10 max-w-[80vw] md:max-w-[52vw]"
+        className="absolute left-5 md:left-10 top-[21vh] md:top-[24vh] z-10 max-w-[80vw] md:max-w-[48vw]"
       >
-        <p className="o-mono text-cream/50 mb-3 md:mb-4">Specialties</p>
-        <ul className="o-mono space-y-1 text-cream/70 mb-6 md:mb-9">
+        <p className="o-mono text-cream/50 mb-2 md:mb-3">Specialties</p>
+        <ul className="o-mono space-y-1 text-cream/70 mb-5 md:mb-7 text-xs md:text-sm">
           <li>Full-Stack Development</li>
           <li>AI & LLM Integration</li>
           <li>Desktop & Native Systems</li>
         </ul>
         <h2
           className="font-display text-cream leading-[0.9]"
-          style={{ fontSize: 'clamp(2.2rem, 5.2vw, 4.6rem)', letterSpacing: '-0.01em' }}
+          style={{ fontSize: 'clamp(1.75rem, 4.2vw, 3.8rem)', letterSpacing: '-0.01em' }}
         >
           Code that Ships.<br />Products that Scale.
         </h2>
-        <div className="mt-4">
+        <div className="mt-3">
           <DecryptedText
             text="FULL STACK & AMBIENT AI ARCHITECTURE"
             speed={40}
             animateOn="view"
-            className="o-mono text-[10px] md:text-xs text-cream/70 tracking-widest uppercase"
+            className="o-mono text-[9px] md:text-[11px] text-cream/70 tracking-widest uppercase"
           />
         </div>
       </motion.div>
@@ -426,9 +421,9 @@ const Hero: React.FC = () => {
       {/* edge claims — right */}
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.0, duration: 1 }}
-        className="absolute right-5 md:right-10 top-1/2 -translate-y-1/2 o-mono text-cream text-right z-10 max-w-[44vw] md:max-w-none"
+        className="absolute right-5 md:right-10 top-[21vh] md:top-[24vh] o-mono text-cream text-right z-10 max-w-[44vw] md:max-w-none text-xs md:text-sm"
       >
-        <p className="text-cream/50 mb-3 md:mb-4">Also</p>
+        <p className="text-cream/50 mb-2 md:mb-3">Also</p>
         <ul className="space-y-1 text-cream/70">
           <li>Content Creator</li>
           <li>Video Editor</li>
@@ -439,29 +434,13 @@ const Hero: React.FC = () => {
       {/* title */}
       <motion.h1
         style={{ y: titleY, opacity: fade }}
-        className="absolute bottom-[5vh] left-0 right-0 px-4 text-center font-display text-mega text-cream z-10 pointer-events-none select-none"
+        className="absolute bottom-[3vh] md:bottom-[4vh] left-0 right-0 px-4 text-center font-display text-mega text-cream z-10 pointer-events-none select-none"
         itemProp="name"
       >
         <span className="sr-only">Narayana Thota — Full Stack Developer & AI Engineer</span>
-        <span aria-hidden="true" className="flex flex-col items-center">
-          <SplitText
-            text="Narayana"
-            delay={0.15}
-            stagger={0.035}
-            duration={0.7}
-            animationFrom={{ opacity: 0, y: 45, scale: 0.95 }}
-            animationTo={{ opacity: 1, y: 0, scale: 1 }}
-            className="font-display text-mega text-cream leading-[0.85]"
-          />
-          <SplitText
-            text="Thota"
-            delay={0.38}
-            stagger={0.035}
-            duration={0.7}
-            animationFrom={{ opacity: 0, y: 45, scale: 0.95 }}
-            animationTo={{ opacity: 1, y: 0, scale: 1 }}
-            className="font-display text-mega text-cream leading-[0.85] -mt-1 md:-mt-4"
-          />
+        <span aria-hidden="true">
+          <RevealLines lines={['Narayana']} delay={0.15} />
+          <RevealLines lines={['Thota']} delay={0.24} />
         </span>
       </motion.h1>
 
@@ -800,9 +779,8 @@ const getGroupIcon = (label: string) => {
 };
 
 const Skills: React.FC = () => (
-  <section id="skills" className="px-5 md:px-10 py-20 md:py-28 border-t border-line relative overflow-hidden">
-    <SilkBackground speed={0.0008} waveCount={5} opacity={0.14} />
-    <div className="max-w-[1500px] mx-auto relative z-10">
+  <section id="skills" className="px-5 md:px-10 py-20 md:py-28 border-t border-line">
+    <div className="max-w-[1500px] mx-auto">
       <Reveal>
         <div className="flex items-center justify-between o-mono text-cream border-b border-line pb-4 mb-16">
           <span>Chapter 02</span>
@@ -849,17 +827,6 @@ const Skills: React.FC = () => (
           </Reveal>
         ))}
       </div>
-
-      {/* Interactive Orbiting Tech Universe */}
-      <Reveal delay={0.2}>
-        <div className="mt-14 md:mt-20">
-          <div className="text-center mb-6">
-            <span className="o-mono text-muted text-xs uppercase tracking-widest">Interactive Tech Orbit</span>
-            <p className="font-display text-cream text-xl md:text-2xl mt-1">Planetary Architecture</p>
-          </div>
-          <TechUniverse />
-        </div>
-      </Reveal>
     </div>
   </section>
 );
@@ -941,83 +908,79 @@ const Experience: React.FC = () => {
             <Chapter no="04" label="background & work" className="text-cream border-b border-line pb-4 mb-10" />
           </Reveal>
         </div>
-        <div className="md:col-span-8">
-          <TracingBeam className="pl-4 md:pl-8">
-            <div className="flex flex-col gap-16">
-              <Reveal>
-                <h3 className="o-mono text-cream mb-6">Professional Experience</h3>
-                <div className="flex flex-col gap-12">
-                  <div className="border-l border-line pl-6 relative">
-                    <div className="absolute w-2 h-2 rounded-full bg-cream -left-[4.5px] top-2" />
-                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
-                      <h4 className="font-display text-2xl text-cream">Full Stack Development Intern</h4>
-                      <span className="o-mono text-muted text-sm mt-1 md:mt-0">Jun 2025 – Jul 2025</span>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-4 text-sm o-mono">
-                      <span className="text-body">Technical Hub Pvt. Ltd.</span>
-                      <span className="text-muted">|</span>
-                      <a href="https://github.com/Narayaaana11/Guards-Hub" target="_blank" rel="noreferrer" className="text-cream link-underline inline-flex items-center gap-1">
-                        Guard Hub: github.com/Narayaaana11/Guards-Hub <ArrowUpRight className="w-3.5 h-3.5" />
-                      </a>
-                    </div>
-                    <ul className="text-body leading-relaxed max-w-2xl list-disc pl-4 space-y-2 text-sm md:text-base text-cream/80">
-                      <li>
-                        Worked in a team on Guard Hub, a security guard management system for campus operations, building the security roster, attendance report and leave/OD management screens in React.
-                      </li>
-                      <li>
-                        Developed Express REST API modules (employees, roster, attendance, leave/OD, monthly reports) and handled end-to-end integration with the React front end.
-                      </li>
-                      <li>
-                        Tested the complete application with Postman, resolving 15+ integration issues before deployment.
-                      </li>
-                    </ul>
-                  </div>
+        <div className="md:col-span-8 flex flex-col gap-16">
+          <Reveal>
+            <h3 className="o-mono text-cream mb-6">Professional Experience</h3>
+            <div className="flex flex-col gap-12">
+              <div className="border-l border-line pl-6 relative">
+                <div className="absolute w-2 h-2 rounded-full bg-cream -left-[4.5px] top-2" />
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                  <h4 className="font-display text-2xl text-cream">Full Stack Development Intern</h4>
+                  <span className="o-mono text-muted text-sm mt-1 md:mt-0">Jun 2025 – Jul 2025</span>
                 </div>
-              </Reveal>
-
-              <Reveal>
-                <h3 className="o-mono text-cream mb-6">Education</h3>
-                <div className="flex flex-col gap-8">
-                  <div className="border-l border-line pl-6 relative">
-                    <div className="absolute w-2 h-2 rounded-full bg-line -left-[4.5px] top-2" />
-                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
-                      <h4 className="font-display text-xl text-cream">Master of Computer Applications (MCA) — Computer Science
-                        <span className="ml-2 inline-block o-mono text-[9px] text-emerald-400 border border-emerald-400/40 rounded px-2 py-0.5 align-middle">2024 – 2026</span>
-                      </h4>
-                      <span className="o-mono text-muted text-sm mt-1 md:mt-0">Aug 2024 – May 2026</span>
-                    </div>
-                    <p className="text-body text-sm">Aditya University — CGPA: 7.70 / 10</p>
-                  </div>
-                  <div className="border-l border-line pl-6 relative">
-                    <div className="absolute w-2 h-2 rounded-full bg-line -left-[4.5px] top-2" />
-                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
-                      <h4 className="font-display text-xl text-cream">Bachelor of Computer Applications (BCA) — Computer Science</h4>
-                      <span className="o-mono text-muted text-sm mt-1 md:mt-0">Aug 2021 – May 2024</span>
-                    </div>
-                    <p className="text-body text-sm">Aditya Degree College — CGPA: 7.24 / 10</p>
-                  </div>
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-4 text-sm o-mono">
+                  <span className="text-body">Technical Hub Pvt. Ltd.</span>
+                  <span className="text-muted">|</span>
+                  <a href="https://github.com/Narayaaana11/Guards-Hub" target="_blank" rel="noreferrer" className="text-cream link-underline inline-flex items-center gap-1">
+                    Guard Hub: github.com/Narayaaana11/Guards-Hub <ArrowUpRight className="w-3.5 h-3.5" />
+                  </a>
                 </div>
-              </Reveal>
-
-              <Reveal>
-                <h3 className="o-mono text-cream mb-6">Certifications &amp; Achievements</h3>
-                <ul className="space-y-4">
-                  <li className="flex flex-col md:flex-row md:items-center justify-between border-b border-line pb-4">
-                    <span className="text-body">Full Stack Developer Certification — Technical Hub Pvt. Ltd.</span>
-                    <span className="o-mono text-muted text-sm mt-1 md:mt-0">Jun 2025</span>
+                <ul className="text-body leading-relaxed max-w-2xl list-disc pl-4 space-y-2 text-sm md:text-base text-cream/80">
+                  <li>
+                    Worked in a team on Guard Hub, a security guard management system for campus operations, building the security roster, attendance report and leave/OD management screens in React.
                   </li>
-                  <li className="flex flex-col md:flex-row md:items-center justify-between border-b border-line pb-4">
-                    <span className="text-body">Programming for Everybody (Getting Started with Python) — University of Michigan (Coursera)</span>
-                    <span className="o-mono text-muted text-sm mt-1 md:mt-0">Verified</span>
+                  <li>
+                    Developed Express REST API modules (employees, roster, attendance, leave/OD, monthly reports) and handled end-to-end integration with the React front end.
                   </li>
-                  <li className="flex flex-col md:flex-row md:items-center justify-between border-b border-line pb-4">
-                    <span className="text-body">Project Space Hackathon Participant — Technical Hub Pvt. Ltd.</span>
-                    <span className="o-mono text-muted text-sm mt-1 md:mt-0">Jun 2025</span>
+                  <li>
+                    Tested the complete application with Postman, resolving 15+ integration issues before deployment.
                   </li>
                 </ul>
-              </Reveal>
+              </div>
             </div>
-          </TracingBeam>
+          </Reveal>
+
+          <Reveal>
+            <h3 className="o-mono text-cream mb-6">Education</h3>
+            <div className="flex flex-col gap-8">
+              <div className="border-l border-line pl-6 relative">
+                <div className="absolute w-2 h-2 rounded-full bg-line -left-[4.5px] top-2" />
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                  <h4 className="font-display text-xl text-cream">Master of Computer Applications (MCA) — Computer Science
+                    <span className="ml-2 inline-block o-mono text-[9px] text-emerald-400 border border-emerald-400/40 rounded px-2 py-0.5 align-middle">2024 – 2026</span>
+                  </h4>
+                  <span className="o-mono text-muted text-sm mt-1 md:mt-0">Aug 2024 – May 2026</span>
+                </div>
+                <p className="text-body text-sm">Aditya University — CGPA: 7.70 / 10</p>
+              </div>
+              <div className="border-l border-line pl-6 relative">
+                <div className="absolute w-2 h-2 rounded-full bg-line -left-[4.5px] top-2" />
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                  <h4 className="font-display text-xl text-cream">Bachelor of Computer Applications (BCA) — Computer Science</h4>
+                  <span className="o-mono text-muted text-sm mt-1 md:mt-0">Aug 2021 – May 2024</span>
+                </div>
+                <p className="text-body text-sm">Aditya Degree College — CGPA: 7.24 / 10</p>
+              </div>
+            </div>
+          </Reveal>
+
+          <Reveal>
+            <h3 className="o-mono text-cream mb-6">Certifications &amp; Achievements</h3>
+            <ul className="space-y-4">
+              <li className="flex flex-col md:flex-row md:items-center justify-between border-b border-line pb-4">
+                <span className="text-body">Full Stack Developer Certification — Technical Hub Pvt. Ltd.</span>
+                <span className="o-mono text-muted text-sm mt-1 md:mt-0">Jun 2025</span>
+              </li>
+              <li className="flex flex-col md:flex-row md:items-center justify-between border-b border-line pb-4">
+                <span className="text-body">Programming for Everybody (Getting Started with Python) — University of Michigan (Coursera)</span>
+                <span className="o-mono text-muted text-sm mt-1 md:mt-0">Verified</span>
+              </li>
+              <li className="flex flex-col md:flex-row md:items-center justify-between border-b border-line pb-4">
+                <span className="text-body">Project Space Hackathon Participant — Technical Hub Pvt. Ltd.</span>
+                <span className="o-mono text-muted text-sm mt-1 md:mt-0">Jun 2025</span>
+              </li>
+            </ul>
+          </Reveal>
         </div>
       </div>
     </section>
@@ -1413,9 +1376,9 @@ const Footer: React.FC = () => {
             <a href="https://www.linkedin.com/in/narayaaana/" target="_blank" rel="noreferrer me" data-cursor="open" className="block text-cream link-underline w-fit mb-1" aria-label="Narayana Thota on LinkedIn">LinkedIn</a>
             <a href="tel:+916301253789" className="block text-cream link-underline w-fit mb-1" aria-label="Call Narayana Thota">+91 6301253789</a>
           </div>
-          <div className="col-span-2 md:col-span-1">
-            <p className="text-muted mb-3">Base &amp; Telemetry</p>
-            <LocationVisualizer />
+          <div>
+            <p className="text-muted mb-3">Located</p>
+            <p className="text-cream">Hyderabad &amp;<br />Bhimavaram, India</p>
           </div>
           <div>
             <p className="text-muted mb-3">Local time</p>
