@@ -205,7 +205,57 @@ input:focus, textarea:focus { outline: none; border-color: var(--line-strong); }
 .link-underline:hover { background-size: 100% 1px; }
 
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-.scrollbar-hide::-webkit-scrollbar { display: none; }
+/* ---------- Glassmorphism & Modern Panels ---------- */
+.glass-panel {
+  background: rgba(22, 17, 10, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(231, 220, 168, 0.15);
+}
+
+.glass-panel-hover {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-panel-hover:hover {
+  background: rgba(22, 17, 10, 0.85);
+  border-color: rgba(231, 220, 168, 0.32);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5), 0 0 30px -10px rgba(231, 220, 168, 0.08);
+}
+
+/* Animated gradient border */
+@keyframes spinBorder {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spinBorder 6s linear infinite;
+}
+
+/* Orbiting circles (Magic UI) */
+@keyframes orbit {
+  0% {
+    transform: rotate(0deg) translateY(calc(var(--radius) * 1)) rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg) translateY(calc(var(--radius) * 1)) rotate(-360deg);
+  }
+}
+@keyframes orbitReverse {
+  0% {
+    transform: rotate(360deg) translateY(calc(var(--radius) * 1)) rotate(-360deg);
+  }
+  100% {
+    transform: rotate(0deg) translateY(calc(var(--radius) * 1)) rotate(0deg);
+  }
+}
+.animate-orbit {
+  animation: orbit var(--duration) linear infinite;
+  animation-delay: var(--delay);
+}
+.animate-orbit-reverse {
+  animation: orbitReverse var(--duration) linear infinite;
+  animation-delay: var(--delay);
+}
 
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {

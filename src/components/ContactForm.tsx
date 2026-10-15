@@ -173,7 +173,7 @@ export const ContactForm: React.FC = () => {
       </div>
 
       {/* right — form wrapped in spotlight card */}
-      <SpotlightCard className="lg:col-span-7 p-6 md:p-8" spotlightColor="rgba(231, 220, 168, 0.12)">
+      <SpotlightCard className="lg:col-span-7 p-6 md:p-8 glass-panel glass-panel-hover rounded-2xl shadow-2xl" spotlightColor="rgba(231, 220, 168, 0.16)">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <input
@@ -267,9 +267,9 @@ export const ContactForm: React.FC = () => {
               disabled={!valid || status === 'sending'}
               data-cursor="hover"
               className={cn(
-                'inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-sm font-medium transition-all self-start',
+                'inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-sm font-medium transition-all self-start shadow-lg',
                 valid && status !== 'sending'
-                  ? 'bg-cream text-ink hover:opacity-90 shadow-lg'
+                  ? 'bg-cream text-ink hover:opacity-90 hover:shadow-[0_0_25px_rgba(231,220,168,0.4)]'
                   : 'border border-line text-muted cursor-not-allowed'
               )}
             >
