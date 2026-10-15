@@ -41,20 +41,37 @@ const CAPABILITIES = [
   { no: '04', title: 'Real-Time Systems & DevOps', body: 'Building event-driven real-time architectures with Socket.io, robust JWT authentication, granular RBAC, Postman integration suites, automated Jest tests, and seamless deployment on Vercel & Render.', tools: ['Socket.io', 'JWT & RBAC', 'Jest & Vitest', 'Postman', 'Render', 'Git'] },
 ];
 
-const GALLERY = [
-  '/projects/vesper/vesper-hud.png',
-  '/projects/vesper/vesper-architecture.png',
-  '/projects/vesper/vesper-settings.png',
-  '/projects/ausvms/shap explaination.png',
-  '/projects/guard-hub/ai ingredeient analysis.png',
-  '/projects/aqua-feed-erp/Greenwashing dection.png',
-  '/projects/matrix-lms/salary intelligence.png',
-  '/projects/ziege/coorelation.png',
-  '/projects/ausvms/revenue impact.png',
-  '/projects/guard-hub/Sugar alias detection.png',
-  '/projects/aqua-feed-erp/Claim BreakDown.png',
-  '/projects/matrix-lms/skills demand.png',
-  '/projects/ziege/auto sceme detection.png',
+interface GalleryItem {
+  src: string;
+  project: string;
+  caption: string;
+}
+
+const GALLERY: GalleryItem[] = [
+  // Vesper
+  { src: '/projects/vesper/vesper-hud.png', project: 'VESPER', caption: 'Ambient Voice HUD & Waveform' },
+  { src: '/projects/vesper/vesper-architecture.png', project: 'VESPER', caption: 'Multi-Provider AI Architecture' },
+  { src: '/projects/vesper/vesper-settings.png', project: 'VESPER', caption: 'Audio Hotkey & Preferences' },
+  // AUSVMS
+  { src: '/projects/ausvms/visitor-dashboard.png', project: 'AUSVMS', caption: 'Multi-Role Visitor Portal' },
+  { src: '/projects/ausvms/live-tracking.png', project: 'AUSVMS', caption: 'Real-Time Campus Visitor Tracking' },
+  { src: '/projects/ausvms/otp-checkin.png', project: 'AUSVMS', caption: 'Instant OTP Check-In Flow' },
+  // Guard Hub
+  { src: '/projects/guard-hub/dashboard.png', project: 'Guard Hub', caption: 'Security Operations Dashboard' },
+  { src: '/projects/guard-hub/shift-schedule.png', project: 'Guard Hub', caption: 'Automated Shift Roster System' },
+  { src: '/projects/guard-hub/guard-profile.png', project: 'Guard Hub', caption: 'Personnel & Attendance Verification' },
+  // Matrix LMS
+  { src: '/projects/matrix-lms/lms-dashboard.png', project: 'Matrix LMS', caption: 'Digital Library Catalog & Loans' },
+  { src: '/projects/matrix-lms/analytics.png', project: 'Matrix LMS', caption: 'Circulation & Book Usage Analytics' },
+  { src: '/projects/matrix-lms/ai-chatbot.png', project: 'Matrix LMS', caption: 'Gemini AI Intelligent Book Assistant' },
+  // Aqua Feed ERP
+  { src: '/projects/aqua-feed-erp/erp-dashboard.png', project: 'Aqua Feed ERP', caption: 'Enterprise Manufacturing Dashboard' },
+  { src: '/projects/aqua-feed-erp/inventory.png', project: 'Aqua Feed ERP', caption: 'Batch Inventory & Material Tracking' },
+  { src: '/projects/aqua-feed-erp/analytics.png', project: 'Aqua Feed ERP', caption: 'Production Yield & Cost Analytics' },
+  // Ziege
+  { src: '/projects/ziege/storefront.png', project: 'Ziege', caption: 'Generative AI Apparel Storefront' },
+  { src: '/projects/ziege/product-view.png', project: 'Ziege', caption: 'Custom AI Apparel Preview' },
+  { src: '/projects/ziege/cart.png', project: 'Ziege', caption: 'E-Commerce Cart & Checkout' },
 ];
 
 const STACK = [
@@ -712,51 +729,51 @@ const SKILL_GROUPS = [
   {
     label: 'Languages',
     skills: [
-      { name: 'TypeScript', level: 5 },
-      { name: 'JavaScript (ES6+)', level: 5 },
-      { name: 'Python', level: 4 },
-      { name: 'SQL', level: 4 },
-      { name: 'HTML5 & CSS3', level: 5 },
+      { name: 'TypeScript', tag: 'Core' },
+      { name: 'JavaScript (ES6+)', tag: 'Core' },
+      { name: 'Python', tag: 'AI & Data' },
+      { name: 'SQL', tag: 'Queries' },
+      { name: 'HTML5 & CSS3', tag: 'Design' },
     ],
   },
   {
     label: 'AI & LLM',
     skills: [
-      { name: 'LLM API Integration', level: 5 },
-      { name: 'Local LLMs (Ollama)', level: 4 },
-      { name: 'Whisper Speech-to-Text', level: 5 },
-      { name: 'Prompt Engineering', level: 5 },
-      { name: 'Model Context Protocol (MCP)', level: 5 },
+      { name: 'LLM API Integration', tag: 'Groq & Gemini' },
+      { name: 'Local LLMs (Ollama)', tag: 'Private AI' },
+      { name: 'Whisper Speech-to-Text', tag: 'Audio STT' },
+      { name: 'Prompt Engineering', tag: 'System Prompts' },
+      { name: 'Model Context Protocol (MCP)', tag: 'Stdio & IDEs' },
     ],
   },
   {
     label: 'Frontend & Desktop',
     skills: [
-      { name: 'React.js', level: 5 },
-      { name: 'Electron.js', level: 5 },
-      { name: 'Redux & Vite', level: 5 },
-      { name: 'Tailwind CSS', level: 5 },
-      { name: 'shadcn/ui', level: 5 },
+      { name: 'React.js', tag: 'Component UI' },
+      { name: 'Electron.js', tag: 'Native Win32' },
+      { name: 'Redux & Vite', tag: 'State & Bundler' },
+      { name: 'Tailwind CSS', tag: 'Utility Styling' },
+      { name: 'shadcn/ui', tag: 'Design System' },
     ],
   },
   {
     label: 'Backend & Databases',
     skills: [
-      { name: 'Node.js & Express.js', level: 5 },
-      { name: 'REST APIs', level: 5 },
-      { name: 'MongoDB & SQLite', level: 5 },
-      { name: 'JWT Auth & RBAC', level: 5 },
-      { name: 'Socket.io & Redis', level: 4 },
+      { name: 'Node.js & Express.js', tag: 'REST Services' },
+      { name: 'REST APIs', tag: '50+ Endpoints' },
+      { name: 'MongoDB & SQLite', tag: 'NoSQL & Local' },
+      { name: 'JWT Auth & RBAC', tag: 'Security' },
+      { name: 'Socket.io & Redis', tag: 'Real-Time' },
     ],
   },
   {
     label: 'Testing & Tools',
     skills: [
-      { name: 'Jest & Vitest', level: 4 },
-      { name: 'Postman', level: 5 },
-      { name: 'Git & GitHub', level: 5 },
-      { name: 'Vercel & Render', level: 5 },
-      { name: 'AI-Assisted Development', level: 5 },
+      { name: 'Jest & Vitest', tag: 'Unit Tests' },
+      { name: 'Postman', tag: 'API Testing' },
+      { name: 'Git & GitHub', tag: 'Version Control' },
+      { name: 'Vercel & Render', tag: 'CI/CD Cloud' },
+      { name: 'AI-Assisted Development', tag: 'Cursor & Copilot' },
     ],
   },
 ];
@@ -791,7 +808,7 @@ const Skills: React.FC = () => (
         {SKILL_GROUPS.map((group, gi) => (
           <Reveal key={group.label} delay={gi * 0.07}>
             <SpotlightCard
-              className="p-6 md:p-7 flex flex-col group/card relative overflow-hidden h-full rounded-none"
+              className="p-6 md:p-7 flex flex-col group/card relative overflow-hidden h-full rounded-2xl"
               spotlightColor="rgba(231, 220, 168, 0.12)"
             >
               {/* Premium Hover Accent Bar */}
@@ -804,22 +821,21 @@ const Skills: React.FC = () => (
                 <h3 className="font-display text-cream text-base tracking-wider uppercase">{group.label}</h3>
               </div>
 
-              <div className="space-y-6 flex-1">
+              <div className="space-y-2.5 flex-1">
                 {group.skills.map((s) => (
-                  <div key={s.name} className="flex flex-col gap-2 group/skill">
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="text-body font-mono text-cream/90 group-hover/card:text-cream transition-colors">{s.name}</span>
-                      <span className="o-mono text-[9px] text-muted">{s.level * 20}%</span>
+                  <div
+                    key={s.name}
+                    className="flex items-center justify-between py-2.5 px-3 rounded-lg border border-line/60 bg-base/50 group/skill transition-all duration-300 hover:border-line-strong hover:bg-cream/[0.05] hover:translate-x-1"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/70 group-hover/skill:bg-emerald-400 transition-colors shadow-[0_0_6px_rgba(52,211,153,0.4)] shrink-0" />
+                      <span className="text-body font-mono text-xs text-cream/90 group-hover/card:text-cream transition-colors truncate">
+                        {s.name}
+                      </span>
                     </div>
-                    <div className="h-[2px] w-full bg-cream/10 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${s.level * 20}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1.2, ease: EASE }}
-                        className="h-full bg-cream"
-                      />
-                    </div>
+                    <span className="o-mono text-[9px] text-cream/50 group-hover/skill:text-cream/80 transition-colors shrink-0 ml-2">
+                      {s.tag}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -993,7 +1009,21 @@ const Experience: React.FC = () => {
 const Gallery: React.FC = () => {
   const scroller = useRef<HTMLDivElement>(null);
   const drag = useRef({ down: false, startX: 0, startScroll: 0, moved: false });
-  const [activeImg, setActiveImg] = useState<string | null>(null);
+  const [activeItem, setActiveItem] = useState<GalleryItem | null>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setActiveItem(null);
+    };
+    if (activeItem) {
+      window.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [activeItem]);
 
   const onDown = (e: React.PointerEvent) => {
     const el = scroller.current;
@@ -1014,9 +1044,9 @@ const Gallery: React.FC = () => {
     try { scroller.current?.releasePointerCapture(e.pointerId); } catch { /* ignore */ }
   };
 
-  const handleCardClick = (src: string) => {
+  const handleCardClick = (item: GalleryItem) => {
     if (!drag.current.moved) {
-      setActiveImg(src);
+      setActiveItem(item);
     }
   };
 
@@ -1025,7 +1055,7 @@ const Gallery: React.FC = () => {
       <div className="max-w-[1500px] mx-auto px-5 md:px-10 mb-8 md:mb-12">
         <Reveal>
           <div className="flex items-center justify-between o-mono text-cream border-b border-line pb-4">
-            <span>Visual Archive</span>
+            <span>Visual Archive — All 6 Shipped Projects</span>
             <span>Drag horizontally · Click to zoom</span>
           </div>
         </Reveal>
@@ -1041,26 +1071,37 @@ const Gallery: React.FC = () => {
         className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide px-5 md:px-10 select-none"
         style={{ touchAction: 'pan-x pan-y', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}
       >
-        {GALLERY.map((src, i) => (
+        {GALLERY.map((item, i) => (
           <div
             key={i}
-            onClick={() => handleCardClick(src)}
-            className="shrink-0 w-[82vw] sm:w-[54vw] md:w-[34vw] aspect-[16/10] bg-cover bg-center rounded-2xl border border-line shadow-xl cursor-zoom-in transition-all duration-300 hover:scale-[1.02] hover:border-cream/50"
-            style={{ backgroundImage: `url("${src}")`, backgroundColor: 'var(--bg-2)' }}
+            onClick={() => handleCardClick(item)}
+            className="group relative shrink-0 w-[82vw] sm:w-[54vw] md:w-[34vw] aspect-[16/10] bg-cover bg-center rounded-2xl border border-line shadow-xl cursor-zoom-in transition-all duration-300 hover:scale-[1.02] hover:border-cream/50 overflow-hidden"
+            style={{ backgroundImage: `url("${item.src}")`, backgroundColor: 'var(--bg-2)' }}
             draggable={false}
-          />
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-90 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+              <div className="flex items-center justify-between w-full">
+                <span className="o-mono text-[10px] text-cream bg-base/90 backdrop-blur px-2.5 py-1 rounded border border-line">
+                  {item.project}
+                </span>
+                <span className="o-mono text-[9px] text-cream/80 truncate max-w-[65%]">
+                  {item.caption}
+                </span>
+              </div>
+            </div>
+          </div>
         ))}
       </div>
 
       {/* Lightbox Modal */}
       <AnimatePresence>
-        {activeImg && (
+        {activeItem && (
           <div className="fixed inset-0 z-[400] flex items-center justify-center p-4 md:p-10">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setActiveImg(null)}
+              onClick={() => setActiveItem(null)}
               className="fixed inset-0 bg-black/85 backdrop-blur-md"
             />
             <motion.div
@@ -1071,15 +1112,17 @@ const Gallery: React.FC = () => {
               className="relative max-w-5xl max-h-[90vh] z-10 glass-panel rounded-2xl overflow-hidden shadow-2xl border border-line"
             >
               <img
-                src={activeImg}
-                alt="Architecture and UI Diagram"
+                src={activeItem.src}
+                alt={`${activeItem.project} — ${activeItem.caption}`}
                 className="w-full h-auto max-h-[80vh] object-contain"
               />
-              <div className="p-4 bg-base/90 border-t border-line flex items-center justify-between">
-                <span className="o-mono text-xs text-cream truncate">{activeImg.split('/').pop()}</span>
+              <div className="p-4 bg-base/90 border-t border-line flex items-center justify-between gap-4">
+                <span className="o-mono text-xs text-cream truncate">
+                  <strong className="text-cream">{activeItem.project}</strong> — {activeItem.caption}
+                </span>
                 <button
-                  onClick={() => setActiveImg(null)}
-                  className="px-4 py-1.5 rounded-full bg-cream text-ink text-xs font-mono font-medium hover:opacity-90"
+                  onClick={() => setActiveItem(null)}
+                  className="px-4 py-1.5 rounded-full bg-cream text-ink text-xs font-mono font-medium hover:opacity-90 shrink-0"
                 >
                   Close (ESC)
                 </button>
