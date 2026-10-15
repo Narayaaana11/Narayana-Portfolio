@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowUpRight, ExternalLink, X, Play, Pause } from 'lucide-re
 import { projectDetails } from '../data/projects';
 import { ScrollProgress, BackToTop, Magnetic, Reveal, ScrollRevealText, EASE } from '../components/ui';
 import { cn, useIsDesktop, usePrefersReducedMotion } from '../lib/utils';
+import { SpotlightCard, VoiceVisualizer } from '../components/reactbits';
 
 /* ---------- Lightbox ---------- */
 const Lightbox: React.FC<{ src: string; alt: string; onClose: () => void }> = ({ src, alt, onClose }) => {
@@ -219,13 +220,21 @@ const ProjectDetail: React.FC = () => {
           >
             {project.tagline}
           </motion.p>
-          {project.link && (
-            <motion.span initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.8, ease: EASE }} className="mt-7 inline-flex">
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.8, ease: EASE }} className="mt-7 flex flex-wrap items-center gap-3">
+            {project.link && (
               <Magnetic as="a" href={project.link} target="_blank" rel="noopener noreferrer" cursor="open" className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-cream text-ink text-sm font-medium">
-                Visit Live <ExternalLink className="w-4 h-4" />
+                {project.link.includes('github.com') ? 'View Source on GitHub' : 'Visit Live'} <ExternalLink className="w-4 h-4" />
               </Magnetic>
-            </motion.span>
-          )}
+            )}
+            {project.liveUrl && project.liveUrl !== '#' && project.liveUrl !== project.link && (
+              <Magnetic as="a" href={project.liveUrl} target="_blank" rel="noopener noreferrer" cursor="open" className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full border border-line text-cream text-sm font-medium hover:bg-cream hover:text-ink transition-colors">
+                Visit Live Demo <ArrowUpRight className="w-4 h-4" />
+              </Magnetic>
+            )}
+            {project.id === 'vesper' && (
+              <VoiceVisualizer className="py-2" />
+            )}
+          </motion.div>
         </div>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }} className="absolute bottom-7 left-5 md:left-10 o-mono text-cream z-10">A case study</motion.div>
@@ -309,10 +318,10 @@ const ProjectDetail: React.FC = () => {
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4">
             {project.techStack.map((t, i) => (
               <Reveal key={i} delay={i * 0.04}>
-                <div className="p-5 border border-line h-full">
+                <SpotlightCard className="p-5 h-full rounded-none" spotlightColor="rgba(231, 220, 168, 0.1)">
                   <h4 className="text-body text-sm font-medium mb-1">{t.name}</h4>
                   <p className="o-mono text-[9px]">{t.role}</p>
-                </div>
+                </SpotlightCard>
               </Reveal>
             ))}
           </div>

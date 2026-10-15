@@ -17,9 +17,10 @@ export const Preloader: React.FC = () => {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
-    // If they prefer reduced motion, skip entirely
-    if (reduced) {
+    // If they already visited this session or prefer reduced motion, skip entirely
+    if (sessionStorage.getItem('intro-played') === '1' || reduced) {
       setSkip(true);
+      setPhase('done');
       return;
     }
     
@@ -29,13 +30,13 @@ export const Preloader: React.FC = () => {
     // Wait for initial animation (loading period) before allowing scroll
     const t = setTimeout(() => {
       setPhase('ready');
-    }, 2500);
+    }, 2400);
     
     return () => clearTimeout(t);
   }, [reduced]);
 
   // Handle the scroll trigger to break the screen open
-  const handleScroll = useCallback((e?: Event) => {
+  const handleScroll = useCallback((e?: Event | React.MouseEvent) => {
     // Only split if we are in the 'ready' phase
     if (phase === 'ready') {
       setPhase('split');
@@ -58,12 +59,14 @@ export const Preloader: React.FC = () => {
     if (phase === 'ready') {
       window.addEventListener('wheel', handleScroll, { passive: true });
       window.addEventListener('touchmove', handleScroll, { passive: true });
-      window.addEventListener('keydown', handleScroll, { passive: true }); // Catch arrow keys / spacebar
+      window.addEventListener('keydown', handleScroll, { passive: true });
+      window.addEventListener('click', handleScroll, { passive: true });
       
       return () => {
         window.removeEventListener('wheel', handleScroll);
         window.removeEventListener('touchmove', handleScroll);
         window.removeEventListener('keydown', handleScroll);
+        window.removeEventListener('click', handleScroll);
       };
     }
   }, [phase, handleScroll]);
@@ -100,18 +103,19 @@ export const Preloader: React.FC = () => {
         animate={{ opacity: 1 }} 
         transition={{ duration: 1, delay: 1.2 }}
       >
-        ( Full Stack Developer and AI Enthusiast )
+        ( Full Stack & AI Engineer )
       </motion.p>
       
       {/* Scroll indicator - fades in only when ready, fades out when split */}
       <motion.div 
-        className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 o-mono text-cream/50 text-xs md:text-sm"
+        className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 o-mono text-cream/60 text-xs md:text-sm cursor-pointer pointer-events-auto"
         initial={{ opacity: 0 }}
         animate={{ opacity: phase === 'ready' ? 1 : 0 }}
         transition={{ duration: 0.6 }}
+        onClick={handleScroll}
       >
         <span className="animate-bounce text-base">↓</span>
-        <span className="tracking-widest">SCROLL TO ENTER</span>
+        <span className="tracking-widest">TAP OR SCROLL TO ENTER</span>
       </motion.div>
     </div>
   );

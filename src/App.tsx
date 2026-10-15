@@ -2,12 +2,13 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Lenis from 'lenis';
-import { ArrowUpRight, ArrowRight, Heart, X, Check, Code2, Terminal, Settings, Sparkles, Cpu, Layers, Server, ShieldCheck } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, Heart, X, Check, Copy, Code2, Terminal, Settings, Sparkles, Cpu, Layers, Server, ShieldCheck } from 'lucide-react';
 import { cn, useIsDesktop, usePrefersReducedMotion } from './lib/utils';
 import {
   ScrollProgress, BackToTop, Magnetic, Reveal, RevealLines, ScrollRevealText, Marquee, EASE,
 } from './components/ui';
 import ContactForm from './components/ContactForm';
+import { DecryptedText, ShinyText, SpotlightCard, VoiceVisualizer } from './components/reactbits';
 
 /* ============================================================
    Content
@@ -152,25 +153,26 @@ const TopBar: React.FC<{ onMenu: () => void; menuOpen: boolean }> = ({ onMenu, m
       >
         <Wordmark onClick={toTop} />
       </motion.div>
-      <div className="flex items-center gap-3 pointer-events-auto">
+      <div className="flex items-center gap-2 md:gap-3 pointer-events-auto">
         <a 
           href="/Narayana Thota.pdf" 
           target="_blank" 
           rel="noreferrer" 
           data-cursor="hover" 
-          className="hidden md:flex items-center justify-center h-9 md:h-10 px-5 rounded-full border border-line bg-base text-cream text-[11px] font-mono uppercase tracking-[0.12em] hover:bg-cream hover:text-ink transition-colors"
+          className="flex items-center justify-center h-8 md:h-10 px-3 md:px-5 rounded-full border border-line bg-base text-cream text-[10px] md:text-[11px] font-mono uppercase tracking-[0.1em] md:tracking-[0.12em] hover:bg-cream hover:text-ink transition-colors"
+          aria-label="View Narayana Thota Resume"
         >
-          View Resume
+          Resume
         </a>
         <button
           onClick={onMenu}
           data-cursor="hover"
-          className="relative h-9 md:h-10 px-5 rounded-full bg-cream text-ink overflow-hidden"
+          className="relative h-8 md:h-10 px-4 md:px-5 rounded-full bg-cream text-ink overflow-hidden"
           aria-label={menuOpen ? 'Close menu' : 'Open menu'}
         >
           <span className="relative block h-full">
-            <motion.span animate={{ y: menuOpen ? '-120%' : '0%' }} transition={{ duration: 0.35, ease: EASE }} className="flex items-center h-full font-mono text-[11px] uppercase tracking-[0.12em]">Menu</motion.span>
-            <motion.span animate={{ y: menuOpen ? '0%' : '120%' }} transition={{ duration: 0.35, ease: EASE }} className="absolute inset-0 flex items-center h-full font-mono text-[11px] uppercase tracking-[0.12em]">Close</motion.span>
+            <motion.span animate={{ y: menuOpen ? '-120%' : '0%' }} transition={{ duration: 0.35, ease: EASE }} className="flex items-center h-full font-mono text-[10px] md:text-[11px] uppercase tracking-[0.12em]">Menu</motion.span>
+            <motion.span animate={{ y: menuOpen ? '0%' : '120%' }} transition={{ duration: 0.35, ease: EASE }} className="absolute inset-0 flex items-center h-full font-mono text-[10px] md:text-[11px] uppercase tracking-[0.12em]">Close</motion.span>
           </span>
         </button>
       </div>
@@ -184,6 +186,13 @@ const TopBar: React.FC<{ onMenu: () => void; menuOpen: boolean }> = ({ onMenu, m
 const Menu: React.FC<{ open: boolean; onNavigate: (target: string) => void; onClose: () => void }> = ({ open, onNavigate, onClose }) => {
   const scroller = useRef<HTMLDivElement>(null);
   const drag = useRef({ down: false, startX: 0, startScroll: 0, moved: false });
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
 
   const go = (target: string) => {
     onNavigate(target);
@@ -359,9 +368,11 @@ const Hero: React.FC = () => {
           <span className="animate-soft-pulse absolute inline-flex h-full w-full rounded-full bg-emerald-400" />
           <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
         </span>
-        <span className="o-mono text-cream w-max">
-          Available for AI Engineer & Full Stack roles
-        </span>
+        <ShinyText
+          text="Available for AI Engineer & Full Stack roles"
+          speed={4}
+          className="o-mono w-max"
+        />
       </motion.div>
 
       {/* edge claims — left: build practice + motto */}
@@ -381,6 +392,14 @@ const Hero: React.FC = () => {
         >
           Code that Ships.<br />Products that Scale.
         </h2>
+        <div className="mt-4">
+          <DecryptedText
+            text="FULL STACK & AMBIENT AI ARCHITECTURE"
+            speed={40}
+            animateOn="view"
+            className="o-mono text-[10px] md:text-xs text-cream/70 tracking-widest uppercase"
+          />
+        </div>
       </motion.div>
 
       {/* edge claims — right */}
@@ -707,7 +726,10 @@ const Skills: React.FC = () => (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         {SKILL_GROUPS.map((group, gi) => (
           <Reveal key={group.label} delay={gi * 0.07}>
-            <div className="border border-line bg-cream/[0.01] hover:bg-cream/[0.03] backdrop-blur-sm p-6 md:p-7 flex flex-col hover:border-line-strong transition-all duration-500 group/card relative overflow-hidden h-full">
+            <SpotlightCard
+              className="p-6 md:p-7 flex flex-col group/card relative overflow-hidden h-full rounded-none"
+              spotlightColor="rgba(231, 220, 168, 0.12)"
+            >
               {/* Premium Hover Accent Bar */}
               <div className="absolute top-0 left-0 w-full h-[2px] bg-cream scale-x-0 group-hover/card:scale-x-100 transition-transform duration-500 origin-left" />
               
@@ -737,7 +759,7 @@ const Skills: React.FC = () => (
                   </div>
                 ))}
               </div>
-            </div>
+            </SpotlightCard>
           </Reveal>
         ))}
       </div>
@@ -1162,6 +1184,34 @@ const Guestbook: React.FC = () => {
 /* ============================================================
    Footer
    ============================================================ */
+const CopyEmailButton: React.FC<{ email?: string; className?: string }> = ({ email = 'narayananaiduthota@gmail.com', className }) => {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(email);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2200);
+    } catch {
+      // Fallback
+    }
+  };
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      data-cursor="hover"
+      className={cn(
+        "inline-flex items-center gap-2 px-5 py-4 rounded-full border border-line bg-base text-cream text-sm font-mono transition-colors hover:bg-cream hover:text-ink",
+        className
+      )}
+      aria-label="Copy email address"
+    >
+      {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+      <span>{copied ? 'Copied' : 'Copy Email'}</span>
+    </button>
+  );
+};
+
 const Footer: React.FC = () => {
   const year = new Date().getFullYear();
   return (
@@ -1175,10 +1225,13 @@ const Footer: React.FC = () => {
           <h2 className="font-display text-h2 text-cream max-w-[14ch]">
             <RevealLines lines={["Let's build", 'something', 'that matters.']} />
           </h2>
-          <Magnetic as="a" href="mailto:narayananaiduthota@gmail.com" cursor="email" className="group inline-flex items-center gap-3 px-7 py-4 rounded-full bg-cream text-ink text-base font-medium w-fit">
-            narayananaiduthota@gmail.com
-            <ArrowUpRight className="w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-          </Magnetic>
+          <div className="flex flex-wrap items-center gap-3">
+            <Magnetic as="a" href="mailto:narayananaiduthota@gmail.com" cursor="email" className="group inline-flex items-center gap-3 px-7 py-4 rounded-full bg-cream text-ink text-base font-medium w-fit">
+              narayananaiduthota@gmail.com
+              <ArrowUpRight className="w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+            </Magnetic>
+            <CopyEmailButton />
+          </div>
         </div>
 
         {/* Contact form */}
