@@ -19,29 +19,149 @@ export interface ProjectDetail {
 
 export const projectDetails: ProjectDetail[] = [
   {
+    id: "vesper",
+    name: "VESPER",
+    type: "ELECTRON / REACT / TYPESCRIPT / WHISPER / MCP / SQLITE",
+    tagline: "Voice-to-Action Windows Ambient AI Platform",
+    description: "Built and shipped Vesper, a Windows push-to-talk voice-to-action desktop app with pluggable cloud and local LLMs, ambient obsidian HUD, sub-250ms direct text injection, native Win32 helpers, SQLite context engine with privacy shielding, and a stdio Model Context Protocol (MCP) server for Cursor and VS Code.",
+    link: "https://github.com/Narayaaana11/VESPER",
+    liveUrl: "https://github.com/Narayaaana11/VESPER",
+    color: "#ff6b00",
+    discipline: "Desktop AI & Systems",
+    year: "2026",
+    problem: "Power users and software engineers lose flow switching between applications, typing repetitive commands, and copying/pasting between AI chat interfaces and their active code editors or terminals. Traditional dictation tools merely transcribe raw words without syntax awareness or active context, while browser AI chatbots steal window focus and disrupt keyboard flow.",
+    approach: "Architected an ambient, local-first Windows desktop platform using Electron, React, and TypeScript. Implemented a global push-to-talk hotkey that captures speech with WebAudio/Silero VAD, transcribes via Groq Whisper-Turbo (<180ms) or local Whisper ONNX, and runs through a pluggable AI provider layer (Groq, Gemini, local Llama via Ollama, and instant rule fallback). Uses native Win32 helpers (detect-window and send-input) to detect the active window and inject formatted text or execute commands directly into any focused application with sub-250ms latency—never stealing cursor focus.",
+    features: [
+      {
+        title: "Ambient Push-to-Talk & Sub-250ms Direct Injection",
+        description: "Hold Right Alt anywhere in Windows: an obsidian glass HUD displays real-time audio waveforms without stealing window focus. Release to format and inject directly at your cursor in VS Code, Cursor, Chrome, Slack, or Terminal in under 250ms.",
+        image: "/projects/vesper/vesper-hud.png"
+      },
+      {
+        title: "Pluggable AI Provider Layer",
+        description: "Unified provider architecture supporting Groq Cloud Whisper, Gemini API, local Llama via Ollama, and rule-based fallback behind one consistent interface for voice-driven code drafting, terminal execution, and app navigation.",
+        image: "/projects/vesper/vesper-architecture.png"
+      },
+      {
+        title: "SQLite Context Engine & Stdio MCP Server",
+        description: "Local operations journal with regex privacy shield that redacts credentials, API keys, and sensitive tokens, plus an embedded stdio Model Context Protocol (MCP) server for IDE agents like Cursor and Windsurf.",
+        image: "/projects/vesper/vesper-settings.png"
+      },
+      {
+        title: "Windows Packaging & Update Manager",
+        description: "Packaged into a standalone Windows installer (.exe) with system tray daemon, background worker, update manager, and high-performance landing site on Vercel.",
+        image: "/projects/vesper/vesper-hud.png"
+      }
+    ],
+    techStack: [
+      { name: "Electron.js", role: "Desktop Application Shell" },
+      { name: "React & TypeScript", role: "Frontend UI & State" },
+      { name: "OpenAI Whisper", role: "Cloud & On-Device STT" },
+      { name: "Model Context Protocol", role: "Stdio MCP Server for IDEs" },
+      { name: "SQLite & SQL.js", role: "Local Operations Journal" },
+      { name: "Groq & Gemini API", role: "High-Speed LLM Inference" },
+      { name: "Local Llama (Ollama)", role: "Offline Private AI Engine" },
+      { name: "Native Win32 C++", role: "Active Window & Direct Input Injection" },
+      { name: "Tailwind CSS", role: "Design System & Glassmorphism" }
+    ],
+    images: [
+      { src: "/projects/vesper/vesper-hud.png", alt: "VESPER Ambient Push-to-Talk HUD", caption: "Floating ambient glass HUD with real-time waveform and zero focus-stealing" },
+      { src: "/projects/vesper/vesper-architecture.png", alt: "VESPER System Architecture & Provider Layer", caption: "Pluggable AI provider layer, SQLite context engine, and MCP stdio server" },
+      { src: "/projects/vesper/vesper-settings.png", alt: "VESPER Configuration & Action Router", caption: "Global hotkey setup, local LLM selector, and native Win32 input injection" }
+    ]
+  },
+  {
+    id: "ausvms",
+    name: "AUSVMS",
+    type: "REACT / TYPESCRIPT / NODE / MONGO / REDIS / SOCKET.IO",
+    tagline: "Aditya University Visitor Management System",
+    description: "Built a production full-stack visitor management platform for Aditya University with a React + TypeScript (Vite, Tailwind, shadcn/ui) front end and an Express/MongoDB API, using JWT authentication and role-based access for admin, staff, security, and visitor accounts.",
+    link: "https://github.com/Narayaaana11/AUSVMS",
+    liveUrl: "https://github.com/Narayaaana11/AUSVMS",
+    color: "#a855f7",
+    discipline: "Full-Stack & Real-Time Systems",
+    year: "2026",
+    problem: "Aditya University needed a secure, efficient way to manage campus visitors. Traditional paper-based entry logs were slow (~3–5 minutes per entry), prone to inaccuracies, and provided zero real-time visibility for administrators and security staff across campus checkpoints.",
+    approach: "Architected a full-stack visitor management platform with React, TypeScript, Node.js, Express, and MongoDB. Engineered OTP-based visitor verification, real-time status synchronization via Socket.io, and asynchronous transactional email notifications handled through a Redis-backed Bull job queue. Authored MongoDB aggregation pipelines for deep analytics (peak hours, visit duration, trend forecasting) with scheduled PDF/Excel/CSV exports, hardened with Helmet, rate limiting, audit logging, and Jest test suites.",
+    features: [
+      { title: "Multi-Role Dashboards & RBAC", description: "Four distinct authenticated portals — Admin, Staff, Guard, and Visitor — built with React, TypeScript, Tailwind, and shadcn/ui with strict role-scoped permissions.", image: "/projects/ausvms/visitor-dashboard.png" },
+      { title: "Real-Time Tracking & Bull Queue Alerts", description: "Socket.io powers live visitor location tracking across campus gates; Redis-backed Bull job queue dispatches reliable email/SMS alerts on check-in/out events.", image: "/projects/ausvms/live-tracking.png" },
+      { title: "OTP Check-In & Aggregation Analytics", description: "Secure OTP verification reduces entry time to under 60 seconds. Advanced MongoDB aggregation pipelines power peak hour, visit duration, and trend analytics with scheduled PDF/Excel/CSV export.", image: "/projects/ausvms/otp-checkin.png" }
+    ],
+    techStack: [
+      { name: "React.js & TypeScript", role: "Vite + shadcn/ui Frontend" },
+      { name: "Node.js & Express", role: "REST API Framework" },
+      { name: "MongoDB", role: "Database & Aggregation Pipelines" },
+      { name: "Redis & Bull", role: "Job Queue & Email Processing" },
+      { name: "Socket.io", role: "Real-Time Synchronization" },
+      { name: "JWT & RBAC", role: "Authentication & Authorization" },
+      { name: "Jest", role: "Unit & Integration Testing" }
+    ],
+    images: [
+      { src: "/projects/ausvms/visitor-dashboard.png", alt: "AUSVMS Dashboard", caption: "Multi-role system overview with real-time stats" },
+      { src: "/projects/ausvms/live-tracking.png", alt: "Live Visitor Tracking", caption: "Real-time campus visitor monitoring" },
+      { src: "/projects/ausvms/otp-checkin.png", alt: "OTP Check-In", caption: "Secure OTP-based entry flow" }
+    ],
+    video: "/projects/ausvms/ausvms.mp4"
+  },
+  {
+    id: "matrix-lms",
+    name: "MATRIX LMS",
+    type: "REACT / REDUX / NODE / MONGO / GEMINI AI",
+    tagline: "Intelligent Library Management System",
+    description: "Built a library platform with a React/Redux front end and an Express/MongoDB back end exposing 50+ REST endpoints, with JWT authentication, role-based access for admins and students, rack-assignment workflows, a Google Drive-backed digital library, Socket.io notifications, and an AI chatbot powered by Google Gemini API.",
+    link: "https://github.com/Narayaaana11/Matrix-Library-Management-System",
+    liveUrl: "https://github.com/Narayaaana11/Matrix-Library-Management-System",
+    color: "#3b82f6",
+    discipline: "Web Application & AI",
+    year: "2026",
+    problem: "Aditya University's library relied on legacy systems unable to handle simultaneous student traffic. Librarians spent ~4 hours daily answering repetitive questions about book locations and availability instead of managing core acquisitions and indexing.",
+    approach: "Led full-stack engineering of a scalable MERN application exposing 50+ REST endpoints serving 500+ students and 10+ librarians. Designed Redux state management for seamless cataloging and borrowing workflows. Implemented rack-assignment tracking, activity logging, and a Google Drive-backed digital repository. Integrated Google's Gemini API to power an AI library assistant that answers natural language queries about book locations, availability, and overdue rules.",
+    features: [
+      { title: "Google Gemini AI Library Assistant", description: "AI chatbot powered by Google's Gemini API autonomously resolves 70% of student queries regarding book availability, rack coordinates, and due dates.", image: "/projects/matrix-lms/ai-chatbot.png" },
+      { title: "50+ REST Endpoints & RBAC", description: "Modular Express and MongoDB API architecture supporting granular role-based access control, book borrowing/return workflows, and detailed activity logs.", image: "/projects/matrix-lms/lms-dashboard.png" },
+      { title: "Digital Library & Real-Time Updates", description: "Google Drive-backed digital e-book library with Socket.io real-time notifications for due date reminders and loan approvals; deployed on Vercel and Render.", image: "/projects/matrix-lms/analytics.png" }
+    ],
+    techStack: [
+      { name: "React.js & Redux", role: "State Management & Frontend" },
+      { name: "Node.js & Express", role: "50+ REST API Endpoints" },
+      { name: "MongoDB", role: "NoSQL Database & Schemas" },
+      { name: "Google Gemini API", role: "Conversational AI Assistant" },
+      { name: "Socket.io", role: "Live Notification Events" },
+      { name: "Google Drive API", role: "Digital Library Storage" },
+      { name: "Vercel & Render", role: "Cloud Production Hosting" }
+    ],
+    images: [
+      { src: "/projects/matrix-lms/lms-dashboard.png", alt: "MATRIX LMS Dashboard", caption: "Librarian administration panel" },
+      { src: "/projects/matrix-lms/ai-chatbot.png", alt: "AI Chatbot Interface", caption: "Google Gemini automated student assistant" },
+      { src: "/projects/matrix-lms/analytics.png", alt: "Analytics Module", caption: "Real-time library usage analytics" }
+    ],
+    video: "/projects/matrix-lms/matrix-lms.mp4"
+  },
+  {
     id: "guard-hub",
     name: "Guard Hub",
     type: "REACT / EXPRESS / NODE / MONGODB",
-    tagline: "Security Management System",
-    description: "Architected and implemented a security roster management system for Aditya University in collaboration with Technical Hub, replacing manual spreadsheet-based scheduling for 100+ campus security guards — eliminating scheduling conflicts and saving ~10 hours of admin work per week.",
+    tagline: "Campus Security & Roster Management System",
+    description: "Developed during internship at Technical Hub Pvt. Ltd. — built security roster, attendance report, and leave/OD management screens in React; developed Express REST API modules (employees, roster, attendance, leave/OD, monthly reports) with end-to-end integration and 15+ resolved Postman test cases.",
     link: "https://github.com/Narayaaana11/Guards-Hub",
-    liveUrl: "#",
+    liveUrl: "https://github.com/Narayaaana11/Guards-Hub",
     color: "#f97316",
     discipline: "Security Management",
     year: "2025",
-    problem: "Aditya University's security department was managing shifts for over 100 guards using manual spreadsheets. This led to scheduling conflicts, overlapping shifts, missed handoffs, and an inefficient process that was prone to human error and difficult to manage at scale — costing administrators ~10+ hours per week in manual corrections.",
-    approach: "I architected and implemented a full-stack MERN security roster management system. I designed an intelligent shift assignment engine that auto-rotates General, A, B, and C shifts on a weekly basis with constraint validation, collision detection, and manual override capabilities. The result: 100% elimination of scheduling conflicts and a 90% reduction in administrative overhead.",
+    problem: "Aditya University's security operations managed shifts for over 100 campus security guards using manual spreadsheets. This caused overlapping shifts, missing personnel at sensitive gates, and an administrative overhead of ~10+ hours per week.",
+    approach: "Collaborated in a team at Technical Hub to architect and implement Guard Hub. Built React frontend screens for roster management, attendance reporting, and leave/OD workflows. Developed Express REST API modules with MongoDB for personnel records and monthly summaries, validating the full system through Postman test suites and resolving 15+ integration issues before campus rollout.",
     features: [
-      { title: "Intelligent Shift Engine", description: "Auto-rotates 4 shift types (General, A, B, C) weekly with constraint validation and real-time collision detection — reducing scheduling errors to zero.", image: "/projects/guard-hub/dashboard.png" },
-      { title: "Manual Override", description: "Administrators can manually override auto-generated schedules with a full audit trail, handling complex edge cases like concurrent requests and emergency replacements.", image: "/projects/guard-hub/shift-schedule.png" },
-      { title: "Role-Based Access Control", description: "Secure approval workflows and attendance tracking with comprehensive RBAC — Admin, Supervisor, and Guard roles with scoped permissions.", image: "/projects/guard-hub/guard-profile.png" }
+      { title: "Intelligent Shift Engine & Roster", description: "Auto-rotates General, A, B, and C shifts with constraint validation, conflict detection, and emergency manual override handling.", image: "/projects/guard-hub/dashboard.png" },
+      { title: "Attendance & Leave/OD Management", description: "Dedicated screens for daily attendance verification, On-Duty (OD) permissions, and monthly attendance reporting.", image: "/projects/guard-hub/shift-schedule.png" },
+      { title: "Role-Based Access Control", description: "Scoped permissions for campus administrators, supervisors, and guards with full audit trails.", image: "/projects/guard-hub/guard-profile.png" }
     ],
     techStack: [
-      { name: "React.js", role: "Frontend UI" },
-      { name: "Node.js", role: "Backend Server" },
-      { name: "Express.js", role: "API Framework" },
-      { name: "MongoDB", role: "Database" },
-      { name: "Tailwind CSS", role: "Styling" }
+      { name: "React.js", role: "Frontend UI Screens" },
+      { name: "Node.js & Express", role: "REST API Modules" },
+      { name: "MongoDB", role: "Database Storage" },
+      { name: "Postman", role: "API Integration Testing" },
+      { name: "Tailwind CSS", role: "UI Styling" }
     ],
     images: [
       { src: "/projects/guard-hub/dashboard.png", alt: "Guard Hub Dashboard", caption: "Admin dashboard — real-time shift overview" },
@@ -79,67 +199,6 @@ export const projectDetails: ProjectDetail[] = [
       { src: "/projects/aqua-feed-erp/analytics.png", alt: "Analytics", caption: "Sales and production reporting" }
     ],
     video: "/projects/aqua-feed-erp/aqua-feed-erp.mp4"
-  },
-  {
-    id: "ausvms",
-    name: "AUSVMS",
-    type: "MERN STACK / SOCKET.IO",
-    tagline: "Aditya University Visitor Management System",
-    description: "Built a real-time visitor management platform for Aditya University serving 4 distinct user roles (Admin, Staff, Guard, Visitor) — replacing paper-based logs, reducing entry time by ~60%, and enabling live visitor tracking across campus.",
-    link: "https://github.com/Narayaaana11/AUSVMS",
-    liveUrl: "#",
-    color: "#a855f7",
-    problem: "Aditya University needed a secure, efficient way to manage campus visitors. Traditional paper-based entry logs were slow (~3–5 minutes per entry), prone to inaccuracies, and provided zero real-time visibility for administrators and security staff.",
-    approach: "I developed a full-stack visitor management system using the MERN stack with Socket.io for real-time communication. I implemented OTP-based visitor check-in (cutting entry time to under 60 seconds), automated email alerts via Nodemailer, and live visitor location tracking — reducing unauthorized entry incidents and giving security teams instant visibility.",
-    features: [
-      { title: "Multi-Role Dashboards", description: "Four distinct authenticated portals — Admin, Staff, Guard, and Visitor — each with role-scoped permissions and purpose-built UI.", image: "/projects/ausvms/visitor-dashboard.png" },
-      { title: "Real-Time Tracking & Alerts", description: "Socket.io powers live visitor location tracking; Nodemailer sends automated email/SMS alerts on entry/exit events to registered staff.", image: "/projects/ausvms/live-tracking.png" },
-      { title: "OTP Check-In & Audit Logs", description: "Secure 6-digit OTP verification for guest entry reduces unauthorized access. Comprehensive audit logs with trend analysis for administration.", image: "/projects/ausvms/otp-checkin.png" }
-    ],
-    techStack: [
-      { name: "React.js", role: "Frontend UI" },
-      { name: "Node.js & Express", role: "Backend API" },
-      { name: "MongoDB", role: "Database" },
-      { name: "Socket.io", role: "Real-Time Tracking" },
-      { name: "Nodemailer", role: "Email/SMS Alerts" }
-    ],
-    images: [
-      { src: "/projects/ausvms/visitor-dashboard.png", alt: "AUSVMS Dashboard", caption: "Multi-role system overview" },
-      { src: "/projects/ausvms/live-tracking.png", alt: "Live Visitor Tracking", caption: "Real-time campus visitor monitoring" },
-      { src: "/projects/ausvms/otp-checkin.png", alt: "OTP Check-In", caption: "Secure OTP-based entry flow" }
-    ],
-    video: "/projects/ausvms/ausvms.mp4"
-  },
-  {
-    id: "matrix-lms",
-    name: "MATRIX LMS",
-    type: "MERN STACK / AI CHATBOT",
-    tagline: "Intelligent Library Management System",
-    description: "A production library management system deployed at Aditya University, serving 500+ students and 10+ librarians — with an AI chatbot that autonomously handles 70% of student inquiries and a CI/CD pipeline on Vercel and Render.",
-    link: "https://github.com/Narayaaana11/Matrix-Library-Management-System",
-    liveUrl: "#",
-    color: "#3b82f6",
-    problem: "Aditya University's library relied on a legacy system that couldn't handle simultaneous operations. Librarians spent ~4 hours daily answering repetitive questions about book availability and rack locations instead of managing core library functions.",
-    approach: "Led full-stack development of a scalable MERN application serving 500+ concurrent users. Architected robust MongoDB schemas with aggregation pipelines for real-time analytics. Integrated an NLP-powered chatbot that autonomously resolves 70% of student queries — freeing up librarian time for high-value work. Deployed with GitHub Actions CI/CD for zero-downtime updates.",
-    features: [
-      { title: "AI-Powered Chatbot", description: "NLP-driven chatbot autonomously resolves 70% of student inquiries about book availability, rack positions, and due dates — reducing librarian query load from ~4 hours/day to under 1 hour.", image: "/projects/matrix-lms/lms-dashboard.png" },
-      { title: "Admin Analytics Dashboard", description: "MongoDB aggregation pipelines power real-time library analytics — most borrowed books, peak usage hours, overdue trends, and librarian performance metrics.", image: "/projects/matrix-lms/ai-chatbot.png" },
-      { title: "Zero-Downtime CI/CD", description: "Frontend deployed on Vercel, backend on Render, with GitHub Actions automating build, test, and deploy on every commit — 99.9% uptime since launch.", image: "/projects/matrix-lms/analytics.png" }
-    ],
-    techStack: [
-      { name: "React.js", role: "Frontend UI" },
-      { name: "Node.js & Express", role: "Backend API" },
-      { name: "MongoDB", role: "Database & Aggregations" },
-      { name: "NLP Chatbot", role: "AI Student Assistant" },
-      { name: "GitHub Actions", role: "CI/CD Pipeline" },
-      { name: "Vercel & Render", role: "Cloud Hosting" }
-    ],
-    images: [
-      { src: "/projects/matrix-lms/lms-dashboard.png", alt: "MATRIX LMS Dashboard", caption: "Librarian administration panel" },
-      { src: "/projects/matrix-lms/ai-chatbot.png", alt: "AI Chatbot Interface", caption: "Automated student inquiry resolution" },
-      { src: "/projects/matrix-lms/analytics.png", alt: "Analytics Module", caption: "Real-time library usage analytics" }
-    ],
-    video: "/projects/matrix-lms/matrix-lms.mp4"
   },
   {
     id: "ziege",

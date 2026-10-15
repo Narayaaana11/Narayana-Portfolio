@@ -1,6 +1,6 @@
 # Narayana Thota — Personal Portfolio & Developer Website
 
-The official portfolio of **Narayana Thota** — Full Stack Developer & AI Engineer from Bhimavaram, India. Built with React 19, TypeScript, Tailwind CSS 4, and Motion.
+The official portfolio of **Veera Venkata Naga Satyanarayana Thota (Narayana Thota)** — Full Stack and AI Engineer (MCA, 2026) based in Hyderabad & Bhimavaram, India. Built with React 19, TypeScript, Tailwind CSS 4, and Motion.
 
 **Live Site**: [narayanathota.me](https://narayanathota.me)  
 **Repository**: [github.com/Narayaaana11/Narayana-Portfolio](https://github.com/Narayaaana11/Narayana-Portfolio)
@@ -9,15 +9,14 @@ The official portfolio of **Narayana Thota** — Full Stack Developer & AI Engin
 
 ## 👨‍💻 About Narayana Thota
 
-**Narayana Thota** is a Full Stack Developer and AI Engineer specializing in:
-- **MERN Stack** (MongoDB, Express.js, React.js, Node.js)
-- **AI Integration** — NLP chatbots, generative AI pipelines
-- **Real-Time Systems** — Socket.io, WebSockets, OTP flows
-- **ERP Development** — Custom enterprise resource planning tools
-
-Currently pursuing MCA at Aditya University (graduating May 2026), based in Bhimavaram, Andhra Pradesh, India. Open to full-time engineering roles and select freelance projects.
+Full Stack and AI Engineer who enjoys taking products from idea to release:
+- **Vesper**: Windows voice-to-action desktop app with pluggable cloud & local LLMs, ambient push-to-talk, sub-250ms direct text injection, native Win32 helpers, and an MCP stdio server.
+- **AUSVMS**: Production visitor management platform for Aditya University with role-based access, real-time Socket.io updates, Bull queues, and analytics aggregation.
+- **Matrix LMS**: Intelligent library platform with 50+ REST endpoints, Google Drive digital library, and Google Gemini AI query resolution.
+- **Guard Hub**: Campus security roster management system engineered during internship at Technical Hub Pvt. Ltd.
 
 📧 [narayananaiduthota@gmail.com](mailto:narayananaiduthota@gmail.com)  
+📱 +91 6301253789  
 🔗 [linkedin.com/in/narayaaana](https://www.linkedin.com/in/narayaaana/)  
 🐙 [github.com/Narayaaana11](https://github.com/Narayaaana11)
 

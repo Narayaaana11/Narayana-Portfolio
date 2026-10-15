@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Lenis from 'lenis';
-import { ArrowUpRight, ArrowRight, Heart, X, Check, Code2, Terminal, Settings, Sparkles } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, Heart, X, Check, Code2, Terminal, Settings, Sparkles, Cpu, Layers, Server, ShieldCheck } from 'lucide-react';
 import { cn, useIsDesktop, usePrefersReducedMotion } from './lib/utils';
 import {
   ScrollProgress, BackToTop, Magnetic, Reveal, RevealLines, ScrollRevealText, Marquee, EASE,
@@ -22,21 +22,25 @@ interface WorkItem {
 }
 
 const WORK_ITEMS: WorkItem[] = [
-  { id: 'guard-hub', name: 'Guard Hub', discipline: 'Security & Roster Management', year: '2025', preview: '/projects/guard-hub/ai ingredeient analysis.png', detail: true },
+  { id: 'vesper', name: 'VESPER', discipline: 'Voice AI Desktop Platform', year: '2026', preview: '/projects/vesper/vesper-hud.png', detail: true },
+  { id: 'ausvms', name: 'AUSVMS', discipline: 'Multi-Role Visitor Portal', year: '2026', preview: '/projects/ausvms/visitor-dashboard.png', detail: true },
+  { id: 'matrix-lms', name: 'MATRIX LMS', discipline: 'AI-Powered Library System', year: '2026', preview: '/projects/matrix-lms/lms-dashboard.png', detail: true },
+  { id: 'guard-hub', name: 'Guard Hub', discipline: 'Security & Roster Management', year: '2025', preview: '/projects/guard-hub/dashboard.png', detail: true },
   { id: 'ziege', name: 'Ziege', discipline: 'Generative AI E-Commerce', year: 'In Dev', preview: '/projects/ziege/storefront.png', detail: true },
   { id: 'aqua-feed-erp', name: 'Aqua Feed ERP', discipline: 'Custom ERP Solution', year: '2024', preview: '/projects/aqua-feed-erp/erp-dashboard.png', detail: true },
-  { id: 'ausvms', name: 'AUSVMS', discipline: 'Multi-Role Visitor Portal', year: '2025', preview: '/projects/ausvms/visitor-dashboard.png', detail: true },
-  { id: 'matrix-lms', name: 'MATRIX LMS', discipline: 'AI-Powered Library System', year: '2025', preview: '/projects/matrix-lms/lms-dashboard.png', detail: true },
 ];
 
 const CAPABILITIES = [
-  { no: '01', title: 'Full-Stack Engineering', body: 'End-to-end web applications and custom portals. Type-safe React frontends, scalable Node.js APIs, and MongoDB schemas engineered to feel considered and robust.', tools: ['React.js', 'Node.js', 'MongoDB', 'Express'] },
-  { no: '02', title: 'AI Integration', body: 'Embedding intelligent features into production applications — NLP chatbots that autonomously resolve 70% of user queries and AI pipelines for generative content.', tools: ['NLP', 'Generative AI', 'REST APIs', 'Prompt Eng.'] },
-  { no: '03', title: 'Real-Time Systems & Architecture', body: 'Building live, event-driven applications — from OTP-based check-in flows to live visitor tracking dashboards — using WebSockets and server-sent events.', tools: ['Socket.io', 'JWT', 'Nodemailer', 'Docker'] },
-  { no: '04', title: 'Custom ERP & Business Tools', body: 'Custom enterprise resource planning tools tailored to your industry — inventory, production tracking, and analytics dashboards that replace fragmented spreadsheets.', tools: ['MERN Stack', 'Socket.io', 'Vercel', 'GitHub Actions'] },
+  { no: '01', title: 'Full-Stack Engineering', body: 'End-to-end web applications and high-availability platforms. Type-safe React & Vite frontends with shadcn/ui and Tailwind, scalable Node.js/Express APIs, MongoDB schemas, and Redis-backed Bull task queues.', tools: ['React.js', 'TypeScript', 'Node.js', 'Express', 'MongoDB', 'Redis'] },
+  { no: '02', title: 'AI & LLM Integration', body: 'Deep integration of production AI systems — pluggable multi-provider architectures (Groq, Gemini, local Llama via Ollama), Whisper speech-to-text, prompt engineering, and Model Context Protocol (MCP) servers.', tools: ['Whisper STT', 'Groq & Gemini', 'Local LLMs', 'MCP', 'Prompt Eng.'] },
+  { no: '03', title: 'Desktop & Native Systems', body: 'Engineering local-first Windows desktop tools using Electron.js and native Win32 helpers. Ambient push-to-talk, sub-250ms direct text injection, and SQLite context engines with privacy shielding.', tools: ['Electron.js', 'Native Win32', 'SQLite', 'Vitest', 'Vercel'] },
+  { no: '04', title: 'Real-Time Systems & DevOps', body: 'Building event-driven real-time architectures with Socket.io, robust JWT authentication, granular RBAC, Postman integration suites, automated Jest tests, and seamless deployment on Vercel & Render.', tools: ['Socket.io', 'JWT & RBAC', 'Jest & Vitest', 'Postman', 'Render', 'Git'] },
 ];
 
 const GALLERY = [
+  '/projects/vesper/vesper-hud.png',
+  '/projects/vesper/vesper-architecture.png',
+  '/projects/vesper/vesper-settings.png',
   '/projects/ausvms/shap explaination.png',
   '/projects/guard-hub/ai ingredeient analysis.png',
   '/projects/aqua-feed-erp/Greenwashing dection.png',
@@ -49,7 +53,12 @@ const GALLERY = [
   '/projects/ziege/auto sceme detection.png',
 ];
 
-const STACK = ['JavaScript', 'React.js', 'Node.js', 'Express.js', 'MongoDB', 'Tailwind CSS', 'Socket.io', 'Nodemailer', 'Vercel', 'GitHub Actions', 'REST APIs', 'Git'];
+const STACK = [
+  'TypeScript', 'JavaScript', 'Python', 'React.js', 'Electron.js', 'Node.js', 'Express.js',
+  'Whisper STT', 'Model Context Protocol (MCP)', 'Groq & Gemini', 'Local LLMs (Ollama)',
+  'MongoDB', 'SQLite', 'Redis', 'Tailwind CSS', 'shadcn/ui', 'Redux', 'Vite',
+  'Socket.io', 'REST APIs', 'JWT & RBAC', 'Jest', 'Vitest', 'Postman', 'Vercel', 'Render', 'Git & GitHub'
+];
 
 const NAV = [
   { no: '00', label: 'Index', target: 'top', image: '/menu_index.png' },
@@ -274,8 +283,8 @@ const Menu: React.FC<{ open: boolean; onNavigate: (target: string) => void; onCl
             className="px-5 md:px-10 py-5 grid grid-cols-1 md:grid-cols-3 gap-5 items-center"
           >
             <div className="o-mono">
-              <p>Bhimavaram, India</p>
-              <p className="text-cream break-all">narayananaiduthota@gmail.com</p>
+              <p>Hyderabad / Bhimavaram, India</p>
+              <p className="text-cream break-all">narayananaiduthota@gmail.com · +91 6301253789</p>
             </div>
             <div className="flex md:justify-center">
               <Magnetic as="a" href="mailto:narayananaiduthota@gmail.com" cursor="email" className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-line text-cream o-mono">
@@ -351,7 +360,7 @@ const Hero: React.FC = () => {
           <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
         </span>
         <span className="o-mono text-cream w-max">
-          Available for full-time roles & select projects
+          Available for AI Engineer & Full Stack roles
         </span>
       </motion.div>
 
@@ -363,8 +372,8 @@ const Hero: React.FC = () => {
         <p className="o-mono text-cream/50 mb-3 md:mb-4">Specialties</p>
         <ul className="o-mono space-y-1 text-cream/70 mb-6 md:mb-9">
           <li>Full-Stack Development</li>
-          <li>AI Integration</li>
-          <li>Real-Time Systems</li>
+          <li>AI & LLM Integration</li>
+          <li>Desktop & Native Systems</li>
         </ul>
         <h2
           className="font-display text-cream leading-[0.9]"
@@ -460,22 +469,22 @@ const About: React.FC = () => (
           </div>
           <div>
             <p className="text-cream font-medium" itemProp="name">Narayana Thota</p>
-            <p className="o-mono text-muted text-xs mt-0.5" itemProp="address">Bhimavaram, India · IST</p>
+            <p className="o-mono text-muted text-xs mt-0.5" itemProp="address">Hyderabad &amp; Bhimavaram, India · IST</p>
           </div>
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 o-mono text-[10px] text-emerald-400">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            Open to opportunities
+            Open to AI &amp; Full Stack roles
           </span>
         </div>
 
         {/* bio text */}
         <div className="md:col-span-5">
           <p className="text-body leading-relaxed mb-5" itemProp="description">
-            I'm a Full-Stack Developer and MCA student at Aditya University (graduating May 2026), based in Bhimavaram, India.
-            I build production-grade web applications — from real-time visitor management systems serving a university campus to AI-powered library platforms handling 500+ daily users — with a focus on clean architecture and measurable impact.
+            I'm a Full Stack and AI Engineer (MCA, 2026) based in Hyderabad and Bhimavaram, India, who thrives on taking ambitious products from concept to production release.
+            I built and shipped <strong>Vesper</strong>, an ambient Windows voice-to-action desktop platform with pluggable cloud and local LLMs, and <strong>AUSVMS</strong>, a full-stack visitor management platform with role-based access, real-time Socket.io updates, and Redis task queues.
           </p>
           <p className="text-body leading-relaxed">
-            Currently open to full-time engineering roles and select freelance projects. I work best on problems where scale, real-time data, or AI capability is part of the answer.
+            Currently looking for AI Engineer and Full Stack Developer roles where high-bandwidth user experiences, local/cloud AI pipelines, and rock-solid system architecture are mission critical.
           </p>
         </div>
 
@@ -485,19 +494,23 @@ const About: React.FC = () => (
           <ul className="space-y-3 o-mono text-sm">
             <li className="flex justify-between border-b border-line pb-2">
               <span className="text-muted">Education</span>
-              <span className="text-cream text-right">MCA · Aditya University</span>
+              <span className="text-cream text-right">MCA · Aditya University (7.70)</span>
+            </li>
+            <li className="flex justify-between border-b border-line pb-2">
+              <span className="text-muted">Undergrad</span>
+              <span className="text-cream text-right">BCA · Aditya College (7.24)</span>
             </li>
             <li className="flex justify-between border-b border-line pb-2">
               <span className="text-muted">Graduating</span>
               <span className="text-cream">May 2026</span>
             </li>
             <li className="flex justify-between border-b border-line pb-2">
-              <span className="text-muted">Experience</span>
-              <span className="text-cream">1 Internship + 5 Projects</span>
+              <span className="text-muted">Focus</span>
+              <span className="text-cream">AI &amp; Full-Stack</span>
             </li>
             <li className="flex justify-between">
               <span className="text-muted">Stack</span>
-              <span className="text-cream">MERN · AI · DevOps</span>
+              <span className="text-cream text-right">TS · Electron · Whisper · LLMs</span>
             </li>
           </ul>
         </div>
@@ -616,36 +629,51 @@ const SKILL_GROUPS = [
   {
     label: 'Languages',
     skills: [
-      { name: 'JavaScript', level: 5 },
+      { name: 'TypeScript', level: 5 },
+      { name: 'JavaScript (ES6+)', level: 5 },
       { name: 'Python', level: 4 },
       { name: 'SQL', level: 4 },
-      { name: 'HTML5', level: 5 },
-      { name: 'CSS3', level: 5 },
+      { name: 'HTML5 & CSS3', level: 5 },
     ],
   },
   {
-    label: 'Frontend & DB',
+    label: 'AI & LLM',
+    skills: [
+      { name: 'LLM API Integration', level: 5 },
+      { name: 'Local LLMs (Ollama)', level: 4 },
+      { name: 'Whisper Speech-to-Text', level: 5 },
+      { name: 'Prompt Engineering', level: 5 },
+      { name: 'Model Context Protocol (MCP)', level: 5 },
+    ],
+  },
+  {
+    label: 'Frontend & Desktop',
     skills: [
       { name: 'React.js', level: 5 },
+      { name: 'Electron.js', level: 5 },
+      { name: 'Redux & Vite', level: 5 },
       { name: 'Tailwind CSS', level: 5 },
-      { name: 'MongoDB', level: 4 },
+      { name: 'shadcn/ui', level: 5 },
     ],
   },
   {
-    label: 'Backend & APIs',
+    label: 'Backend & Databases',
     skills: [
-      { name: 'Node.js', level: 5 },
-      { name: 'Express.js', level: 5 },
+      { name: 'Node.js & Express.js', level: 5 },
       { name: 'REST APIs', level: 5 },
+      { name: 'MongoDB & SQLite', level: 5 },
+      { name: 'JWT Auth & RBAC', level: 5 },
+      { name: 'Socket.io & Redis', level: 4 },
     ],
   },
   {
-    label: 'Tools & Platforms',
+    label: 'Testing & Tools',
     skills: [
+      { name: 'Jest & Vitest', level: 4 },
+      { name: 'Postman', level: 5 },
       { name: 'Git & GitHub', level: 5 },
-      { name: 'VS Code / Cursor', level: 5 },
-      { name: 'Claude Code', level: 4 },
-      { name: 'Codex / AI Tools', level: 4 },
+      { name: 'Vercel & Render', level: 5 },
+      { name: 'AI-Assisted Development', level: 5 },
     ],
   },
 ];
@@ -654,14 +682,16 @@ const getGroupIcon = (label: string) => {
   switch (label.toLowerCase()) {
     case 'languages':
       return <Code2 className="w-5 h-5 text-cream" />;
-    case 'frontend & db':
-      return <Terminal className="w-5 h-5 text-cream" />;
-    case 'backend & apis':
-      return <Settings className="w-5 h-5 text-cream" />;
-    case 'tools & platforms':
-      return <Sparkles className="w-5 h-5 text-cream" />;
+    case 'ai & llm':
+      return <Cpu className="w-5 h-5 text-cream" />;
+    case 'frontend & desktop':
+      return <Layers className="w-5 h-5 text-cream" />;
+    case 'backend & databases':
+      return <Server className="w-5 h-5 text-cream" />;
+    case 'testing & tools':
+      return <ShieldCheck className="w-5 h-5 text-cream" />;
     default:
-      return null;
+      return <Sparkles className="w-5 h-5 text-cream" />;
   }
 };
 
@@ -674,10 +704,10 @@ const Skills: React.FC = () => (
           <span>skills & proficiency</span>
         </div>
       </Reveal>
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 md:gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         {SKILL_GROUPS.map((group, gi) => (
           <Reveal key={group.label} delay={gi * 0.07}>
-            <div className="border border-line bg-cream/[0.01] hover:bg-cream/[0.03] backdrop-blur-sm p-6 md:p-8 flex flex-col hover:border-line-strong transition-all duration-500 group/card relative overflow-hidden h-full">
+            <div className="border border-line bg-cream/[0.01] hover:bg-cream/[0.03] backdrop-blur-sm p-6 md:p-7 flex flex-col hover:border-line-strong transition-all duration-500 group/card relative overflow-hidden h-full">
               {/* Premium Hover Accent Bar */}
               <div className="absolute top-0 left-0 w-full h-[2px] bg-cream scale-x-0 group-hover/card:scale-x-100 transition-transform duration-500 origin-left" />
               
@@ -685,7 +715,7 @@ const Skills: React.FC = () => (
                 <div className="w-9 h-9 rounded-full bg-cream/5 border border-line flex items-center justify-center group-hover/card:bg-cream/15 group-hover/card:border-line-strong transition-all duration-300">
                   {getGroupIcon(group.label)}
                 </div>
-                <h3 className="font-display text-cream text-lg tracking-wider uppercase">{group.label}</h3>
+                <h3 className="font-display text-cream text-base tracking-wider uppercase">{group.label}</h3>
               </div>
 
               <div className="space-y-6 flex-1">
@@ -799,19 +829,25 @@ const Experience: React.FC = () => {
               <div className="border-l border-line pl-6 relative">
                 <div className="absolute w-2 h-2 rounded-full bg-cream -left-[4.5px] top-2" />
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
-                  <h4 className="font-display text-2xl text-cream">Full Stack Developer Intern</h4>
+                  <h4 className="font-display text-2xl text-cream">Full Stack Development Intern</h4>
                   <span className="o-mono text-muted text-sm mt-1 md:mt-0">Jun 2025 – Jul 2025</span>
                 </div>
-                <p className="text-body o-mono text-sm mb-4">Technical Hub Pvt. Ltd — Bhimavaram, India</p>
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-4 text-sm o-mono">
+                  <span className="text-body">Technical Hub Pvt. Ltd.</span>
+                  <span className="text-muted">|</span>
+                  <a href="https://github.com/Narayaaana11/Guards-Hub" target="_blank" rel="noreferrer" className="text-cream link-underline inline-flex items-center gap-1">
+                    Guard Hub: github.com/Narayaaana11/Guards-Hub <ArrowUpRight className="w-3.5 h-3.5" />
+                  </a>
+                </div>
                 <ul className="text-body leading-relaxed max-w-2xl list-disc pl-4 space-y-2 text-sm md:text-base text-cream/80">
                   <li>
-                    Contributed to Guards Hub, a security roster management system built for Aditya University, gaining hands-on experience translating a manual, spreadsheet-based process into a full-stack MERN application for 100+ campus security guards.
+                    Worked in a team on Guard Hub, a security guard management system for campus operations, building the security roster, attendance report and leave/OD management screens in React.
                   </li>
                   <li>
-                    Learned to design and implement rule-based scheduling logic, building a shift assignment engine that auto-rotates General, A, B, and C shifts weekly with constraint validation, collision detection, and manual override handling.
+                    Developed Express REST API modules (employees, roster, attendance, leave/OD, monthly reports) and handled end-to-end integration with the React front end.
                   </li>
                   <li>
-                    Strengthened testing and debugging skills by performing integration testing across the shift engine, attendance tracking, and approval workflows, including edge cases like overlapping shifts, concurrent requests, and role-based access.
+                    Tested the complete application with Postman, resolving 15+ integration issues before deployment.
                   </li>
                 </ul>
               </div>
@@ -824,33 +860,37 @@ const Experience: React.FC = () => {
               <div className="border-l border-line pl-6 relative">
                 <div className="absolute w-2 h-2 rounded-full bg-line -left-[4.5px] top-2" />
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
-                  <h4 className="font-display text-xl text-cream">Master of Computer Applications (MCA)
-                    <span className="ml-2 inline-block o-mono text-[9px] text-emerald-400 border border-emerald-400/40 rounded px-2 py-0.5 align-middle">Currently Enrolled</span>
+                  <h4 className="font-display text-xl text-cream">Master of Computer Applications (MCA) — Computer Science
+                    <span className="ml-2 inline-block o-mono text-[9px] text-emerald-400 border border-emerald-400/40 rounded px-2 py-0.5 align-middle">2024 – 2026</span>
                   </h4>
-                  <span className="o-mono text-muted text-sm mt-1 md:mt-0">Aug 2024 – May 2026 (Expected)</span>
+                  <span className="o-mono text-muted text-sm mt-1 md:mt-0">Aug 2024 – May 2026</span>
                 </div>
-                <p className="text-body text-sm">Aditya University — CGPA: 7.70</p>
+                <p className="text-body text-sm">Aditya University — CGPA: 7.70 / 10</p>
               </div>
               <div className="border-l border-line pl-6 relative">
                 <div className="absolute w-2 h-2 rounded-full bg-line -left-[4.5px] top-2" />
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
-                  <h4 className="font-display text-xl text-cream">Bachelor of Computer Applications (BCA)</h4>
+                  <h4 className="font-display text-xl text-cream">Bachelor of Computer Applications (BCA) — Computer Science</h4>
                   <span className="o-mono text-muted text-sm mt-1 md:mt-0">Aug 2021 – May 2024</span>
                 </div>
-                <p className="text-body text-sm">Aditya Degree College — CGPA: 7.24</p>
+                <p className="text-body text-sm">Aditya Degree College — CGPA: 7.24 / 10</p>
               </div>
             </div>
           </Reveal>
 
           <Reveal>
-            <h3 className="o-mono text-cream mb-6">Certifications & Awards</h3>
+            <h3 className="o-mono text-cream mb-6">Certifications &amp; Achievements</h3>
             <ul className="space-y-4">
               <li className="flex flex-col md:flex-row md:items-center justify-between border-b border-line pb-4">
-                <span className="text-body">Full Stack Developer — Technical Hub Pvt. Ltd</span>
+                <span className="text-body">Full Stack Developer Certification — Technical Hub Pvt. Ltd.</span>
                 <span className="o-mono text-muted text-sm mt-1 md:mt-0">Jun 2025</span>
               </li>
               <li className="flex flex-col md:flex-row md:items-center justify-between border-b border-line pb-4">
-                <span className="text-body">Project Space Hackathon — Technical Hub Pvt. Ltd</span>
+                <span className="text-body">Programming for Everybody (Getting Started with Python) — University of Michigan (Coursera)</span>
+                <span className="o-mono text-muted text-sm mt-1 md:mt-0">Verified</span>
+              </li>
+              <li className="flex flex-col md:flex-row md:items-center justify-between border-b border-line pb-4">
+                <span className="text-body">Project Space Hackathon Participant — Technical Hub Pvt. Ltd.</span>
                 <span className="o-mono text-muted text-sm mt-1 md:mt-0">Jun 2025</span>
               </li>
             </ul>
@@ -1162,10 +1202,11 @@ const Footer: React.FC = () => {
             <p className="text-muted mb-3">Connect</p>
             <a href="https://github.com/Narayaaana11" target="_blank" rel="noreferrer me" data-cursor="open" className="block text-cream link-underline w-fit mb-1" aria-label="Narayana Thota on GitHub">GitHub</a>
             <a href="https://www.linkedin.com/in/narayaaana/" target="_blank" rel="noreferrer me" data-cursor="open" className="block text-cream link-underline w-fit mb-1" aria-label="Narayana Thota on LinkedIn">LinkedIn</a>
+            <a href="tel:+916301253789" className="block text-cream link-underline w-fit mb-1" aria-label="Call Narayana Thota">+91 6301253789</a>
           </div>
           <div>
             <p className="text-muted mb-3">Located</p>
-            <p className="text-cream">Bhimavaram,<br />India</p>
+            <p className="text-cream">Hyderabad &amp;<br />Bhimavaram, India</p>
           </div>
           <div>
             <p className="text-muted mb-3">Local time</p>
@@ -1178,10 +1219,13 @@ const Footer: React.FC = () => {
           <h2 className="font-display text-mega text-cream leading-[0.82]" itemProp="name">Narayana<br />Thota</h2>
           {/* Hidden address block — helps Google identify the person entity */}
           <address className="sr-only" itemProp="address" itemScope itemType="https://schema.org/PostalAddress">
-            <span itemProp="addressLocality">Bhimavaram</span>,
-            <span itemProp="addressRegion">Andhra Pradesh</span>,
+            <span itemProp="name">Veera Venkata Naga Satyanarayana Thota</span>
+            <span itemProp="addressLocality">Hyderabad</span>,
+            <span itemProp="addressRegion">Telangana</span>,
             <span itemProp="addressCountry">India</span>.
+            Phone: <a href="tel:+916301253789" itemProp="telephone">+91 6301253789</a>.
             Email: <a href="mailto:narayananaiduthota@gmail.com" itemProp="email">narayananaiduthota@gmail.com</a>.
+            Website: <a href="https://www.narayanathota.me" itemProp="url">narayanathota.me</a>.
             GitHub: <a href="https://github.com/Narayaaana11" rel="me">github.com/Narayaaana11</a>.
             LinkedIn: <a href="https://www.linkedin.com/in/narayaaana/" rel="me">linkedin.com/in/narayaaana</a>.
           </address>
