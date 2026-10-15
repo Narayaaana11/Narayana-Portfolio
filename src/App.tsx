@@ -729,51 +729,51 @@ const SKILL_GROUPS = [
   {
     label: 'Languages',
     skills: [
-      { name: 'TypeScript', tag: 'Core' },
-      { name: 'JavaScript (ES6+)', tag: 'Core' },
-      { name: 'Python', tag: 'AI & Data' },
-      { name: 'SQL', tag: 'Queries' },
-      { name: 'HTML5 & CSS3', tag: 'Design' },
+      'TypeScript',
+      'JavaScript (ES6+)',
+      'Python',
+      'SQL',
+      'HTML5 & CSS3',
     ],
   },
   {
     label: 'AI & LLM',
     skills: [
-      { name: 'LLM API Integration', tag: 'Groq & Gemini' },
-      { name: 'Local LLMs (Ollama)', tag: 'Private AI' },
-      { name: 'Whisper Speech-to-Text', tag: 'Audio STT' },
-      { name: 'Prompt Engineering', tag: 'System Prompts' },
-      { name: 'Model Context Protocol (MCP)', tag: 'Stdio & IDEs' },
+      'LLM API Integration',
+      'Local LLMs (Ollama)',
+      'Whisper Speech-to-Text',
+      'Prompt Engineering',
+      'Model Context Protocol (MCP)',
     ],
   },
   {
     label: 'Frontend & Desktop',
     skills: [
-      { name: 'React.js', tag: 'Component UI' },
-      { name: 'Electron.js', tag: 'Native Win32' },
-      { name: 'Redux & Vite', tag: 'State & Bundler' },
-      { name: 'Tailwind CSS', tag: 'Utility Styling' },
-      { name: 'shadcn/ui', tag: 'Design System' },
+      'React.js',
+      'Electron.js',
+      'Redux & Vite',
+      'Tailwind CSS',
+      'shadcn/ui',
     ],
   },
   {
     label: 'Backend & Databases',
     skills: [
-      { name: 'Node.js & Express.js', tag: 'REST Services' },
-      { name: 'REST APIs', tag: '50+ Endpoints' },
-      { name: 'MongoDB & SQLite', tag: 'NoSQL & Local' },
-      { name: 'JWT Auth & RBAC', tag: 'Security' },
-      { name: 'Socket.io & Redis', tag: 'Real-Time' },
+      'Node.js & Express.js',
+      'REST APIs',
+      'MongoDB & SQLite',
+      'JWT Auth & RBAC',
+      'Socket.io & Redis',
     ],
   },
   {
     label: 'Testing & Tools',
     skills: [
-      { name: 'Jest & Vitest', tag: 'Unit Tests' },
-      { name: 'Postman', tag: 'API Testing' },
-      { name: 'Git & GitHub', tag: 'Version Control' },
-      { name: 'Vercel & Render', tag: 'CI/CD Cloud' },
-      { name: 'AI-Assisted Development', tag: 'Cursor & Copilot' },
+      'Jest & Vitest',
+      'Postman',
+      'Git & GitHub',
+      'Vercel & Render',
+      'AI-Assisted Development',
     ],
   },
 ];
@@ -804,11 +804,11 @@ const Skills: React.FC = () => (
           <span>skills & proficiency</span>
         </div>
       </Reveal>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 lg:gap-5 xl:gap-6">
         {SKILL_GROUPS.map((group, gi) => (
           <Reveal key={group.label} delay={gi * 0.07}>
             <SpotlightCard
-              className="p-6 md:p-7 flex flex-col group/card relative overflow-hidden h-full rounded-2xl"
+              className="p-5 md:p-6 flex flex-col group/card relative overflow-hidden h-full rounded-2xl"
               spotlightColor="rgba(231, 220, 168, 0.12)"
             >
               {/* Premium Hover Accent Bar */}
@@ -822,19 +822,14 @@ const Skills: React.FC = () => (
               </div>
 
               <div className="space-y-2.5 flex-1">
-                {group.skills.map((s) => (
+                {group.skills.map((skillName) => (
                   <div
-                    key={s.name}
-                    className="flex items-center justify-between py-2.5 px-3 rounded-lg border border-line/60 bg-base/50 group/skill transition-all duration-300 hover:border-line-strong hover:bg-cream/[0.05] hover:translate-x-1"
+                    key={skillName}
+                    className="flex items-center gap-2.5 py-2.5 px-3 rounded-lg border border-line/60 bg-base/50 group/skill transition-all duration-300 hover:border-line-strong hover:bg-cream/[0.05] hover:translate-x-1"
                   >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/70 group-hover/skill:bg-emerald-400 transition-colors shadow-[0_0_6px_rgba(52,211,153,0.4)] shrink-0" />
-                      <span className="text-body font-mono text-xs text-cream/90 group-hover/card:text-cream transition-colors truncate">
-                        {s.name}
-                      </span>
-                    </div>
-                    <span className="o-mono text-[9px] text-cream/50 group-hover/skill:text-cream/80 transition-colors shrink-0 ml-2">
-                      {s.tag}
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/80 group-hover/skill:bg-emerald-400 transition-colors shadow-[0_0_6px_rgba(52,211,153,0.5)] shrink-0" />
+                    <span className="text-body font-mono text-xs md:text-[13px] text-cream/90 group-hover/card:text-cream transition-colors leading-tight">
+                      {skillName}
                     </span>
                   </div>
                 ))}
